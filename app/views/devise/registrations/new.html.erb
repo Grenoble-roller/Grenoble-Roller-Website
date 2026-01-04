@@ -29,11 +29,19 @@
                   placeholder: "Email", 
                   required: true,
                   style: "font-size: 16px; min-height: 44px;",
+                  data: { 
+                    email_validation_target: "input"
+                  },
                   aria: has_error ? { 
                     required: true,
-                    describedby: "error_email",
+                    describedby: "error_email email_validation_feedback",
                     invalid: true
-                  } : { required: true } %>
+                  } : { 
+                    required: true,
+                    describedby: "email_validation_feedback"
+                  } %>
+              <!-- Feedback validation email en temps réel -->
+              <div id="email_validation_feedback" class="form-text small mt-1" role="status" aria-live="polite"></div>
               <% if has_error %>
                 <div class="invalid-feedback d-block" id="error_email">
                   <%= resource.errors[:email].first %>
@@ -316,3 +324,122 @@
     </script>
   <% end %>
 <% end %>
+
+<!-- Validation email en temps réel -->
+<script>
+  (function() {
+    const emailInput = document.getElementById('user_email');
+    const feedbackDiv = document.getElementById('email_validation_feedback');
+    const form = document.querySelector('form[action*="registration"]');
+    let validationTimeout = null;
+    let currentRequest = null;
+
+    if (!emailInput || !feedbackDiv) return;
+
+    // Fonction pour valider le format email
+    function isValidEmailFormat(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    // Fonction pour vérifier si l'email existe via AJAX
+    function checkEmailAvailability(email) {
+      // Annuler la requête précédente si elle existe
+      if (currentRequest) {
+        currentRequest.abort();
+      }
+
+      // Vérifier d'abord le format
+      if (!isValidEmailFormat(email)) {
+        feedbackDiv.textContent = '';
+        feedbackDiv.className = 'form-text small mt-1';
+        emailInput.classList.remove('is-valid', 'is-invalid');
+        return;
+      }
+
+      // Afficher un indicateur de chargement
+      feedbackDiv.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Vérification en cours...';
+      feedbackDiv.className = 'form-text small mt-1 text-info';
+      emailInput.classList.remove('is-valid', 'is-invalid');
+
+      // Faire la requête AJAX
+      const url = '<%= check_email_users_path %>';
+      currentRequest = fetch(`${url}?email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        credentials: 'same-origin'
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur réseau');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.available) {
+          // Email disponible
+          feedbackDiv.innerHTML = '<i class="bi bi-check-circle me-1 text-success"></i><span class="text-success">Cet email est disponible</span>';
+          feedbackDiv.className = 'form-text small mt-1 text-success';
+          emailInput.classList.remove('is-invalid');
+          emailInput.classList.add('is-valid');
+        } else {
+          // Email déjà utilisé
+          feedbackDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-1 text-danger"></i><span class="text-danger">' + data.message + '</span>';
+          feedbackDiv.className = 'form-text small mt-1 text-danger';
+          emailInput.classList.remove('is-valid');
+          emailInput.classList.add('is-invalid');
+          emailInput.setAttribute('aria-invalid', 'true');
+        }
+      })
+      .catch(error => {
+        // En cas d'erreur, ne pas bloquer l'utilisateur
+        console.error('Erreur lors de la vérification de l\'email:', error);
+        feedbackDiv.textContent = '';
+        feedbackDiv.className = 'form-text small mt-1';
+        emailInput.classList.remove('is-valid', 'is-invalid');
+      })
+      .finally(() => {
+        currentRequest = null;
+      });
+    }
+
+    // Écouter les changements dans le champ email
+    emailInput.addEventListener('input', function() {
+      const email = this.value.trim();
+
+      // Nettoyer le timeout précédent
+      if (validationTimeout) {
+        clearTimeout(validationTimeout);
+      }
+
+      // Réinitialiser le feedback si le champ est vide
+      if (!email) {
+        feedbackDiv.textContent = '';
+        feedbackDiv.className = 'form-text small mt-1';
+        emailInput.classList.remove('is-valid', 'is-invalid');
+        emailInput.removeAttribute('aria-invalid');
+        return;
+      }
+
+      // Attendre 500ms après la dernière frappe avant de vérifier (debounce)
+      validationTimeout = setTimeout(function() {
+        checkEmailAvailability(email);
+      }, 500);
+    });
+
+    // Vérifier aussi au blur (quand l'utilisateur quitte le champ)
+    emailInput.addEventListener('blur', function() {
+      const email = this.value.trim();
+      if (email && isValidEmailFormat(email)) {
+        // Annuler le timeout si en attente
+        if (validationTimeout) {
+          clearTimeout(validationTimeout);
+        }
+        checkEmailAvailability(email);
+      }
+    });
+  })();
+</script>

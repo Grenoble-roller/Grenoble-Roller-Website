@@ -265,8 +265,8 @@ tags: ["tag1", "tag2"]
 - [ ] Section "Tarifs d'adhésion" (Tableau simple avec 3 tarifs + CTA)
 - [ ] Page "Équipe" (Créer page statique manquante)
 
-**Parcours 2 : Inscription** :
-- [ ] Indicateur de progression du formulaire (Barre "Étape 1/1" pour préparer futures étapes)
+**Parcours 2 : Inscription** : ✅ TERMINÉ
+- [ ] Indicateur de progression du formulaire (Barre "Étape 1/1" pour préparer futures étapes) - Priorité basse
 
 **Parcours 3 : Découverte des Événements** :
 - [ ] Tri personnalisé (Dropdown "Trier par" : Date, Popularité, Distance, Nouveautés)
@@ -399,6 +399,8 @@ tags: ["tag1", "tag2"]
 ### Corrections UX
 - ✅ **Navbar** : Boutons "Se connecter" et "S'inscrire" côte à côte sur desktop, empilés sur mobile uniquement
 - ✅ **Messages de bienvenue** : Messages personnalisés après connexion/inscription/confirmation email avec prénom de l'utilisateur
+- ✅ **Validation email en temps réel** : Vérification AJAX de la disponibilité de l'email pendant la saisie dans le formulaire d'inscription (2025-01-30)
+- ✅ **Page de bienvenue** : Page `/welcome` avec guide "Prochaines étapes" après inscription (confirmation email, adhésion, événements) (2025-01-30)
 - ✅ **Redirection** : Utilisateurs déjà connectés visitant `/users/sign_in` redirigés vers l'accueil avec message de bienvenue
 
 ---

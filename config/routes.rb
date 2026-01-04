@@ -134,6 +134,9 @@ Rails.application.routes.draw do
     passwords: "passwords",
     confirmations: "confirmations"
   }
+  
+  # Route AJAX pour vérifier si un email existe déjà (validation en temps réel)
+  get "/users/check_email", to: "registrations#check_email", as: "check_email_users"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -154,6 +157,7 @@ Rails.application.routes.draw do
   root "pages#index"
 
   # Static pages
+  get "/welcome", to: "pages#welcome", as: "welcome"
   get "/a-propos", to: "pages#about", as: "about"
   # Redirection 301 de /association vers /a-propos (fusion des pages)
   get "/association", to: redirect("/a-propos", status: 301), as: "association"

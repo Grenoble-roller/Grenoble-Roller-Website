@@ -3,6 +3,44 @@
 class RegistrationsController < Devise::RegistrationsController
   # Inclure TurnstileVerifiable explicitement car RegistrationsController n'hérite pas de ApplicationController
   include TurnstileVerifiable
+  
+  # GET /users/check_email
+  # Endpoint AJAX pour vérifier si un email existe déjà
+  def check_email
+    email = params[:email]&.downcase&.strip
+    
+    if email.blank?
+      render json: { valid: false, message: "Email requis" }, status: :bad_request
+      return
+    end
+    
+    # Vérifier le format email
+    unless email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+      render json: { valid: false, message: "Format d'email invalide" }, status: :unprocessable_entity
+      return
+    end
+    
+    # Vérifier si l'email existe déjà
+    email_exists = User.exists?(email: email)
+    
+    if email_exists
+      render json: { 
+        valid: false, 
+        available: false,
+        message: "Cet email est déjà utilisé. Connectez-vous ou utilisez un autre email." 
+      }, status: :ok
+    else
+      render json: { 
+        valid: true, 
+        available: true,
+        message: "Cet email est disponible" 
+      }, status: :ok
+    end
+  rescue => e
+    Rails.logger.error("Erreur lors de la vérification de l'email: #{e.message}")
+    render json: { valid: false, message: "Erreur lors de la vérification" }, status: :internal_server_error
+  end
+  
   # POST /resource
   def create
     # Vérifier le consentement RGPD avant création
@@ -70,8 +108,8 @@ class RegistrationsController < Devise::RegistrationsController
 
   # The path used after sign up for inactive accounts (non confirmés).
   def after_inactive_sign_up_path_for(_resource)
-    # Rediriger vers la page de confirmation email
-    new_user_confirmation_path
+    # Rediriger vers la page de bienvenue avec guide "Prochaines étapes"
+    welcome_path
   end
 
   # The path used after updating the account.
