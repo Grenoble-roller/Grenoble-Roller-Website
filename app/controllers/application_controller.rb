@@ -53,10 +53,12 @@ class ApplicationController < ActionController::Base
     
     # Créer l'instance Pagy::Offset avec les paramètres corrects
     # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
     pagy_vars = {
       count: count,
       page: page,
-      limit: items
+      limit: items,
+      request: request
     }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
     
     pagy_instance = Pagy::Offset.new(**pagy_vars)
@@ -86,10 +88,12 @@ class ApplicationController < ActionController::Base
     
     # Créer l'instance Pagy::Offset avec les paramètres corrects
     # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
     pagy_vars = {
       count: count,
       page: page,
-      limit: items
+      limit: items,
+      request: request
     }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
     
     pagy_instance = Pagy::Offset.new(**pagy_vars)

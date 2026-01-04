@@ -65,8 +65,9 @@ class SessionsController < Devise::SessionsController
         if resource.confirmed?
           # Email confirmé : connexion normale avec message de bienvenue personnalisé
           first_name = resource.first_name.presence || "membre"
-          # Vérifier si c'est une première connexion (dernière connexion très ancienne ou nulle)
-          if resource.last_sign_in_at.nil? || resource.last_sign_in_at < 1.day.ago
+          # Vérifier si c'est une première connexion (utilisateur confirmé récemment)
+          # Note: :trackable n'est pas activé, donc on utilise confirmed_at comme alternative
+          if resource.confirmed_at.present? && resource.confirmed_at > 1.day.ago
             flash[:notice] = "Bonjour #{first_name} ! 👋 Bienvenue sur Grenoble Roller. Nous sommes ravis de vous revoir !"
           else
             flash[:notice] = "Bonjour #{first_name} ! 👋 Bienvenue sur Grenoble Roller."

@@ -1,9 +1,8 @@
 module ApplicationHelper
   include ActionView::Helpers::TextHelper
-  # Pagy 43 : Les helpers sont maintenant des méthodes d'instance de Pagy
-  # On délègue les appels aux méthodes de l'instance @pagy
+  # Pagy 43 : Utilise series_nav avec :bootstrap comme style
   def pagy_bootstrap_nav(pagy, **options)
-    pagy.bootstrap_series_nav(**options)
+    pagy.series_nav(:bootstrap, **options)
   end
 
   def pagy_nav(pagy, **options)
