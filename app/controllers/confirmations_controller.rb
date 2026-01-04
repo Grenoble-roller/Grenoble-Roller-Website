@@ -60,7 +60,9 @@ class ConfirmationsController < Devise::ConfirmationsController
       # Détection auto-click email scanner (après confirmation réussie)
       detect_email_scanner(resource) if resource.confirmation_sent_at
 
-      set_flash_message! :notice, :confirmed
+      # Message de bienvenue personnalisé après confirmation
+      first_name = resource.first_name.presence || "membre"
+      flash[:notice] = "Email confirmé avec succès ! 🎉 Bienvenue #{first_name}, votre compte est maintenant actif. Profitez de toutes les fonctionnalités de Grenoble Roller !"
       sign_in(resource_name, resource)
       redirect_to after_confirmation_path_for(resource)
     else

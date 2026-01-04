@@ -4,11 +4,11 @@ class SessionsController < Devise::SessionsController
   # Inclure TurnstileVerifiable explicitement car SessionsController n'hérite pas de ApplicationController
   include TurnstileVerifiable
   # GET /resource/sign_in
-  # Permettre l'accès à la page de connexion même si déjà connecté (pour tester)
   def new
-    # Si l'utilisateur est déjà connecté, afficher un message mais permettre l'accès
+    # Si l'utilisateur est déjà connecté, rediriger vers l'accueil avec un message approprié
     if user_signed_in?
-      flash.now[:info] = "Vous êtes déjà connecté·e. Déconnectez-vous pour vous reconnecter avec un autre compte."
+      redirect_to root_path, notice: "Vous êtes déjà connecté·e. Bienvenue #{current_user.first_name.presence || 'membre'} ! 👋"
+      return
     end
     super
   end
@@ -63,9 +63,14 @@ class SessionsController < Devise::SessionsController
       if resource.persisted?
         # Vérifier si l'email est confirmé APRÈS authentification réussie
         if resource.confirmed?
-          # Email confirmé : connexion normale
+          # Email confirmé : connexion normale avec message de bienvenue personnalisé
           first_name = resource.first_name.presence || "membre"
-          flash[:notice] = "Bonjour #{first_name} ! 👋 Bienvenue sur Grenoble Roller."
+          # Vérifier si c'est une première connexion (dernière connexion très ancienne ou nulle)
+          if resource.last_sign_in_at.nil? || resource.last_sign_in_at < 1.day.ago
+            flash[:notice] = "Bonjour #{first_name} ! 👋 Bienvenue sur Grenoble Roller. Nous sommes ravis de vous revoir !"
+          else
+            flash[:notice] = "Bonjour #{first_name} ! 👋 Bienvenue sur Grenoble Roller."
+          end
         else
           # Email non confirmé : déconnecter et rediriger vers page de confirmation
           sign_out(resource)
