@@ -62,7 +62,10 @@ Cette section est réservée pour la documentation des **fonctionnalités en cou
 
 **Impact** : Haut (autonomie bénévoles)  
 **Effort** : Moyen  
-**Référence** : [`../09-product/homepage-reflection.md`](../09-product/homepage-reflection.md) - **NOUVEAU**
+**Références** :
+- [`homepage-quick-wins.md`](./homepage-quick-wins.md) - **NOUVEAU** - Quick wins (difficulté faible + impact élevé)
+- [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - Plan complet avec gestion admin détaillée
+- [`homepage-reflection.md`](./homepage-reflection.md) - Réflexion initiale + prompt Perplexity
 
 #### Calendrier Interactif
 - ❌ Vue calendrier (FullCalendar) pour événements
