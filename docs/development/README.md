@@ -261,9 +261,8 @@ tags: ["tag1", "tag2"]
 #### 5. Améliorations UX Importantes (~48 tâches)
 
 **Parcours 1 : Découverte de l'Association** :
-- [ ] Section "Derniers événements" (Carrousel ou grille avec 3-4 derniers événements passés)
-- [ ] Section "Tarifs d'adhésion" (Tableau simple avec 3 tarifs + CTA)
 - [ ] Page "Équipe" (Créer page statique manquante)
+- **Note** : Section "Tarifs d'adhésion" et "Derniers événements" retirées - la page d'accueil fera l'objet d'une recherche dédiée plus tard
 
 **Parcours 2 : Inscription** : ✅ TERMINÉ
 - [ ] Indicateur de progression du formulaire (Barre "Étape 1/1" pour préparer futures étapes) - Priorité basse
@@ -274,13 +273,14 @@ tags: ["tag1", "tag2"]
 - [ ] Filtres avancés (Filtres combinés avec tags actifs visibles)
 
 **Parcours 4 : Inscription à un Événement** :
-- [ ] Prévisualisation email (Aperçu de l'email de confirmation dans la modal)
 - [ ] Confirmation en deux étapes (Étape 1 modal → Étape 2 page de confirmation)
 - [ ] Notification push (optionnel) (Demander permission pour notifications push)
 
 **Parcours 5 : Gestion de Mes Inscriptions** :
-- [ ] Filtres basiques (Filtres par date, statut rappel)
-- [ ] Pagination (Pagination avec Kaminari/Pagy - 10-15 événements par page)
+- [x] Filtres basiques (Filtres par statut rappel) ✅
+  - **✅ Implémenté** : Filtre par statut rappel (activé/désactivé) avec formulaire (2025-01-30)
+- [x] Pagination (Pagination avec Pagy - 12 événements par page) ✅
+  - **✅ Implémenté** : Pagination séparée pour événements à venir et passés (12 par page) (2025-01-30)
 - [ ] Vue calendrier (Toggle vue liste/calendrier avec FullCalendar)
 - [ ] Actions en masse (Checkbox pour sélectionner plusieurs événements et désinscription en masse)
 - [ ] Tri personnalisé (Dropdown "Trier par" : Date, Nom, Distance)

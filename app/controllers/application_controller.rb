@@ -47,31 +47,56 @@ class ApplicationController < ActionController::Base
     end
     
     # Paramètres de pagination
-    page = (params[:page] || vars[:page] || 1).to_i
+    page_param = vars[:page_param] || :page
+    page = (params[page_param] || vars[:page] || 1).to_i
     items = vars[:items] || Pagy.options[:items] || 25
     
-    # Créer l'instance Pagy
-    pagy_instance = Pagy.new(
+    # Créer l'instance Pagy::Offset avec les paramètres corrects
+    # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    pagy_vars = {
       count: count,
       page: page,
-      items: items,
-      **vars.except(:items, :page)
-    )
+      limit: items
+    }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
+    
+    pagy_instance = Pagy::Offset.new(**pagy_vars)
     
     # Paginer la collection
     if collection.respond_to?(:limit) && collection.respond_to?(:offset)
       # ActiveRecord::Relation
-      paginated_collection = collection.limit(pagy_instance.items).offset(pagy_instance.offset)
+      paginated_collection = collection.limit(pagy_instance.limit).offset(pagy_instance.offset)
     elsif collection.respond_to?(:[])
       # Array ou autre collection indexable
-      paginated_collection = collection[pagy_instance.offset, pagy_instance.items] || []
+      paginated_collection = collection[pagy_instance.offset, pagy_instance.limit] || []
     else
       # Fallback : convertir en array
       array = collection.to_a
-      paginated_collection = array[pagy_instance.offset, pagy_instance.items] || []
+      paginated_collection = array[pagy_instance.offset, pagy_instance.limit] || []
     end
     
     [pagy_instance, paginated_collection]
+  end
+
+  # Helper pour paginer un array (utile quand on a déjà filtré avec select)
+  def pagy_array(array, vars = {})
+    count = array.size
+    page_param = vars[:page_param] || :page
+    page = (params[page_param] || vars[:page] || 1).to_i
+    items = vars[:items] || Pagy.options[:items] || 25
+    
+    # Créer l'instance Pagy::Offset avec les paramètres corrects
+    # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    pagy_vars = {
+      count: count,
+      page: page,
+      limit: items
+    }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
+    
+    pagy_instance = Pagy::Offset.new(**pagy_vars)
+    
+    paginated_array = array[pagy_instance.offset, pagy_instance.limit] || []
+    
+    [pagy_instance, paginated_array]
   end
 
   protected

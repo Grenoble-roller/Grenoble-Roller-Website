@@ -18,9 +18,8 @@
 
 ### **Parcours 1 : Découverte de l'Association**
 - [ ] Newsletter fonctionnelle (Formulaire footer + backend avec service email)
-- [ ] Section "Derniers événements" (Carrousel ou grille avec 3-4 derniers événements passés)
-- [ ] Section "Tarifs d'adhésion" (Tableau simple avec 3 tarifs + CTA)
 - [ ] Page "Équipe" (Créer page statique manquante)
+- **Note** : Section "Tarifs d'adhésion" et "Derniers événements" retirées - la page d'accueil fera l'objet d'une recherche dédiée plus tard
 
 ### **Parcours 2 : Inscription**
 - [ ] Validation email en temps réel (Vérifier si email existe déjà via AJAX)
@@ -36,7 +35,6 @@
 - [ ] Filtres avancés (Filtres combinés avec tags actifs visibles)
 
 ### **Parcours 4 : Inscription à un Événement**
-- [ ] Prévisualisation email (Aperçu de l'email de confirmation dans la modal)
 - [ ] Confirmation en deux étapes (Étape 1 modal → Étape 2 page de confirmation)
 - [ ] Notification push (optionnel) (Demander permission pour notifications push)
 
