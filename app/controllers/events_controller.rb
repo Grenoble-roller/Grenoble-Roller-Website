@@ -12,25 +12,35 @@ class EventsController < ApplicationController
     # Les rejetés restent en BDD mais ne sont pas affichés dans les listes publiques
     scoped_events = scoped_events.where.not(status: "rejected")
 
+    # Appliquer les filtres
+    scoped_events = apply_filters(scoped_events)
+
     if can_moderate?
       # Admins/moderateurs voient les événements non publiés (draft) mais pas les rejetés
-      @upcoming_events = scoped_events.upcoming.order(:start_at)
-      @past_events_total = scoped_events.past.count
-      if params[:show_all_past] == "true"
-        @past_events = scoped_events.past.order(start_at: :desc)
-      else
-        @past_events = scoped_events.past.order(start_at: :desc).limit(6)
-      end
+      # Événements à venir : 6 minicards (sans pagination)
+      @upcoming_events = scoped_events.upcoming.order(:start_at).limit(6)
+      
+      # Événements passés : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
+      past_scope = scoped_events.past.order(start_at: :desc)
+      @pagy_past, @past_events = pagy(past_scope, page_param: :page_past, items: 10)
     else
       # Utilisateurs normaux voient seulement les événements visibles (publiés/annulés)
-      @upcoming_events = scoped_events.visible.upcoming.order(:start_at)
-      @past_events_total = scoped_events.visible.past.count
-      if params[:show_all_past] == "true"
-        @past_events = scoped_events.visible.past.order(start_at: :desc)
-      else
-        @past_events = scoped_events.visible.past.order(start_at: :desc).limit(6)
-      end
+      # Événements à venir : 6 minicards (sans pagination)
+      @upcoming_events = scoped_events.visible.upcoming.order(:start_at).limit(6)
+      
+      # Événements passés : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
+      past_scope = scoped_events.visible.past.order(start_at: :desc)
+      @pagy_past, @past_events = pagy(past_scope, page_param: :page_past, items: 10)
     end
+
+    # Charger les données pour les filtres
+    @routes = Route.order(:name)
+    @levels = [
+      ["Débutant", "beginner"],
+      ["Intermédiaire", "intermediate"],
+      ["Confirmé", "advanced"],
+      ["Tous niveaux", "all_levels"]
+    ]
   end
 
   def show
@@ -273,6 +283,21 @@ class EventsController < ApplicationController
 
   def load_supporting_data
     @routes = Route.order(:name)
+  end
+
+  # Appliquer les filtres depuis les paramètres
+  def apply_filters(events)
+    # Filtre par route
+    if params[:route_id].present?
+      events = events.where(route_id: params[:route_id])
+    end
+
+    # Filtre par niveau
+    if params[:level].present? && Event.level.values.include?(params[:level])
+      events = events.where(level: params[:level])
+    end
+
+    events
   end
 
   # Sauvegarder les parcours par boucle

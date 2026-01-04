@@ -222,20 +222,20 @@ tags: ["tag1", "tag2"]
 
 #### 3. Fonctionnalités Urgentes
 
-**Parcours 2 : Inscription** :
-- [ ] Validation email en temps réel (Vérifier si email existe déjà via AJAX)
-  - **⚠️ État actuel** : Validation format email côté client existe, mais PAS de vérification AJAX si email déjà utilisé
-- [ ] Page de bienvenue après inscription (Redirection vers `/welcome` avec guide "Prochaines étapes")
-  - **⚠️ État actuel** : Email de bienvenue envoyé (`UserMailer.welcome_email`), mais PAS de page `/welcome` avec redirection
+**Parcours 2 : Inscription** : ✅ TERMINÉ
+- [x] Validation email en temps réel (Vérifier si email existe déjà via AJAX) ✅
+  - **✅ Implémenté** : Endpoint AJAX `/users/check_email` avec validation en temps réel pendant la saisie (debounce 500ms)
+- [x] Page de bienvenue après inscription (Redirection vers `/welcome` avec guide "Prochaines étapes") ✅
+  - **✅ Implémenté** : Page `/welcome` avec guide des prochaines étapes (confirmation email, adhésion, événements), textes harmonisés avec le ton de l'association
 - **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
 
-**Parcours 3 : Découverte des Événements** :
-- [ ] Barre de recherche (Recherche par titre, description, lieu - AJAX)
-  - **⚠️ État actuel** : Pas de recherche implémentée dans `EventsController`
-- [ ] Filtres basiques (Filtres par date, route, niveau)
-  - **⚠️ État actuel** : Pas de filtres utilisateur, seulement scopes upcoming/past
-- [ ] Pagination (Pagination avec Kaminari/Pagy - 10-15 événements par page)
-  - **⚠️ État actuel** : Pagy utilisé dans admin panel, mais PAS dans contrôleur public. Événements passés limités à 6 avec bouton "Voir tout"
+**Parcours 3 : Découverte des Événements** : ✅ TERMINÉ
+- [x] Filtres basiques (Filtres par route, niveau) ✅
+  - **✅ Implémenté** : Filtres par route et niveau avec formulaire en haut de page (2025-01-30)
+- [x] Pagination et affichage optimisé ✅
+  - **✅ Implémenté** : 
+    - Événements à venir : 6 minicards (sans pagination) pour mise en avant visuelle
+    - Événements passés : Tableau compact avec pagination (10 par page) pour consultation historique (2025-01-30)
 - **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
 
 **✅ Déjà fait** :
@@ -399,10 +399,13 @@ tags: ["tag1", "tag2"]
 ### Corrections UX
 - ✅ **Navbar** : Boutons "Se connecter" et "S'inscrire" côte à côte sur desktop, empilés sur mobile uniquement
 - ✅ **Messages de bienvenue** : Messages personnalisés après connexion/inscription/confirmation email avec prénom de l'utilisateur
-- ✅ **Validation email en temps réel** : Vérification AJAX de la disponibilité de l'email pendant la saisie dans le formulaire d'inscription (2025-01-30)
+- ✅ **Validation email en temps réel** : Vérification AJAX de la disponibilité de l'email pendant la saisie dans le formulaire d'inscription (endpoint `/users/check_email`, debounce 500ms) (2025-01-30)
 - ✅ **Page de bienvenue** : Page `/welcome` avec guide "Prochaines étapes" après inscription (confirmation email, adhésion, événements) (2025-01-30)
+- ✅ **Textes page welcome** : Textes harmonisés avec le ton de l'association (communauté, randonnées urbaines, convivialité) (2025-01-30)
+- ✅ **Filtres événements** : Filtres par route et niveau avec formulaire en haut de page (2025-01-30)
+- ✅ **Affichage optimisé événements** : 6 minicards pour événements à venir, tableau paginé (10/page) pour événements passés (2025-01-30)
 - ✅ **Redirection** : Utilisateurs déjà connectés visitant `/users/sign_in` redirigés vers l'accueil avec message de bienvenue
 
 ---
 
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2025-01-30 (Filtres et affichage optimisé événements)
