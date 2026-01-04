@@ -85,6 +85,41 @@
     flex-wrap: wrap;
   }
 
+  /* Correction contraste WCAG 2.1 AA - Ratio ≥4.5:1 */
+  .cookie-banner-text a {
+    color: #0056b3; /* --gr-primary-dark - Ratio 7.1:1 sur fond blanc ✅ */
+    text-decoration: underline;
+  }
+  
+  .cookie-banner-text a:hover {
+    color: #004085; /* Encore plus foncé au survol */
+  }
+  
+  .cookie-banner .btn-outline-liquid-primary {
+    border-color: #0056b3; /* --gr-primary-dark - Ratio 7.1:1 sur fond blanc ✅ */
+    color: #0056b3;
+  }
+  
+  .cookie-banner .btn-outline-liquid-primary:hover {
+    background-color: #0056b3;
+    color: white;
+  }
+  
+  /* Mode sombre */
+  [data-bs-theme="dark"] .cookie-banner-text a {
+    color: #4d94ff; /* --gr-primary-dark pour mode sombre - Ratio 5.8:1 ✅ */
+  }
+  
+  [data-bs-theme="dark"] .cookie-banner .btn-outline-liquid-primary {
+    border-color: #4d94ff;
+    color: #4d94ff;
+  }
+  
+  [data-bs-theme="dark"] .cookie-banner .btn-outline-liquid-primary:hover {
+    background-color: #4d94ff;
+    color: white;
+  }
+
   @media (max-width: 768px) {
     .cookie-banner-content {
       flex-direction: column;

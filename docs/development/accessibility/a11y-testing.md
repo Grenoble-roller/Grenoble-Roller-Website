@@ -1,8 +1,9 @@
 ---
 title: "Guide Tests Accessibilité Automatisés"
 status: "active"
-version: "1.0"
+version: "2.0"
 created: "2025-11-14"
+updated: "2025-01-30"
 tags: ["accessibility", "a11y", "testing", "automation"]
 ---
 
@@ -24,34 +25,14 @@ tags: ["accessibility", "a11y", "testing", "automation"]
    npm --version
    ```
 
-3. **Outils installés** (déjà fait)
+3. **Dépendances installées**
    ```bash
    npm install
    ```
 
-4. **Dépendances système pour Chrome/Puppeteer** (Linux uniquement)
-   ```bash
-   # Ubuntu/Debian
-   sudo apt-get install -y \
-     libatk1.0-0 \
-     libatk-bridge2.0-0 \
-     libcups2 \
-     libdrm2 \
-     libxkbcommon0 \
-     libxcomposite1 \
-     libxdamage1 \
-     libxfixes3 \
-     libxrandr2 \
-     libgbm1 \
-     libasound2
-   ```
-   
-   **Note** : Si vous êtes en Docker, ces dépendances doivent être installées dans le conteneur.
-
 ## 🚀 Utilisation
 
 ### Test complet (Pa11y + Lighthouse)
-
 ```bash
 npm run test:a11y
 ```
@@ -91,7 +72,6 @@ Par défaut, les tests vérifient :
 - `http://localhost:3000/users/sign_up`
 
 ### Changer l'URL de base
-
 ```bash
 BASE_URL=http://localhost:3001 npm run test:a11y
 ```
@@ -114,9 +94,81 @@ Fichier : `.pa11yci.json`
 - **0 erreurs** : ✅ Conforme
 - **Erreurs** : Voir détails dans le rapport
 
+## ✅ Tests Recommandés pour Vérifier la Conformité
+
+### 1. Tests Automatisés (À exécuter maintenant)
+
+#### Pa11y - Vérification WCAG 2.1 AA
+```bash
+npm run test:a11y:pa11y
+```
+**Objectif** : Vérifier que les 6 pages principales sont toujours conformes après les modifications récentes (filtres, pagination).
+
+**Pages à tester** :
+- ✅ Homepage
+- ✅ Association
+- ✅ Boutique
+- ✅ Événements (avec filtres)
+- ✅ Connexion
+- ✅ Inscription
+
+**Résultat attendu** : 0 erreur sur toutes les pages
+
+#### Lighthouse - Score Accessibilité
+```bash
+npm run test:a11y:lighthouse
+```
+**Objectif** : Vérifier le score d'accessibilité (cible : ≥90/100).
+
+**Pages à tester** : Les mêmes 6 pages
+
+**Résultat attendu** : Score ≥90/100 pour chaque page
+
+### 2. Tests Manuels Complémentaires (Optionnels mais recommandés)
+
+#### Navigation Clavier
+- ✅ **Déjà validé** en novembre 2025
+- **À refaire si** : Modifications importantes de la navigation
+
+#### Test Lecteur d'écran (NVDA)
+- ⏳ **À faire** : Tester les parcours principaux avec NVDA
+- **Parcours à tester** :
+  - Inscription → Confirmation email
+  - Navigation événements avec filtres
+  - Inscription à un événement
+  - "Mes sorties" avec filtres et pagination
+
+#### Vérification Contrastes
+- ⏳ **À faire** : Validation finale avec WebAIM Contrast Checker
+- **Éléments à vérifier** :
+  - Badges et boutons
+  - Textes sur images
+  - Liens dans footer
+
+#### Test Responsive Mobile
+- ⏳ **À faire** : Vérifier avec zoom 200% et tailles tactiles
+- **Points à vérifier** :
+  - Tous les éléments interactifs ≥44×44px
+  - Navigation clavier fonctionnelle
+  - Contenu lisible sans scroll horizontal
+
+### 3. Audit Admin (Optionnel)
+
+**ActiveAdmin** - À auditer si nécessaire :
+- Tableaux : Headers associés aux cellules
+- Formulaires : Labels et erreurs ARIA
+- Navigation : Clavier dans sidebar
+
 ## 📝 Notes
 
 - Les tests nécessitent que l'application soit accessible
 - Lighthouse nécessite Chrome/Chromium
 - Les rapports JSON Lighthouse peuvent être visualisés sur https://googlechrome.github.io/lighthouse/viewer/
+- **Derniers tests** : Novembre 2025 (6/6 pages conformes Pa11y)
+- **À relancer** : Après modifications récentes (filtres, pagination)
 
+## 🎯 Plan d'Action Recommandé
+
+1. **Maintenant** : Exécuter `npm run test:a11y` pour vérifier la conformité actuelle
+2. **Si erreurs** : Corriger et relancer les tests
+3. **Optionnel** : Tests manuels complémentaires (lecteur d'écran, contrastes)

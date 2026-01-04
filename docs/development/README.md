@@ -206,6 +206,7 @@ tags: ["tag1", "tag2"]
   - ✅ `Pagy::Frontend` n'existe plus → Helpers personnalisés créés dans `ApplicationHelper`
   - ✅ `Pagy::Backend` n'existe plus → Méthode `pagy()` créée dans `ApplicationController`
   - ✅ Retiré tous les `include Pagy::Backend` des contrôleurs (11 fichiers)
+  - ✅ Correction `Pagy.new` → `Pagy::Offset.new(**vars)` avec `limit` au lieu de `items` (2025-01-30)
 - **📖 Détails** : [`../dependencies-update-analysis.md`](../dependencies-update-analysis.md)
 
 #### 2. Tests Préproduction
@@ -238,6 +239,13 @@ tags: ["tag1", "tag2"]
     - Événements passés : Tableau compact avec pagination (10 par page) pour consultation historique (2025-01-30)
 - **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
 
+**Parcours 5 : Gestion de Mes Inscriptions** : ✅ TERMINÉ
+- [x] Filtres basiques (Filtres par statut rappel) ✅
+  - **✅ Implémenté** : Filtre par statut de rappel (activé/désactivé) avec formulaire (2025-01-30)
+- [x] Pagination ✅
+  - **✅ Implémenté** : Pagination séparée pour événements à venir et passés (12 par page) avec `pagy_array` (2025-01-30)
+- **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
+
 **✅ Déjà fait** :
 - ✅ Masquer sections non implémentées footer (Équipe, Carrières, Blog masquées avec `if false`)
 
@@ -258,66 +266,21 @@ tags: ["tag1", "tag2"]
 - [ ] Vérifier hiérarchie headings (Association, Événements liste, Événement détail, Boutique)
 - **📖 Détails** : [`accessibility/lighthouse-action-plan.md`](accessibility/lighthouse-action-plan.md)
 
-#### 5. Améliorations UX Importantes (~48 tâches)
+#### 5. Améliorations UX Importantes
 
-**Parcours 1 : Découverte de l'Association** :
-- [ ] Page "Équipe" (Créer page statique manquante)
-- **Note** : Section "Tarifs d'adhésion" et "Derniers événements" retirées - la page d'accueil fera l'objet d'une recherche dédiée plus tard
+**Note** : Les améliorations futures ont été réévaluées et retirées de la roadmap. Seules les fonctionnalités essentielles déjà implémentées sont conservées.
 
 **Parcours 2 : Inscription** : ✅ TERMINÉ
-- [ ] Indicateur de progression du formulaire (Barre "Étape 1/1" pour préparer futures étapes) - Priorité basse
+- ✅ Validation email en temps réel
+- ✅ Page de bienvenue après inscription
 
-**Parcours 3 : Découverte des Événements** :
-- [ ] Tri personnalisé (Dropdown "Trier par" : Date, Popularité, Distance, Nouveautés)
-- [ ] Vue calendrier (Toggle vue liste/calendrier avec FullCalendar - vue mensuelle)
-- [ ] Filtres avancés (Filtres combinés avec tags actifs visibles)
+**Parcours 3 : Découverte des Événements** : ✅ TERMINÉ
+- ✅ Filtres basiques (route, niveau)
+- ✅ Pagination et affichage optimisé
 
-**Parcours 4 : Inscription à un Événement** :
-- [ ] Confirmation en deux étapes (Étape 1 modal → Étape 2 page de confirmation)
-- [ ] Notification push (optionnel) (Demander permission pour notifications push)
-
-**Parcours 5 : Gestion de Mes Inscriptions** :
-- [x] Filtres basiques (Filtres par statut rappel) ✅
-  - **✅ Implémenté** : Filtre par statut rappel (activé/désactivé) avec formulaire (2025-01-30)
-- [x] Pagination (Pagination avec Pagy - 12 événements par page) ✅
-  - **✅ Implémenté** : Pagination séparée pour événements à venir et passés (12 par page) (2025-01-30)
-- [ ] Vue calendrier (Toggle vue liste/calendrier avec FullCalendar)
-- [ ] Actions en masse (Checkbox pour sélectionner plusieurs événements et désinscription en masse)
-- [ ] Tri personnalisé (Dropdown "Trier par" : Date, Nom, Distance)
-- [ ] Export calendrier global (Export iCal de toutes ses inscriptions en une fois)
-
-**Parcours 6 : Création d'un Événement** :
-- [ ] Formulaire en plusieurs étapes (Étape 1 Infos de base → Étape 2 Détails → Étape 3 Options)
-- [ ] Prévisualisation événement (Bouton "Aperçu" qui montre la card événement)
-- [ ] Création route depuis formulaire (Modal "Créer un nouveau parcours" directement)
-- [ ] Duplication d'événement (Bouton "Dupliquer" sur événement existant)
-- [ ] Templates d'événements (Templates pré-remplis : "Rando vendredi soir", etc.)
-- [ ] Validation côté client (Validation HTML5 + JavaScript avant soumission)
-
-**Parcours 7 : Achat en Boutique** :
-- [ ] Zoom sur image produit (Lightbox pour agrandir l'image au clic) - **PRIORITÉ MOYENNE**
-- [ ] Tri des produits (Dropdown "Trier par" : Prix, Nom, Popularité)
-- [ ] Galerie d'images (Carrousel avec plusieurs images par produit)
-- [ ] Panier persistant pour utilisateurs connectés (Sauvegarder panier en DB, fusionner avec session)
-- [ ] Sauvegarde panier avant déconnexion (Sauvegarder automatiquement le panier en DB)
-- [ ] Récapitulatif avant paiement (Page intermédiaire "Récapitulatif" avec adresse de livraison)
-- [ ] Suggestions produits ("Produits similaires" ou "Autres clients ont aussi acheté")
-
-**Parcours 8 : Administration** :
-- [ ] Bulk actions (Sélectionner plusieurs événements → "Publier en masse", "Refuser en masse")
-- [ ] Recherche globale (Barre de recherche qui cherche dans Events, Users, Orders)
-- [ ] Regroupement menu (Menu groupé : "Événements" → Events, Routes, Attendances)
-- [ ] Exports avancés (Exports CSV personnalisés avec colonnes choisies, exports PDF)
-- [ ] Filtres sauvegardés (Permettre de sauvegarder des filtres fréquents)
-- [ ] Dashboard complet avec graphiques (Graphiques : événements par mois, inscriptions, revenus)
-
-**Parcours 9 : Navigation via Footer** :
-- [ ] Page "Équipe" (Créer page statique manquante)
-- [ ] Page "Carrières" (Si recrutement prévu : offres d'emploi)
-- [ ] Page "Blog" (Si blog prévu, créer structure de base ou masquer le lien)
-- [ ] Créer pages statiques essentielles (FAQ, Contact avec formulaire, CGU, Confidentialité)
-
-**📖 Détails complets** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md) et [`ux-improvements/ux-improvements-backlog.md`](ux-improvements/ux-improvements-backlog.md)
+**Parcours 5 : Gestion de Mes Inscriptions** : ✅ TERMINÉ
+- ✅ Filtres basiques (statut rappel)
+- ✅ Pagination séparée pour événements à venir et passés
 
 ---
 
@@ -374,18 +337,16 @@ tags: ["tag1", "tag2"]
 
 ## 📊 Statistiques Globales
 
-- **Total tâches identifiées** : ~122 tâches
-- **🔴 Priorité Haute** : 5 tâches (4%) - Dépendances terminées ✅
-- **🟡 Priorité Moyenne** : ~60 tâches (49%)
-- **🟢 Priorité Basse** : ~52 tâches (43%)
+- **🔴 Priorité Haute** : Dépendances terminées ✅
+- **🟡 Priorité Moyenne** : Accessibilité et optimisations
+- **🟢 Priorité Basse** : Optimisations performance (fin dev)
 
 **Répartition par domaine** :
-- **Dépendances** : 4 tâches (Phase 2 + Phase 3)
-- **Tests** : 5 tâches (Capybara préprod)
-- **UX** : ~89 tâches (Quick wins + Importantes + Futures)
-- **Accessibilité** : 7 tâches (Admin + Lighthouse SEO)
-- **Performance** : 5 tâches (Optimisations fin dev)
-- **Phase 2** : Plans et migrations (non quantifiés)
+- **Dépendances** : Phase 2 + Phase 3 terminées ✅
+- **Tests** : Capybara préprod terminés ✅
+- **UX** : Fonctionnalités essentielles implémentées ✅
+- **Accessibilité** : Améliorations en cours
+- **Performance** : Optimisations fin dev
 
 ---
 
@@ -395,6 +356,8 @@ tags: ["tag1", "tag2"]
 - ✅ **Correction `Pagy::Backend`** : Créé méthode `pagy()` dans `ApplicationController` (remplace le module qui n'existe plus dans Pagy 43)
 - ✅ Retiré tous les `include Pagy::Backend` des contrôleurs admin (11 fichiers dans `app/controllers/admin_panel/`)
 - ✅ Helpers frontend déjà corrigés précédemment (`Pagy::Frontend` → helpers personnalisés dans `ApplicationHelper`)
+- ✅ **Correction `Pagy.new`** : Correction de l'erreur `ArgumentError` - utilisation de `Pagy::Offset.new(**vars)` au lieu de `Pagy.new(vars)` dans les méthodes `pagy()` et `pagy_array()` (2025-01-30)
+- ✅ **Correction `items` → `limit`** : Remplacement de toutes les références à `items` par `limit` dans les instances `Pagy::Offset` (API Pagy 43)
 
 ### Corrections UX
 - ✅ **Navbar** : Boutons "Se connecter" et "S'inscrire" côte à côte sur desktop, empilés sur mobile uniquement
@@ -404,8 +367,10 @@ tags: ["tag1", "tag2"]
 - ✅ **Textes page welcome** : Textes harmonisés avec le ton de l'association (communauté, randonnées urbaines, convivialité) (2025-01-30)
 - ✅ **Filtres événements** : Filtres par route et niveau avec formulaire en haut de page (2025-01-30)
 - ✅ **Affichage optimisé événements** : 6 minicards pour événements à venir, tableau paginé (10/page) pour événements passés (2025-01-30)
+- ✅ **Filtres "Mes sorties"** : Filtre par statut de rappel (activé/désactivé) avec formulaire (2025-01-30)
+- ✅ **Pagination "Mes sorties"** : Pagination séparée pour événements à venir et passés (12 par page) avec `pagy_array` (2025-01-30)
 - ✅ **Redirection** : Utilisateurs déjà connectés visitant `/users/sign_in` redirigés vers l'accueil avec message de bienvenue
 
 ---
 
-**Dernière mise à jour** : 2025-01-30 (Filtres et affichage optimisé événements)
+**Dernière mise à jour** : 2025-01-30 (Correction bug Pagy + Filtres et pagination "Mes sorties")
