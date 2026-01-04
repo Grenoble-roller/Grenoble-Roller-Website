@@ -88,7 +88,8 @@ tags: ["shape-up", "building", "cycle-01", "phase-2", "events", "admin"]
 **Objectif** : Valider les parcours utilisateur complets avant passage en production
 
 **Tâches** :
-- [x] Corriger helper Pagy 43 (Pagy::Frontend n'existe plus, créé helpers personnalisés) ✅
+- [x] Corriger helper Pagy 43 Frontend (Pagy::Frontend n'existe plus, créé helpers personnalisés dans ApplicationHelper) ✅
+- [x] Corriger helper Pagy 43 Backend (Pagy::Backend n'existe plus, créé méthode pagy() dans ApplicationController) ✅
 - [x] Réactiver les tests skipés (5 tests : xit → it dans event_attendance_spec.rb et mes_sorties_spec.rb) ✅
 - [x] Corriger tests non-JS (test "Voir plus" corrigé - utilise le titre de l'événement) ✅
 - [x] Ajouter Chrome dans Dockerfile.dev pour tests JS ✅

@@ -2,8 +2,8 @@
 
 **Date d'analyse** : 2025-01-27  
 **Dernière vérification** : 2025-01-13  
-**Dernière mise à jour** : 2025-01-30 (Phase 1, 2 et 3 terminées)  
-**Statut** : ✅ **Phase 1, 2 et 3 TERMINÉES** - Toutes les dépendances mises à jour
+**Dernière mise à jour** : 2025-01-30 (Phase 1, 2 et 3 terminées + corrections Pagy::Backend)  
+**Statut** : ✅ **Phase 1, 2 et 3 TERMINÉES** - Toutes les dépendances mises à jour et breaking changes corrigés
 
 ## Résumé exécutif
 
@@ -144,9 +144,12 @@ Sur les 9 PRs de Dependabot, **6 peuvent être mergées immédiatement** (mises 
   - [x] Mettre à jour Gemfile vers pagy ~> 43.0 ✅
   - [x] Adapter configuration initializer (Pagy.options au lieu de Pagy::DEFAULT) ✅
   - [x] Retirer requires extras (chargement automatique via Loader) ✅
+  - [x] Corriger helpers frontend (Pagy::Frontend n'existe plus, créé helpers personnalisés dans ApplicationHelper) ✅
+  - [x] Corriger helpers backend (Pagy::Backend n'existe plus, créé méthode pagy() dans ApplicationController) ✅
+  - [x] Retirer tous les `include Pagy::Backend` des contrôleurs (11 fichiers) ✅
   - [x] Tester localement ✅
-  - [ ] Vérifier tous les contrôleurs utilisant Pagy (en cours)
-  - [ ] Tester pagination dans les vues (à faire)
+  - [x] Vérifier tous les contrôleurs utilisant Pagy ✅
+  - [x] Tester pagination dans les vues ✅
 
 ---
 
@@ -184,6 +187,11 @@ bundle update pagy
 # 2. Adaptation config/initializers/pagy.rb :
 #    - Retiré require "pagy/extras/bootstrap" et "pagy/extras/overflow" (chargement automatique)
 #    - Changé Pagy::DEFAULT[:items] → Pagy.options[:items] (DEFAULT est frozen dans v43)
+# 3. Correction helpers frontend (app/helpers/application_helper.rb) :
+#    - Créé helpers personnalisés pour remplacer Pagy::Frontend (pagy_bootstrap_nav, pagy_nav, pagy_info)
+# 4. Correction helpers backend (app/controllers/application_controller.rb) :
+#    - Créé méthode pagy() pour remplacer Pagy::Backend
+#    - Retiré tous les include Pagy::Backend des contrôleurs (11 fichiers)
 docker compose -f ops/dev/docker-compose.yml exec web bundle install
 ```
 
@@ -194,7 +202,10 @@ docker compose -f ops/dev/docker-compose.yml exec web bundle install
 **Changements Pagy 43** :
 - Les extras Bootstrap sont chargés automatiquement via le module `Loader`
 - `Pagy::DEFAULT` est frozen, utiliser `Pagy.options` pour la configuration
-- Les helpers `pagy_bootstrap_nav` fonctionnent toujours (chargement lazy)
+- `Pagy::Frontend` n'existe plus : créé helpers personnalisés dans `ApplicationHelper` (`pagy_bootstrap_nav`, `pagy_nav`, `pagy_info`)
+- `Pagy::Backend` n'existe plus : créé méthode `pagy()` dans `ApplicationController` pour remplacer le module
+- Retiré tous les `include Pagy::Backend` des contrôleurs (11 fichiers dans `app/controllers/admin_panel/`)
+- Les helpers `pagy_bootstrap_nav` fonctionnent toujours via délégation aux méthodes d'instance
 - `overflow` n'est plus nécessaire, géré automatiquement
 
 ---

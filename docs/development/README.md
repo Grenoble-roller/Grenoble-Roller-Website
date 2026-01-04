@@ -202,6 +202,10 @@ tags: ["tag1", "tag2"]
 **✅ Phase 3 TERMINÉE** (1 dépendance) :
 - ✅ `pagy` : 8.6.3 → 43.2.2
 - **⚠️ Note** : Configuration adaptée (Pagy.options au lieu de Pagy::DEFAULT, extras chargés automatiquement)
+- **⚠️ Breaking changes corrigés** :
+  - ✅ `Pagy::Frontend` n'existe plus → Helpers personnalisés créés dans `ApplicationHelper`
+  - ✅ `Pagy::Backend` n'existe plus → Méthode `pagy()` créée dans `ApplicationController`
+  - ✅ Retiré tous les `include Pagy::Backend` des contrôleurs (11 fichiers)
 - **📖 Détails** : [`../dependencies-update-analysis.md`](../dependencies-update-analysis.md)
 
 #### 2. Tests Préproduction
@@ -382,6 +386,20 @@ tags: ["tag1", "tag2"]
 - **Accessibilité** : 7 tâches (Admin + Lighthouse SEO)
 - **Performance** : 5 tâches (Optimisations fin dev)
 - **Phase 2** : Plans et migrations (non quantifiés)
+
+---
+
+## 🔧 Corrections Récentes (2025-01-30)
+
+### Corrections Pagy 43
+- ✅ **Correction `Pagy::Backend`** : Créé méthode `pagy()` dans `ApplicationController` (remplace le module qui n'existe plus dans Pagy 43)
+- ✅ Retiré tous les `include Pagy::Backend` des contrôleurs admin (11 fichiers dans `app/controllers/admin_panel/`)
+- ✅ Helpers frontend déjà corrigés précédemment (`Pagy::Frontend` → helpers personnalisés dans `ApplicationHelper`)
+
+### Corrections UX
+- ✅ **Navbar** : Boutons "Se connecter" et "S'inscrire" côte à côte sur desktop, empilés sur mobile uniquement
+- ✅ **Messages de bienvenue** : Messages personnalisés après connexion/inscription/confirmation email avec prénom de l'utilisateur
+- ✅ **Redirection** : Utilisateurs déjà connectés visitant `/users/sign_in` redirigés vers l'accueil avec message de bienvenue
 
 ---
 
