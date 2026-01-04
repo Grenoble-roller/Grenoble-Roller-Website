@@ -6,7 +6,7 @@ module AdminPanel
       # Permissions pour les initiations :
       # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
       # - Lecture (index?, show?) : level >= 40
-      # - Écriture (create?, update?, destroy?) : level >= 60
+      # - Écriture (create?, update?, destroy?) : level >= 40
       # - Actions spéciales (presences, waitlist, etc.) : level >= 60
 
       def index?
@@ -18,15 +18,15 @@ module AdminPanel
       end
 
       def create?
-        admin_user? # level >= 60
+        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
       end
 
       def update?
-        admin_user? # level >= 60
+        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
       end
 
       def destroy?
-        admin_user? # level >= 60
+        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
       end
 
       def presences?

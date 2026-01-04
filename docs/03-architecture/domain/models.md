@@ -468,7 +468,7 @@ To view the complete schema:
 cat db/schema.rb
 ```
 
-See `docs/development/phase2/phase2-migrations-models.md` for detailed Phase 2 migration documentation.
+See `docs/02-shape-up/building/phase2-migrations-models.md` for detailed Phase 2 migration documentation.
 
 ## Seed Data
 

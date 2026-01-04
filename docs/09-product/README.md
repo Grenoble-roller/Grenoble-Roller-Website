@@ -25,12 +25,12 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 - **[`test-plan-inscription-profil.md`](test-plan-inscription-profil.md)** : Plan de test complet (scénarios, checklist, tests RSpec)
 
 ### Quick Wins & Intégration
-- ⚠️ **Déplacé** : [`../development/ux-improvements/quick-wins-helloasso.md`](../development/ux-improvements/quick-wins-helloasso.md) - Synthèse quick wins et intégration HelloAsso (état actuel, plan d'action)
+- **[`quick-wins-helloasso.md`](quick-wins-helloasso.md)** - Synthèse quick wins et intégration HelloAsso (état actuel, plan d'action) ✅ **100% INTÉGRÉ**
 
 ### UX Analysis
 - **[`user-journeys-analysis.md`](user-journeys-analysis.md)** : Detailed analysis of 9 user journeys with friction points and identified improvements
-- ⚠️ **Déplacé** : [`../development/ux-improvements/ux-improvements-backlog.md`](../development/ux-improvements/ux-improvements-backlog.md) - Complete backlog of 119 UX improvements (38 Quick Wins, 48 Important, 33 Future) with prioritized action plan
-- ⚠️ **Déplacé** : [`../development/ux-improvements/todo-restant.md`](../development/ux-improvements/todo-restant.md) - Récapitulatif des tâches restantes
+- **[`ux-improvements-backlog.md`](ux-improvements-backlog.md)** - Référence historique des améliorations UX (119 améliorations identifiées, fonctionnalités essentielles terminées) ✅
+- **[`todo-restant.md`](todo-restant.md)** - Récapitulatif des fonctionnalités essentielles terminées ✅
 
 ### Structure des Analyses
 
@@ -80,7 +80,7 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 - A11y intégrée dès la conception (15-20% temps)
 - Audits périodiques
 
-**Complete details** : See [`../development/ux-improvements/ux-improvements-backlog.md`](../development/ux-improvements/ux-improvements-backlog.md)
+**Complete details** : See [`ux-improvements-backlog.md`](ux-improvements-backlog.md)
 
 ---
 
@@ -98,7 +98,7 @@ L'accessibilité est **intégrée transversalement** dans chaque sprint (15-20% 
 - ✅ Test manuel : Validation navigation clavier + lecteur d'écran
 - ✅ Responsive : Fonctionnel à 200% zoom, cibles tactiles ≥44×44px
 
-**Details** : See section "Accessibilité : Approche Transversale" in [`../development/ux-improvements/ux-improvements-backlog.md`](../development/ux-improvements/ux-improvements-backlog.md)
+**Details** : See section "Accessibilité : Approche Transversale" in [`ux-improvements-backlog.md`](ux-improvements-backlog.md)
 
 ---
 

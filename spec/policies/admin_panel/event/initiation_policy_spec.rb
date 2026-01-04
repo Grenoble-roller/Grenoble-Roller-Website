@@ -76,6 +76,18 @@ RSpec.describe AdminPanel::Event::InitiationPolicy do
   end
 
   describe '#create?' do
+    context 'when user is organizer (level 40)' do
+      let(:user) { create(:user, role: organizer_role) }
+
+      it { expect(policy.create?).to be(true) }
+    end
+
+    context 'when user is moderator (level 50)' do
+      let(:user) { create(:user, role: moderator_role) }
+
+      it { expect(policy.create?).to be(true) }
+    end
+
     context 'when user is admin (level 60)' do
       let(:user) { create(:user, role: admin_role) }
 
@@ -86,12 +98,6 @@ RSpec.describe AdminPanel::Event::InitiationPolicy do
       let(:user) { create(:user, role: superadmin_role) }
 
       it { expect(policy.create?).to be(true) }
-    end
-
-    context 'when user is organizer (level 40)' do
-      let(:user) { create(:user, role: organizer_role) }
-
-      it { expect(policy.create?).to be(false) }
     end
 
     context 'when user is initiation (level 30)' do
@@ -116,14 +122,26 @@ RSpec.describe AdminPanel::Event::InitiationPolicy do
   end
 
   describe '#destroy?' do
+    context 'when user is organizer (level 40)' do
+      let(:user) { create(:user, role: organizer_role) }
+
+      it { expect(policy.destroy?).to be(true) }
+    end
+
+    context 'when user is moderator (level 50)' do
+      let(:user) { create(:user, role: moderator_role) }
+
+      it { expect(policy.destroy?).to be(true) }
+    end
+
     context 'when user is admin (level 60)' do
       let(:user) { create(:user, role: admin_role) }
 
       it { expect(policy.destroy?).to be(true) }
     end
 
-    context 'when user is organizer (level 40)' do
-      let(:user) { create(:user, role: organizer_role) }
+    context 'when user is initiation (level 30)' do
+      let(:user) { create(:user, role: initiation_role) }
 
       it { expect(policy.destroy?).to be(false) }
     end

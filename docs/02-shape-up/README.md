@@ -22,7 +22,8 @@ Cette section contient toute la documentation liée à la **méthodologie Shape 
 
 ### Current Cycles
 - **[`building/cycle-01-building-log.md`](building/cycle-01-building-log.md)** : Cycle 01 - Building phase log (planning, sprints, progress tracking)
-- ⚠️ **Déplacé** : [`../development/phase2/cycle-01-phase-2-plan.md`](../development/phase2/cycle-01-phase-2-plan.md) - Cycle 01 - Phase 2 detailed plan (Events & Admin)
+- **[`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)** : Cycle 01 - Phase 2 detailed plan (Events & Admin) ✅ **COMPLETED**
+- **[`building/phase2-migrations-models.md`](building/phase2-migrations-models.md)** : Migrations et modèles Phase 2 ✅ **TERMINÉ**
 
 ### Structure des Cycles
 ```
@@ -85,7 +86,7 @@ Cette section contient toute la documentation liée à la **méthodologie Shape 
 - **Complete methodology** : [`shape-up-methodology.md`](shape-up-methodology.md)
 - **Technical guide** : [`technical-implementation-guide.md`](technical-implementation-guide.md)
 - **Current cycle** : [`building/cycle-01-building-log.md`](building/cycle-01-building-log.md)
-- **Phase 2** : [`../development/phase2/cycle-01-phase-2-plan.md`](../development/phase2/cycle-01-phase-2-plan.md)
+- **Phase 2** : [`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)
 
 ---
 
