@@ -30,7 +30,7 @@ gem "rack-cors" # CORS pour applications mobiles
 gem "table_print"
 
 # Pagination
-gem "pagy", "~> 8.0"
+gem "pagy", "~> 43.0"
 
 # Excel export (XLSX)
 gem "rubyXL", "~> 3.4"
@@ -51,7 +51,7 @@ gem "mission_control-jobs"
 gem "bootsnap", require: false
 
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
+gem "kamal", "~> 2.10", require: false
 
 # Cron jobs management
 gem "whenever", require: false

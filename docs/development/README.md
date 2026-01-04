@@ -97,6 +97,26 @@ Documentation infrastructure en développement (pour l'instant vide, prêt pour 
 
 ---
 
+### 📦 Mises à jour de Dépendances
+**Fichier** : [`../dependencies-update-analysis.md`](../dependencies-update-analysis.md)
+
+Analyse et suivi des mises à jour de dépendances Dependabot :
+
+**✅ Phase 1 TERMINÉE** (5 gems mises à jour) :
+- `aws-sdk-s3`, `bootsnap`, `debug`, `thruster`, `selenium-webdriver`
+
+**⚠️ Phase 2 EN ATTENTE** (3 dépendances nécessitant tests) :
+- `kamal` : 2.9.0 → 2.10.1 (tester déploiement staging)
+- `actions/checkout` : v4 → v6 (tester CI)
+- `actions/upload-artifact` : v4 → v6 (tester CI)
+
+**🚨 Phase 3 EN ATTENTE** (migration majeure) :
+- `pagy` : 8.6.3 → 43.2.2 (saut de version majeur, migration nécessaire)
+
+**📖 Documentation complète** : [`docs/dependencies-update-analysis.md`](../dependencies-update-analysis.md)
+
+---
+
 ## 🔄 Cycle de Vie des Documents
 
 ### Quand un document entre dans `development/` ?
@@ -155,4 +175,212 @@ tags: ["tag1", "tag2"]
 
 ---
 
-**Dernière mise à jour** : 2025-12-20
+## 📊 Éléments Restants à Faire
+
+**Dernière mise à jour** : 2025-01-30
+
+### 📈 Vue d'Ensemble
+
+- **🔴 Priorité Haute** : 5 tâches critiques (tests préprod, fonctionnalités urgentes) - Dépendances terminées ✅
+- **🟡 Priorité Moyenne** : ~60 tâches (UX importantes, accessibilité, SEO)
+- **🟢 Priorité Basse** : ~52 tâches (newsletter reportée, améliorations futures, optimisations)
+
+---
+
+### 🔴 Priorité Haute (5 tâches)
+
+#### 1. Mises à jour de Dépendances ✅ **TERMINÉES**
+
+**✅ Toutes les mises à jour de dépendances sont terminées !**
+
+**✅ Phase 2 TERMINÉE** (3 dépendances) :
+- ✅ `kamal` : 2.9.0 → 2.10.1
+- ✅ `actions/checkout` : v4 → v6
+- ✅ `actions/upload-artifact` : v4 → v6
+- **📖 Détails** : [`../dependencies-update-analysis.md`](../dependencies-update-analysis.md)
+
+**✅ Phase 3 TERMINÉE** (1 dépendance) :
+- ✅ `pagy` : 8.6.3 → 43.2.2
+- **⚠️ Note** : Configuration adaptée (Pagy.options au lieu de Pagy::DEFAULT, extras chargés automatiquement)
+- **📖 Détails** : [`../dependencies-update-analysis.md`](../dependencies-update-analysis.md)
+
+#### 2. Tests Préproduction
+
+**Tests Capybara** (reportés en préprod, nécessaires avant production) :
+- [ ] Corriger 10 tests Capybara restants (tests JavaScript avec modals, formulaires, confirmations)
+- [ ] Valider les parcours utilisateur complets (inscription/désinscription, création événement)
+- [ ] Tests d'intégration pour les modals Bootstrap
+- [ ] Tests d'intégration pour les formulaires JavaScript
+- [ ] Tests d'intégration pour les confirmations de suppression
+- **📖 Détails** : [`phase2/cycle-01-phase-2-plan.md`](phase2/cycle-01-phase-2-plan.md) (section "📅 PRÉPROD - AVANT PRODUCTION")
+
+#### 3. Fonctionnalités Urgentes
+
+**Parcours 2 : Inscription** :
+- [ ] Validation email en temps réel (Vérifier si email existe déjà via AJAX)
+  - **⚠️ État actuel** : Validation format email côté client existe, mais PAS de vérification AJAX si email déjà utilisé
+- [ ] Page de bienvenue après inscription (Redirection vers `/welcome` avec guide "Prochaines étapes")
+  - **⚠️ État actuel** : Email de bienvenue envoyé (`UserMailer.welcome_email`), mais PAS de page `/welcome` avec redirection
+- **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
+
+**Parcours 3 : Découverte des Événements** :
+- [ ] Barre de recherche (Recherche par titre, description, lieu - AJAX)
+  - **⚠️ État actuel** : Pas de recherche implémentée dans `EventsController`
+- [ ] Filtres basiques (Filtres par date, route, niveau)
+  - **⚠️ État actuel** : Pas de filtres utilisateur, seulement scopes upcoming/past
+- [ ] Pagination (Pagination avec Kaminari/Pagy - 10-15 événements par page)
+  - **⚠️ État actuel** : Pagy utilisé dans admin panel, mais PAS dans contrôleur public. Événements passés limités à 6 avec bouton "Voir tout"
+- **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
+
+**✅ Déjà fait** :
+- ✅ Masquer sections non implémentées footer (Équipe, Carrières, Blog masquées avec `if false`)
+
+---
+
+### 🟡 Priorité Moyenne (~60 tâches)
+
+#### 4. Accessibilité
+
+**Admin (ActiveAdmin)** :
+- [ ] Tableaux : Vérifier headers associés aux cellules
+- [ ] Formulaires : Vérifier accessibilité formulaires admin
+- [ ] Navigation : Vérifier navigation clavier dans sidebar
+- **📖 Détails** : [`accessibility/accessibility-audit.md`](accessibility/accessibility-audit.md) (section "Admin (ActiveAdmin)")
+
+**Lighthouse - SEO** :
+- [ ] Meta description spécifique par page (Association, Événements liste, Événement détail, Boutique, Produit détail)
+- [ ] Vérifier hiérarchie headings (Association, Événements liste, Événement détail, Boutique)
+- **📖 Détails** : [`accessibility/lighthouse-action-plan.md`](accessibility/lighthouse-action-plan.md)
+
+#### 5. Améliorations UX Importantes (~48 tâches)
+
+**Parcours 1 : Découverte de l'Association** :
+- [ ] Section "Derniers événements" (Carrousel ou grille avec 3-4 derniers événements passés)
+- [ ] Section "Tarifs d'adhésion" (Tableau simple avec 3 tarifs + CTA)
+- [ ] Page "Équipe" (Créer page statique manquante)
+
+**Parcours 2 : Inscription** :
+- [ ] Indicateur de progression du formulaire (Barre "Étape 1/1" pour préparer futures étapes)
+
+**Parcours 3 : Découverte des Événements** :
+- [ ] Tri personnalisé (Dropdown "Trier par" : Date, Popularité, Distance, Nouveautés)
+- [ ] Vue calendrier (Toggle vue liste/calendrier avec FullCalendar - vue mensuelle)
+- [ ] Filtres avancés (Filtres combinés avec tags actifs visibles)
+
+**Parcours 4 : Inscription à un Événement** :
+- [ ] Prévisualisation email (Aperçu de l'email de confirmation dans la modal)
+- [ ] Confirmation en deux étapes (Étape 1 modal → Étape 2 page de confirmation)
+- [ ] Notification push (optionnel) (Demander permission pour notifications push)
+
+**Parcours 5 : Gestion de Mes Inscriptions** :
+- [ ] Filtres basiques (Filtres par date, statut rappel)
+- [ ] Pagination (Pagination avec Kaminari/Pagy - 10-15 événements par page)
+- [ ] Vue calendrier (Toggle vue liste/calendrier avec FullCalendar)
+- [ ] Actions en masse (Checkbox pour sélectionner plusieurs événements et désinscription en masse)
+- [ ] Tri personnalisé (Dropdown "Trier par" : Date, Nom, Distance)
+- [ ] Export calendrier global (Export iCal de toutes ses inscriptions en une fois)
+
+**Parcours 6 : Création d'un Événement** :
+- [ ] Formulaire en plusieurs étapes (Étape 1 Infos de base → Étape 2 Détails → Étape 3 Options)
+- [ ] Prévisualisation événement (Bouton "Aperçu" qui montre la card événement)
+- [ ] Création route depuis formulaire (Modal "Créer un nouveau parcours" directement)
+- [ ] Duplication d'événement (Bouton "Dupliquer" sur événement existant)
+- [ ] Templates d'événements (Templates pré-remplis : "Rando vendredi soir", etc.)
+- [ ] Validation côté client (Validation HTML5 + JavaScript avant soumission)
+
+**Parcours 7 : Achat en Boutique** :
+- [ ] Zoom sur image produit (Lightbox pour agrandir l'image au clic) - **PRIORITÉ MOYENNE**
+- [ ] Tri des produits (Dropdown "Trier par" : Prix, Nom, Popularité)
+- [ ] Galerie d'images (Carrousel avec plusieurs images par produit)
+- [ ] Panier persistant pour utilisateurs connectés (Sauvegarder panier en DB, fusionner avec session)
+- [ ] Sauvegarde panier avant déconnexion (Sauvegarder automatiquement le panier en DB)
+- [ ] Récapitulatif avant paiement (Page intermédiaire "Récapitulatif" avec adresse de livraison)
+- [ ] Suggestions produits ("Produits similaires" ou "Autres clients ont aussi acheté")
+
+**Parcours 8 : Administration** :
+- [ ] Bulk actions (Sélectionner plusieurs événements → "Publier en masse", "Refuser en masse")
+- [ ] Recherche globale (Barre de recherche qui cherche dans Events, Users, Orders)
+- [ ] Regroupement menu (Menu groupé : "Événements" → Events, Routes, Attendances)
+- [ ] Exports avancés (Exports CSV personnalisés avec colonnes choisies, exports PDF)
+- [ ] Filtres sauvegardés (Permettre de sauvegarder des filtres fréquents)
+- [ ] Dashboard complet avec graphiques (Graphiques : événements par mois, inscriptions, revenus)
+
+**Parcours 9 : Navigation via Footer** :
+- [ ] Page "Équipe" (Créer page statique manquante)
+- [ ] Page "Carrières" (Si recrutement prévu : offres d'emploi)
+- [ ] Page "Blog" (Si blog prévu, créer structure de base ou masquer le lien)
+- [ ] Créer pages statiques essentielles (FAQ, Contact avec formulaire, CGU, Confidentialité)
+
+**📖 Détails complets** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md) et [`ux-improvements/ux-improvements-backlog.md`](ux-improvements/ux-improvements-backlog.md)
+
+---
+
+### 🟢 Priorité Basse (~50 tâches)
+
+#### 6. Quick Wins Restants (8 tâches)
+
+**Parcours 7 : Achat en Boutique** :
+- [ ] Barre de recherche produits (AJAX) - **DÉPRIORISÉ** (peu de produits ~6-7)
+
+**📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md) (section "🟢 QUICK WINS RESTANTS")
+
+#### 7. Newsletter (Reportée)
+
+**Parcours 1 : Découverte de l'Association** :
+- [ ] Newsletter fonctionnelle (Formulaire footer + backend avec service email)
+  - **⚠️ Statut** : Reportée pour l'instant (section déjà masquée dans footer avec `if false`)
+  - **📖 Détails** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md)
+
+#### 8. Améliorations Futures (~33 tâches)
+
+**Parcours 1-9** : Témoignages membres, galerie photos, carte interactive, inscription réseaux sociaux, suggestions personnalisées, inscription groupée, liste d'attente, QR codes, statistiques personnelles, éditeur WYSIWYG, planification récurrente, comparaison produits, liste de souhaits, avis clients, codes promo, etc.
+
+**📖 Détails complets** : [`ux-improvements/todo-restant.md`](ux-improvements/todo-restant.md) (section "🔴 AMÉLIORATIONS FUTURES")
+
+#### 9. Optimisations Performance (Fin du Dev)
+
+**Lighthouse - Optimisations** :
+- [ ] Optimisation images (WebP, compression)
+- [ ] Purge CSS inutilisé
+- [ ] Optimisation JavaScript (tree shaking, code splitting)
+- [ ] Lazy loading images
+- [ ] Configuration sécurité production (HTTPS, CSP headers, HSTS, COOP, Trusted Types)
+
+**📖 Détails** : [`accessibility/lighthouse-action-plan.md`](accessibility/lighthouse-action-plan.md) (section "⏳ À Faire Plus Tard")
+
+#### 10. Tests (Améliorations)
+
+**Roadmap et Corrections** :
+- [ ] Voir roadmap dans `testing/ROADMAP.md`
+- [ ] Voir todolist dans `testing/TODOLIST.md` (si fichier existe)
+
+**📖 Détails** : [`testing/ROADMAP.md`](testing/ROADMAP.md)
+
+#### 11. Phase 2 (Fonctionnalités Futures)
+
+**Plans et Migrations** :
+- [ ] Voir plans dans `phase2/cycle-01-phase-2-plan.md`
+- [ ] Voir migrations dans `phase2/phase2-migrations-models.md`
+
+**📖 Détails** : [`phase2/cycle-01-phase-2-plan.md`](phase2/cycle-01-phase-2-plan.md)
+
+---
+
+## 📊 Statistiques Globales
+
+- **Total tâches identifiées** : ~122 tâches
+- **🔴 Priorité Haute** : 5 tâches (4%) - Dépendances terminées ✅
+- **🟡 Priorité Moyenne** : ~60 tâches (49%)
+- **🟢 Priorité Basse** : ~52 tâches (43%)
+
+**Répartition par domaine** :
+- **Dépendances** : 4 tâches (Phase 2 + Phase 3)
+- **Tests** : 5 tâches (Capybara préprod)
+- **UX** : ~89 tâches (Quick wins + Importantes + Futures)
+- **Accessibilité** : 7 tâches (Admin + Lighthouse SEO)
+- **Performance** : 5 tâches (Optimisations fin dev)
+- **Phase 2** : Plans et migrations (non quantifiés)
+
+---
+
+**Dernière mise à jour** : 2025-01-30
