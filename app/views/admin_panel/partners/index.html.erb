@@ -88,7 +88,7 @@
                       <span class="text-muted" style="display: none;">-</span>
                     <% else %>
                       <% begin %>
-                        <%= image_tag partner.logo_url, height: 50, style: "border-radius: 8px;", alt: partner.name %>
+                    <%= image_tag partner.logo_url, height: 50, style: "border-radius: 8px;", alt: partner.name %>
                       <% rescue Propshaft::MissingAssetError, Sprockets::Rails::Helper::AssetNotFound => e %>
                         <span class="text-muted" title="Image non trouvée: <%= partner.logo_url %>">-</span>
                       <% end %>

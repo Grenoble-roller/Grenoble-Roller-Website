@@ -1672,7 +1672,7 @@ current_user.attendances.active.where(free_trial_used: true, child_membership_id
 - Nom, prénom, date de naissance : Obligatoires
 - Questionnaire de santé : 9 questions obligatoires
 - RGPD, autorisation parentale : Obligatoires si enfant < 16 ans
-- Certificat médical : Obligatoire pour FFRS si réponses OUI ou nouvelle licence
+- Certificat médical : Recommandé pour FFRS (gestion au cas par cas selon type : rando vs compét)
 
 **L'enfant est créé en pending automatiquement ?**
 - ✅ **OUI** : Par défaut, tous les enfants sont créés avec `status = "pending"`

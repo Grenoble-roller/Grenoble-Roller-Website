@@ -76,7 +76,7 @@ export default class extends Controller {
       if (response.ok) {
         const data = await response.json()
         input.classList.remove('is-saving')
-        input.classList.add('is-modified')
+    input.classList.add('is-modified')
         input.dataset.originalValue = input.value
         
         // Retirer la classe après 2 secondes
