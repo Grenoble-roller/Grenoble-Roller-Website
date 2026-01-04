@@ -1,13 +1,16 @@
 module ApplicationHelper
   include ActionView::Helpers::TextHelper
-  # Pagy 43 : Les helpers sont maintenant des méthodes d'instance de Pagy
-  # On délègue les appels aux méthodes de l'instance @pagy
+  # Pagy 4.3 : Les helpers utilisent les méthodes publiques de Pagy
+  # bootstrap_series_nav est protégée, utiliser bootstrap_nav qui est publique
   def pagy_bootstrap_nav(pagy, **options)
-    pagy.bootstrap_series_nav(**options)
+    # Dans Pagy 4.3, bootstrap_nav est la méthode publique à utiliser
+    # Elle fonctionne pour Pagy standard et Pagy::Offset
+    pagy.bootstrap_nav(**options)
   end
 
   def pagy_nav(pagy, **options)
-    pagy.series_nav(**options)
+    # Dans Pagy 4.3, nav est la méthode publique à utiliser
+    pagy.nav(**options)
   end
 
   def pagy_info(pagy, **options)
