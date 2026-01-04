@@ -13,6 +13,11 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 
 ## 📚 Documentation Disponible
 
+### Page d'Accueil & Communication
+- [`homepage-reflection.md`](./homepage-reflection.md) - **NOUVEAU** - Réflexion sur l'amélioration de la page d'accueil avec focus autonomie bénévoles (carrousel images, annonces, galerie photos, témoignages)
+
+## 📚 Documentation Disponible
+
 ### Adhésions
 - **[`adhesions-complete.md`](adhesions-complete.md)** : Documentation complète consolidée (stratégie, flux, règles métier, législation, structure technique, automatisation)
 - **[`adhesions-implementation-status.md`](adhesions-implementation-status.md)** : Statut d'implémentation (checklists, écarts HelloAsso, conformité, points non implémentés)
