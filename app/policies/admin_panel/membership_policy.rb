@@ -9,5 +9,9 @@ module AdminPanel
     def activate?
       admin_user? # Vérifie user.role.level.to_i >= 60
     end
+
+    def check_payment?
+      admin_user? # Vérifie user.role.level.to_i >= 60
+    end
   end
 end

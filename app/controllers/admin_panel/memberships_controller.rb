@@ -4,9 +4,10 @@ module AdminPanel
   class MembershipsController < BaseController
     # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
-    before_action :set_membership, only: %i[show edit update destroy activate]
+    before_action :set_membership, only: %i[show edit update destroy activate check_payment]
     before_action :authorize_membership, only: %i[show edit update destroy]
     before_action :authorize_activate, only: [:activate]
+    before_action :authorize_check_payment, only: [:check_payment]
 
     # GET /admin-panel/memberships
     def index
@@ -108,6 +109,27 @@ module AdminPanel
       redirect_to admin_panel_membership_path(@membership)
     end
 
+    # POST /admin-panel/memberships/:id/check_payment
+    def check_payment
+      if @membership.payment&.provider == "helloasso"
+        begin
+          HelloassoService.fetch_and_update_payment(@membership.payment)
+          @membership.reload
+          flash[:notice] = "Vérification HelloAsso effectuée. Statut mis à jour."
+        rescue => e
+          Rails.logger.error("[AdminPanel::MembershipsController] Erreur lors de la vérification HelloAsso : #{e.message}")
+          Rails.logger.error(e.backtrace.join("\n"))
+          flash[:alert] = "Erreur lors de la vérification HelloAsso : #{e.message}"
+        end
+      elsif @membership.payment.nil?
+        flash[:alert] = "Aucun paiement associé à cette adhésion."
+      else
+        flash[:alert] = "Ce paiement n'est pas un paiement HelloAsso (provider: #{@membership.payment.provider})."
+      end
+
+      redirect_to admin_panel_membership_path(@membership)
+    end
+
     private
 
     def set_membership
@@ -120,6 +142,10 @@ module AdminPanel
 
     def authorize_activate
       authorize [ :admin_panel, @membership ], :activate?
+    end
+
+    def authorize_check_payment
+      authorize [ :admin_panel, @membership ], :check_payment?
     end
 
     def membership_params

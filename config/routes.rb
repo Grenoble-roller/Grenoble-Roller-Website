@@ -198,6 +198,8 @@ Rails.application.routes.draw do
       patch :upgrade
       # Renouveler une adhésion expirée (enfant uniquement)
       post :renew
+      # Vérifier le paiement HelloAsso
+      post :check_payment
     end
     collection do
       # Paiement groupé pour plusieurs enfants en attente

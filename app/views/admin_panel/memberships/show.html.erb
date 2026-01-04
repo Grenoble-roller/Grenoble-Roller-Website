@@ -7,12 +7,17 @@
 
 <%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Adhésion #<%= @membership.id %></h1>
   <div class="d-flex gap-2">
     <% if @membership.status == "pending" %>
       <%= button_to "Activer", activate_admin_panel_membership_path(@membership), method: :patch, 
           class: "btn btn-success" %>
+      <% if @membership.payment&.provider == "helloasso" %>
+        <%= button_to "Vérifier HelloAsso", check_payment_admin_panel_membership_path(@membership), method: :post, 
+            class: "btn btn-warning",
+            title: "Forcer la vérification du statut du paiement auprès d'HelloAsso" %>
+      <% end %>
     <% end %>
     <%= link_to "Modifier", edit_admin_panel_membership_path(@membership), class: "btn btn-outline-liquid-primary" %>
     <%= link_to "Retour", admin_panel_memberships_path, class: "btn btn-outline-secondary" %>
@@ -215,6 +220,11 @@
         <% if @membership.status == "pending" %>
           <%= button_to "Activer", activate_admin_panel_membership_path(@membership), method: :patch, 
               class: "btn btn-success w-100 mb-2" %>
+          <% if @membership.payment&.provider == "helloasso" %>
+            <%= button_to "Vérifier paiement HelloAsso", check_payment_admin_panel_membership_path(@membership), method: :post, 
+                class: "btn btn-warning w-100 mb-2",
+                title: "Forcer la vérification du statut du paiement auprès d'HelloAsso" %>
+          <% end %>
         <% end %>
         <%= link_to "Modifier", edit_admin_panel_membership_path(@membership), class: "btn btn-liquid-primary w-100 mb-2" %>
         <%= button_to "Supprimer", admin_panel_membership_path(@membership), method: :delete, 
