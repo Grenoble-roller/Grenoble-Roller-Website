@@ -2,7 +2,7 @@
 
 module AdminPanel
   class PaymentsController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_payment, only: %i[show destroy]
     before_action :authorize_payment, only: %i[show destroy]

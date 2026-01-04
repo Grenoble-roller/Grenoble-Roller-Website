@@ -2,7 +2,7 @@
 
 module AdminPanel
   class UsersController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_user, only: %i[show edit update destroy]
     before_action :authorize_user, only: %i[show edit update destroy]

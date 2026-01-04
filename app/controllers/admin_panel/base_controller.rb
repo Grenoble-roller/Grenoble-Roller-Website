@@ -2,7 +2,7 @@
 
 module AdminPanel
   class BaseController < ApplicationController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     # Pundit est déjà inclus dans ApplicationController
     # before_action :authenticate_user! est géré par Devise

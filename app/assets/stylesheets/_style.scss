@@ -1308,10 +1308,30 @@
       flex-shrink: 0;
     }
     
-    /* Menu utilisateur ou boutons auth - pleine largeur */
-    .navbar-grenoble-roller .navbar-user-menu,
+    /* Menu utilisateur ou boutons auth - pleine largeur sur mobile uniquement */
+    .navbar-grenoble-roller .navbar-user-menu {
+      width: 100%;
+    }
+    
+    /* Boutons auth - pleine largeur sur mobile, taille naturelle sur desktop */
     .navbar-grenoble-roller .navbar-auth-buttons {
       width: 100%;
+    }
+    
+    .navbar-grenoble-roller .navbar-auth-buttons .btn {
+      width: 100%;
+    }
+    
+    /* Sur desktop (lg+), les boutons auth gardent leur taille naturelle */
+    @media (min-width: 992px) {
+      .navbar-grenoble-roller .navbar-auth-buttons {
+        width: auto;
+      }
+      
+      .navbar-grenoble-roller .navbar-auth-buttons .btn {
+        width: auto !important;
+        min-width: auto;
+      }
     }
     
     .navbar-grenoble-roller .navbar-user-menu .dropdown-toggle {

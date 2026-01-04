@@ -2,7 +2,7 @@
 
 module AdminPanel
   class ProductVariantsController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_product
     before_action :set_variant, only: %i[show edit update destroy toggle_status]

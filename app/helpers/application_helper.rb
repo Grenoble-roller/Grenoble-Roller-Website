@@ -1,6 +1,18 @@
 module ApplicationHelper
   include ActionView::Helpers::TextHelper
-  include Pagy::Frontend
+  # Pagy 43 : Les helpers sont maintenant des méthodes d'instance de Pagy
+  # On délègue les appels aux méthodes de l'instance @pagy
+  def pagy_bootstrap_nav(pagy, **options)
+    pagy.bootstrap_series_nav(**options)
+  end
+
+  def pagy_nav(pagy, **options)
+    pagy.series_nav(**options)
+  end
+
+  def pagy_info(pagy, **options)
+    pagy.info_tag(**options)
+  end
 
   # Alias de la méthode originale pluralize avant surcharge
   alias_method :original_pluralize, :pluralize

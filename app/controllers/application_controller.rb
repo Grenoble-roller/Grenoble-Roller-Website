@@ -2,6 +2,10 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include TurnstileVerifiable
   include ApiResponder
+  
+  # Pagy 43 : La méthode pagy() est disponible directement
+  # Plus besoin d'inclure Pagy::Backend (qui n'existe plus dans Pagy 43)
+  # La méthode pagy() est définie comme helper dans Pagy 43
 
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
@@ -28,6 +32,46 @@ class ApplicationController < ActionController::Base
         redirect_to new_user_session_path, alert: "Vous devez être connecté pour accéder à cette page."
       end
     end
+  end
+
+  # Pagy 43 : Helper method pour la pagination dans les contrôleurs
+  # Remplace Pagy::Backend qui n'existe plus dans Pagy 43
+  def pagy(collection, vars = {})
+    # Obtenir le nombre total d'éléments
+    count = if collection.respond_to?(:count)
+      collection.count
+    elsif collection.respond_to?(:size)
+      collection.size
+    else
+      collection.to_a.size
+    end
+    
+    # Paramètres de pagination
+    page = (params[:page] || vars[:page] || 1).to_i
+    items = vars[:items] || Pagy.options[:items] || 25
+    
+    # Créer l'instance Pagy
+    pagy_instance = Pagy.new(
+      count: count,
+      page: page,
+      items: items,
+      **vars.except(:items, :page)
+    )
+    
+    # Paginer la collection
+    if collection.respond_to?(:limit) && collection.respond_to?(:offset)
+      # ActiveRecord::Relation
+      paginated_collection = collection.limit(pagy_instance.items).offset(pagy_instance.offset)
+    elsif collection.respond_to?(:[])
+      # Array ou autre collection indexable
+      paginated_collection = collection[pagy_instance.offset, pagy_instance.items] || []
+    else
+      # Fallback : convertir en array
+      array = collection.to_a
+      paginated_collection = array[pagy_instance.offset, pagy_instance.items] || []
+    end
+    
+    [pagy_instance, paginated_collection]
   end
 
   protected

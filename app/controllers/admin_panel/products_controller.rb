@@ -2,7 +2,7 @@
 
 module AdminPanel
   class ProductsController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_product, only: %i[show edit update destroy publish unpublish]
     before_action :authorize_product, only: %i[show edit update destroy publish unpublish]

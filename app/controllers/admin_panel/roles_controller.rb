@@ -2,7 +2,7 @@
 
 module AdminPanel
   class RolesController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     # IMPORTANT : Les rôles sont accessibles UNIQUEMENT pour level >= 70 (SUPERADMIN)
     before_action :ensure_superadmin

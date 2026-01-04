@@ -48,25 +48,31 @@ RSpec.describe 'Mes sorties', type: :system do
         expect(page).to have_content('Vous n').and have_content('êtes inscrit(e) à aucune sortie pour le moment')
       end
 
-      xit 'permet de se désinscrire depuis la page Mes sorties', js: true do # SKIP: ChromeDriver non disponible
+      it 'permet de se désinscrire depuis la page Mes sorties', js: true do
         create(:attendance, user: member, event: event1, status: 'registered')
 
         visit attendances_path
         expect(page).to have_content(event1.title)
 
-        # Trouver le bouton de désinscription dans la card de l'événement
-        # La card utilise le partial event_card, donc le bouton est dans la card
+        # Cliquer sur le lien "Découvrir" pour aller sur la page show de l'événement
+        # (le bouton de désinscription n'est pas dans la card pour une seule inscription)
         event_card = page.find('.card-event', text: event1.title)
         within(event_card) do
-          accept_confirm do
-            click_button 'Se désinscrire'
-          end
+          click_link 'Découvrir'
+        end
+
+        # Sur la page show, cliquer sur le bouton de désinscription
+        # Le bouton affiche "Annuler" mais a aria-label="Se désinscrire"
+        accept_confirm do
+          button = page.find('button[aria-label="Se désinscrire"]')
+          button.click
         end
 
         # Attendre que la page se recharge
         sleep 0.5
 
-        # Vérifier que l'événement n'est plus dans la liste
+        # Retourner à la page Mes sorties pour vérifier que l'événement n'est plus dans la liste
+        visit attendances_path
         expect(page).not_to have_content(event1.title)
         expect(event1.reload.attendances.where(user: member).exists?).to be false
       end
@@ -128,11 +134,11 @@ RSpec.describe 'Mes sorties', type: :system do
     it 'permet de cliquer sur un événement pour voir les détails' do
       visit attendances_path
 
-      # Le titre de l'événement est dans un lien ou dans une card avec stretched-link
-      # On peut cliquer sur le lien "Voir plus" ou sur le titre via le stretched-link
+      # Le titre de l'événement est un lien vers la page de détails
+      # Cliquer sur le titre de l'événement dans la card
       event_card = page.find('.card-event', text: event1.title)
       within(event_card) do
-        click_link 'Voir plus'
+        click_link event1.title
       end
 
       expect(page).to have_current_path(event_path(event1))

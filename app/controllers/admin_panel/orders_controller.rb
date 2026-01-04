@@ -2,7 +2,7 @@
 
 module AdminPanel
   class OrdersController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_order, only: %i[show edit update destroy change_status]
     before_action :authorize_order, only: %i[show edit update destroy change_status]
