@@ -345,6 +345,7 @@ end
 
 ## 🔗 Références
 
+- **Plan d'implémentation détaillé** : [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - **NOUVEAU** - Éléments réalisables classés par pertinence et faisabilité
 - **Documentation principale** : [`../README.md`](../README.md)
 - **État des fonctionnalités** : [`../00-overview/features-status.md`](../00-overview/features-status.md)
 - **Architecture** : [`../03-architecture/`](../03-architecture/)
