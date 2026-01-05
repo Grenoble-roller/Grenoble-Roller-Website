@@ -4,7 +4,7 @@
 %>
 
 <% if carousels.any? %>
-  <div id="homepageCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
+  <div id="homepageCarousel" class="carousel slide carousel-fade" data-controller="carousel" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
     <!-- Indicateurs -->
     <% if carousels.count > 1 %>
       <div class="carousel-indicators">

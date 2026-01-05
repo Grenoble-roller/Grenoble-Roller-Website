@@ -99,22 +99,21 @@
                   <% end %>
                   <% if carousel.published? %>
                     <%= link_to unpublish_admin_panel_homepage_carousel_path(carousel), 
-                        method: :post, 
+                        data: { turbo_method: :post }, 
                         class: "btn btn-sm btn-outline-secondary", 
                         title: "Dépublier" do %>
                       <i class="bi bi-eye-slash"></i>
                     <% end %>
                   <% else %>
                     <%= link_to publish_admin_panel_homepage_carousel_path(carousel), 
-                        method: :post, 
+                        data: { turbo_method: :post }, 
                         class: "btn btn-sm btn-outline-success", 
                         title: "Publier" do %>
                       <i class="bi bi-check-circle"></i>
                     <% end %>
                   <% end %>
                   <%= link_to admin_panel_homepage_carousel_path(carousel), 
-                      method: :delete, 
-                      data: { confirm: "Confirmer la suppression ?" }, 
+                      data: { turbo_method: :delete, turbo_confirm: "Confirmer la suppression ?" }, 
                       class: "btn btn-sm btn-outline-danger", 
                       title: "Supprimer" do %>
                     <i class="bi bi-trash"></i>
@@ -122,13 +121,13 @@
                 </div>
                 <div class="btn-group w-100 mt-2" role="group">
                   <%= link_to move_up_admin_panel_homepage_carousel_path(carousel), 
-                      method: :patch, 
+                      data: { turbo_method: :patch }, 
                       class: "btn btn-sm btn-outline-info", 
                       title: "Monter" do %>
                     <i class="bi bi-arrow-up"></i>
                   <% end %>
                   <%= link_to move_down_admin_panel_homepage_carousel_path(carousel), 
-                      method: :patch, 
+                      data: { turbo_method: :patch }, 
                       class: "btn btn-sm btn-outline-info", 
                       title: "Descendre" do %>
                     <i class="bi bi-arrow-down"></i>

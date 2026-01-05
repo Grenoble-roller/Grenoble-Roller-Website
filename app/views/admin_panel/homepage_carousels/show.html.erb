@@ -108,24 +108,24 @@
         <div class="d-grid gap-2">
           <% if @carousel.published? %>
             <%= link_to unpublish_admin_panel_homepage_carousel_path(@carousel), 
-                method: :post, 
+                data: { turbo_method: :post }, 
                 class: "btn btn-outline-secondary" do %>
               <i class="bi bi-eye-slash me-2"></i>Dépublier
             <% end %>
           <% else %>
             <%= link_to publish_admin_panel_homepage_carousel_path(@carousel), 
-                method: :post, 
+                data: { turbo_method: :post }, 
                 class: "btn btn-success" do %>
               <i class="bi bi-check-circle me-2"></i>Publier
             <% end %>
           <% end %>
           <%= link_to move_up_admin_panel_homepage_carousel_path(@carousel), 
-              method: :patch, 
+              data: { turbo_method: :patch }, 
               class: "btn btn-outline-info" do %>
             <i class="bi bi-arrow-up me-2"></i>Monter
           <% end %>
           <%= link_to move_down_admin_panel_homepage_carousel_path(@carousel), 
-              method: :patch, 
+              data: { turbo_method: :patch }, 
               class: "btn btn-outline-info" do %>
             <i class="bi bi-arrow-down me-2"></i>Descendre
           <% end %>
