@@ -30,6 +30,33 @@
   </li>
 <% end %>
 
+<!-- PAGE D'ACCUEIL (level >= 40 : ORGANIZER+) -->
+<% if can_view_initiations? %>
+  <li class="admin-menu-item">
+    <a href="#homepage-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') ? 'true' : 'false' %>"
+       aria-controls="homepage-submenu"
+       title="Page d'Accueil">
+      <i class="bi bi-house-door admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Page d'Accueil</span>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') %>" id="homepage-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_homepage_carousels_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('homepage_carousels')}",
+            title: "Carrousel",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-images admin-menu-subicon" aria-hidden="true"></i>
+          <span>Carrousel</span>
+        <% end %>
+      </li>
+    </ul>
+  </li>
+<% end %>
+
 <!-- ÉVÉNEMENTS (level >= 60 : ADMIN, SUPERADMIN) -->
 <% if can_access_admin_panel?(60) %>
   <li class="admin-menu-item">

@@ -1,0 +1,136 @@
+<% 
+  breadcrumb_items = [
+    { label: "Carrousel", url: admin_panel_homepage_carousels_path },
+    { label: @carousel.title, url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%= @carousel.title %></h1>
+  <div class="btn-group">
+    <%= link_to "Modifier", edit_admin_panel_homepage_carousel_path(@carousel), class: "btn btn-primary" %>
+    <%= link_to "Retour", admin_panel_homepage_carousels_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Aperçu image -->
+  <div class="col-md-8">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Aperçu</h5>
+      </div>
+      <div class="card-body p-0">
+        <% if @carousel.image.attached? %>
+          <%= image_tag @carousel.image.variant(resize_to_limit: [1920, 600]), 
+              class: "img-fluid w-100", 
+              style: "max-height: 400px; object-fit: cover;" %>
+        <% else %>
+          <div class="bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+            <i class="bi bi-image fs-1 text-muted"></i>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Informations -->
+  <div class="col-md-4">
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-5">ID</dt>
+          <dd class="col-sm-7"><%= @carousel.id %></dd>
+
+          <dt class="col-sm-5">Titre</dt>
+          <dd class="col-sm-7"><strong><%= @carousel.title %></strong></dd>
+
+          <% if @carousel.subtitle.present? %>
+            <dt class="col-sm-5">Sous-titre</dt>
+            <dd class="col-sm-7"><%= @carousel.subtitle %></dd>
+          <% end %>
+
+          <% if @carousel.link_url.present? %>
+            <dt class="col-sm-5">Lien</dt>
+            <dd class="col-sm-7">
+              <%= link_to truncate(@carousel.link_url, length: 30), 
+                  @carousel.link_url, 
+                  target: "_blank", 
+                  rel: "noopener" %>
+            </dd>
+          <% end %>
+
+          <dt class="col-sm-5">Position</dt>
+          <dd class="col-sm-7">
+            <span class="badge bg-primary">#<%= @carousel.position %></span>
+          </dd>
+
+          <dt class="col-sm-5">Statut</dt>
+          <dd class="col-sm-7">
+            <% if @carousel.published? %>
+              <span class="badge bg-success">Publié</span>
+            <% else %>
+              <span class="badge bg-secondary">Brouillon</span>
+            <% end %>
+          </dd>
+
+          <% if @carousel.published_at.present? %>
+            <dt class="col-sm-5">Publié le</dt>
+            <dd class="col-sm-7"><%= @carousel.published_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+          <% end %>
+
+          <% if @carousel.expires_at.present? %>
+            <dt class="col-sm-5">Expire le</dt>
+            <dd class="col-sm-7">
+              <span class="text-<%= @carousel.expired? ? 'danger' : 'muted' %>">
+                <%= @carousel.expires_at.strftime("%d/%m/%Y à %H:%M") %>
+              </span>
+            </dd>
+          <% end %>
+
+          <dt class="col-sm-5">Créé le</dt>
+          <dd class="col-sm-7"><%= @carousel.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <% if @carousel.published? %>
+            <%= link_to unpublish_admin_panel_homepage_carousel_path(@carousel), 
+                method: :post, 
+                class: "btn btn-outline-secondary" do %>
+              <i class="bi bi-eye-slash me-2"></i>Dépublier
+            <% end %>
+          <% else %>
+            <%= link_to publish_admin_panel_homepage_carousel_path(@carousel), 
+                method: :post, 
+                class: "btn btn-success" do %>
+              <i class="bi bi-check-circle me-2"></i>Publier
+            <% end %>
+          <% end %>
+          <%= link_to move_up_admin_panel_homepage_carousel_path(@carousel), 
+              method: :patch, 
+              class: "btn btn-outline-info" do %>
+            <i class="bi bi-arrow-up me-2"></i>Monter
+          <% end %>
+          <%= link_to move_down_admin_panel_homepage_carousel_path(@carousel), 
+              method: :patch, 
+              class: "btn btn-outline-info" do %>
+            <i class="bi bi-arrow-down me-2"></i>Descendre
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

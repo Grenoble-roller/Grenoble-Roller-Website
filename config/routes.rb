@@ -108,6 +108,19 @@ Rails.application.routes.draw do
         patch :toggle
       end
     end
+
+    # Homepage Content (level >= 40 : ORGANIZER+)
+    resources :homepage_carousels, path: "homepage-carousels" do
+      member do
+        post :publish
+        post :unpublish
+        patch :move_up
+        patch :move_down
+      end
+      collection do
+        patch :reorder
+      end
+    end
   end
 
   # Ressource REST pour le mode maintenance

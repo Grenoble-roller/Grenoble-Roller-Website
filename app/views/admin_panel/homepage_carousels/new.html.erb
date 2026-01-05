@@ -1,0 +1,10 @@
+<% 
+  breadcrumb_items = [
+    { label: "Carrousel", url: admin_panel_homepage_carousels_path },
+    { label: "Nouveau slide", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<%= render 'form' %>
