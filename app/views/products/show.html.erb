@@ -109,12 +109,27 @@
           <!-- pousse le bloc options + prix + CTA vers le bas -->
           <div class="spacer"></div>
 
+          <% 
+            # Calculer le prix minimum/maximum AVANT le bloc conditionnel pour qu'il soit toujours défini
+            if @variants.any?
+              variant_min = @variants.where.not(price_cents: nil).minimum(:price_cents)
+              variant_max = @variants.where.not(price_cents: nil).maximum(:price_cents)
+              single_variant = @variants.count == 1 ? @variants.first : nil
+            else
+              variant_min = nil
+              variant_max = nil
+              single_variant = nil
+            end
+            min_price = variant_min || @product.price_cents
+            max_price = variant_max || @product.price_cents
+            has_multiple_prices = min_price.present? && max_price.present? && min_price != max_price
+          %>
+
           <!-- Sélection variantes -->
           <% if @variants.any? %>
             <% 
               size_options = @variants.flat_map { |v| v.option_values.select { |ov| ov.option_type.name == 'size' } }.uniq
               color_options = @variants.flat_map { |v| v.option_values.select { |ov| ov.option_type.name == 'color' } }.uniq
-              single_variant = @variants.count == 1 ? @variants.first : nil
 
               size_stock = Hash.new(0)
               color_stock = Hash.new(0)
@@ -128,11 +143,6 @@
                   end
                 end
               end
-            %>
-            <% 
-              min_price = @variants.minimum(:price_cents) || @product.price_cents
-              max_price = @variants.maximum(:price_cents) || @product.price_cents
-              has_multiple_prices = min_price != max_price
             %>
             <div class="product-options-section mb-3">
               <div class="product-options">
