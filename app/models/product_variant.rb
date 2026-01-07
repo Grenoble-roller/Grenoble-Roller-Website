@@ -24,6 +24,7 @@ class ProductVariant < ApplicationRecord
 
   before_save :apply_inheritance
   after_create :create_inventory_record
+  after_update :sync_inventory_stock, if: :saved_change_to_stock_qty?
 
   # SCOPES
   scope :active, -> { where(is_active: true) }
@@ -82,5 +83,31 @@ class ProductVariant < ApplicationRecord
       stock_qty: stock_qty || 0,
       reserved_qty: 0
     )
+  end
+
+  def sync_inventory_stock
+    # Synchroniser le stock_qty de l'inventaire avec celui de la variante
+    # IMPORTANT: On synchronise inventory.stock_qty avec variant.stock_qty
+    # La différence entre les deux représente l'ajustement de stock
+    if inventory
+      old_inv_stock = inventory.stock_qty
+      new_inv_stock = stock_qty
+      difference = new_inv_stock - old_inv_stock
+      
+      if difference != 0
+        # Mettre à jour le stock de l'inventaire pour qu'il corresponde à celui de la variante
+        inventory.update_column(:stock_qty, new_inv_stock)
+        # Enregistrer le mouvement pour traçabilité
+        inventory.movements.create!(
+          quantity: difference,
+          reason: "adjustment",
+          reference: "variant_#{id}_update",
+          before_qty: old_inv_stock
+        )
+      end
+    else
+      # Si l'inventaire n'existe pas, le créer avec le stock actuel de la variante
+      create_inventory_record
+    end
   end
 end

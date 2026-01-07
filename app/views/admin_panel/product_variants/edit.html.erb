@@ -95,11 +95,16 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :image, "Image", class: "form-label" %>
-            <%= f.file_field :image, accept: "image/*", class: "form-control" %>
-            <% if @variant.image.attached? %>
+            <%= f.label :images, "Images", class: "form-label" %>
+            <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
+            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
+            <% if @variant.images.attached? %>
               <div class="mt-2">
-                <%= image_tag @variant.image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                <% @variant.images.each do |image| %>
+                  <div class="d-inline-block me-2 mb-2">
+                    <%= image_tag image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </div>

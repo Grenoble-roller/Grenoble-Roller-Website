@@ -38,18 +38,29 @@
        data-controller="product-show"
        data-product-show-variants-value='<%= @variants.map { |v| 
          begin
+           # option_values est déjà chargé via variant_option_values dans le contrôleur
            option_vals = v.option_values.to_a
-         rescue
-           option_vals = []
+           size_opt = option_vals.find { |ov| ov.option_type&.name == 'size' }
+           color_opt = option_vals.find { |ov| ov.option_type&.name == 'color' }
+           {
+             id: v.id,
+             sizeId: size_opt&.id,
+             colorId: color_opt&.id,
+             stock: variant_available_stock(v),
+             price: v.price_cents,
+             imageUrl: variant_image_url(v) || ""
+           }
+         rescue => e
+           Rails.logger.error "[ProductShow] Erreur lors du chargement des options pour variant #{v.id}: #{e.message}"
+           {
+             id: v.id,
+             sizeId: nil,
+             colorId: nil,
+             stock: variant_available_stock(v),
+             price: v.price_cents,
+             imageUrl: variant_image_url(v) || ""
+           }
          end
-         {
-           id: v.id,
-           sizeId: option_vals.find { |ov| ov.option_type&.name == 'size' }&.id,
-           colorId: option_vals.find { |ov| ov.option_type&.name == 'color' }&.id,
-           stock: v.stock_qty,
-           price: v.price_cents,
-           imageUrl: variant_image_url(v).present? ? (v.image.attached? ? url_for(v.image) : asset_path(v.image_url.presence || @product.image_url)) : ""
-         }
        }.to_json.html_safe %>'
        data-product-show-default-image-url-value="<%= (@product.image.attached? ? url_for(@product.image) : asset_path(@product.image_url)).to_json.html_safe %>">
     <div class="row g-4 align-items-stretch flex-column flex-lg-row">
@@ -74,7 +85,8 @@
             <% end %>
           </div>
           <% 
-            has_stock = @variants.any? { |v| v.stock_qty > 0 }
+            # Utiliser stock_qty de la variante comme source de vérité principale
+            has_stock = @variants.any? { |v| variant_available_stock(v) > 0 }
           %>
           <% if has_stock %>
             <span class="badge badge-liquid-success badge-stock">En stock</span>
@@ -128,21 +140,48 @@
           <!-- Sélection variantes -->
           <% if @variants.any? %>
             <% 
-              size_options = @variants.flat_map { |v| v.option_values.select { |ov| ov.option_type.name == 'size' } }.uniq
-              color_options = @variants.flat_map { |v| v.option_values.select { |ov| ov.option_type.name == 'color' } }.uniq
+              # Charger toutes les options disponibles depuis les variantes actives
+              # option_values est déjà chargé via variant_option_values dans le contrôleur
+              # Utiliser to_a pour forcer le chargement et uniq pour éviter les doublons
+              all_option_values = @variants.flat_map { |v| 
+                # option_values est chargé via variant_option_values, donc option_type devrait être accessible
+                v.option_values.to_a
+              }.uniq
+              
+              # Filtrer par type d'option (size/color)
+              size_options = all_option_values.select { |ov| ov.option_type&.name == 'size' }.uniq
+              color_options = all_option_values.select { |ov| ov.option_type&.name == 'color' }.uniq
 
+              # Calculer le stock disponible par option
+              # Pour chaque option, vérifier s'il existe AU MOINS UNE variante complète avec cette option qui a du stock
               size_stock = Hash.new(0)
               color_stock = Hash.new(0)
+              
+              # Pour chaque variante avec stock, marquer ses options comme disponibles
               @variants.each do |v|
-                v.option_values.each do |ov|
+                # Utiliser stock_qty de la variante comme source de vérité principale
+                available = variant_available_stock(v)
+                next if available <= 0 # Ignorer les variantes sans stock
+                
+                # option_values est déjà chargé via variant_option_values dans le contrôleur
+                option_vals = v.option_values.to_a
+                
+                # Pour chaque option de cette variante, marquer le stock maximum disponible
+                # Le stock d'une option = le stock maximum parmi toutes les variantes qui ont cette option ET qui ont du stock
+                option_vals.each do |ov|
+                  next unless ov.option_type # Sécurité si option_type n'est pas chargé
+                  
                   case ov.option_type.name
                   when 'size'
-                    size_stock[ov.id] += v.stock_qty
+                    # Garder le stock maximum pour cette taille parmi toutes les variantes avec cette taille
+                    size_stock[ov.id] = [size_stock[ov.id], available].max
                   when 'color'
-                    color_stock[ov.id] += v.stock_qty
+                    # Garder le stock maximum pour cette couleur parmi toutes les variantes avec cette couleur
+                    color_stock[ov.id] = [color_stock[ov.id], available].max
                   end
                 end
               end
+              
             %>
             <div class="product-options-section mb-3">
               <div class="product-options">
@@ -223,7 +262,7 @@
                   <%= button_tag type: "button", class: "qty-btn", aria: { label: "Diminuer" }, data: { action: "click->product-show#decrementQty" } do %>
                     <i class="bi bi-dash" aria-hidden="true"></i>
                   <% end %>
-                  <%= number_field_tag :quantity, 1, min: 1, max: (single_variant&.stock_qty.to_i if single_variant), class: "form-control form-control-sm border-0 bg-transparent p-0 form-control-number-compact", id: "quantity_field", style: "width: 3em;", data: { product_show_target: "qtyField", action: "input->product-show#quantityChanged" } %>
+                  <%= number_field_tag :quantity, 1, min: 1, max: (single_variant ? variant_available_stock(single_variant) : nil), class: "form-control form-control-sm border-0 bg-transparent p-0 form-control-number-compact", id: "quantity_field", style: "width: 3em;", data: { product_show_target: "qtyField", action: "input->product-show#quantityChanged" } %>
                   <%= button_tag type: "button", class: "qty-btn", aria: { label: "Augmenter" }, data: { action: "click->product-show#incrementQty" } do %>
                     <i class="bi bi-plus" aria-hidden="true"></i>
                   <% end %>
@@ -244,7 +283,7 @@
                         class="btn btn-liquid-primary w-100 product-add-btn" 
                         id="add-btn-detail"
                         data-product-show-target="addButton"
-                        <%= 'disabled' unless single_variant && single_variant.stock_qty > 0 %>>
+                        <%= 'disabled' unless single_variant && variant_available_stock(single_variant) > 0 %>>
                   <i class="bi bi-cart-plus me-2" aria-hidden="true"></i>
                   <span>Ajouter au panier</span>
                 </button>

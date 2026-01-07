@@ -58,8 +58,15 @@ class ProductsController < ApplicationController
     
     raise ActiveRecord::RecordNotFound, "Product not found" if @product.nil?
     
-    @variants = @product.product_variants.where(is_active: true)
-                        .includes(variant_option_values: { option_value: :option_type })
+    # Charger les variantes actives avec toutes les associations nécessaires
+    # IMPORTANT: option_values est une relation through, donc il faut charger variant_option_values avec option_value et option_type
+    # Cela permet d'accéder à v.option_values et ov.option_type sans requêtes supplémentaires
+    @variants = @product.product_variants
+                        .where(is_active: true)
+                        .includes(
+                          :inventory,
+                          variant_option_values: { option_value: :option_type }
+                        )
                         .order(:sku)
   end
 end

@@ -43,7 +43,17 @@
           <dd class="col-sm-9"><%= price_display(@product.price_cents, @product.currency) %></dd>
 
           <dt class="col-sm-3">Stock total</dt>
-          <dd class="col-sm-9"><%= @product.stock_qty || 0 %></dd>
+          <dd class="col-sm-9">
+            <% 
+              # Calculer le stock total des variantes actives uniquement
+              # Utiliser stock_qty de la variante comme source de vérité principale
+              total_stock = @product.product_variants.where(is_active: true).sum { |v| variant_available_stock(v) }
+            %>
+            <%= total_stock %> unité<%= 's' if total_stock != 1 %>
+            <small class="text-muted d-block mt-1">
+              (<%= @product.product_variants.where(is_active: true).count %> variante<%= 's' if @product.product_variants.where(is_active: true).count != 1 %> active<%= 's' if @product.product_variants.where(is_active: true).count != 1 %>)
+            </small>
+          </dd>
 
           <dt class="col-sm-3">Statut</dt>
           <dd class="col-sm-9"><%= active_badge(@product.is_active) %></dd>

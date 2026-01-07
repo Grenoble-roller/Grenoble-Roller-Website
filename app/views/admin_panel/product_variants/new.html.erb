@@ -121,8 +121,9 @@
           <% end %>
 
           <div class="mb-3">
-            <%= f.label :image, "Image", class: "form-label" %>
-            <%= f.file_field :image, accept: "image/*", class: "form-control" %>
+            <%= f.label :images, "Images", class: "form-label" %>
+            <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
+            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
           </div>
 
           <div class="mb-3">
