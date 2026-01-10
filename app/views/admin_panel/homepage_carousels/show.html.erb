@@ -55,14 +55,17 @@
             <dd class="col-sm-7"><%= @carousel.subtitle %></dd>
           <% end %>
 
-          <% if @carousel.link_url.present? && safe_external_url(@carousel.link_url) %>
-            <dt class="col-sm-5">Lien</dt>
-            <dd class="col-sm-7">
-              <%= link_to truncate(@carousel.link_url, length: 30), 
-                  safe_external_url(@carousel.link_url), 
-                  target: "_blank", 
-                  rel: "noopener" %>
-            </dd>
+          <% if @carousel.link_url.present? %>
+            <% safe_url = safe_external_url(@carousel.link_url) %>
+            <% if safe_url %>
+              <dt class="col-sm-5">Lien</dt>
+              <dd class="col-sm-7">
+                <%= link_to truncate(@carousel.link_url, length: 30), 
+                    safe_url, 
+                    target: "_blank", 
+                    rel: "noopener" %>
+              </dd>
+            <% end %>
           <% end %>
 
           <dt class="col-sm-5">Position</dt>
