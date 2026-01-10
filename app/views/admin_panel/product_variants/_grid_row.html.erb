@@ -56,11 +56,14 @@
           title: 'Modifier' do %>
         <i class="bi bi-pencil" aria-hidden="true"></i>
       <% end %>
-      <%= link_to toggle_status_admin_panel_product_product_variant_path(product, variant),
+      <%= button_to toggle_status_admin_panel_product_product_variant_path(product, variant),
           method: :patch,
           class: 'btn btn-outline-liquid-info',
-          title: variant.is_active ? 'Désactiver' : 'Activer',
-          data: { confirm: "Confirmer #{variant.is_active ? 'désactivation' : 'activation'} ?" } do %>
+          title: variant.is_active ? 'Désactiver la variante' : 'Activer la variante',
+          form: { 
+            class: 'd-inline',
+            data: { turbo_confirm: "Confirmer la #{variant.is_active ? 'désactivation' : 'activation'} de la variante #{variant.sku} ?" } 
+          } do %>
         <i class="bi bi-<%= variant.is_active ? 'eye-slash' : 'eye' %>" aria-hidden="true"></i>
       <% end %>
       <%= link_to admin_panel_product_product_variant_path(product, variant),

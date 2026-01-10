@@ -8,19 +8,19 @@
        data-image-upload-target="dropZone"
        data-action="dragover->image-upload#handleDragOver 
                     drop->image-upload#handleDrop 
-                    dragleave->image-upload#handleDragLeave
-                    click->image-upload#triggerFileInput">
+                    dragleave->image-upload#handleDragLeave">
     <i class="bi bi-cloud-upload display-4 text-muted mb-3"></i>
     <p class="mb-2">
       <strong>Glissez-déposez vos images ici</strong>
     </p>
     <p class="text-muted small mb-3">
-      ou cliquez pour sélectionner
+      ou cliquez sur le bouton ci-dessous
     </p>
     <%= form.file_field :image, 
         multiple: false,
         accept: "image/jpeg,image/png,image/webp",
         class: "d-none",
+        id: "product_image_input",
         data: { 
           image_upload_target: "fileInput",
           action: "change->image-upload#handleFiles"
@@ -36,7 +36,7 @@
   </div>
 
   <!-- Preview de l'image actuelle -->
-  <% if product&.image&.attached? %>
+  <% if product&.persisted? && product.image&.attached? %>
     <div class="image-preview-current mb-4">
       <h6 class="mb-3">Image actuelle</h6>
       <div class="position-relative d-inline-block">
@@ -52,28 +52,6 @@
       </div>
     </div>
   <% end %>
-
-  <!-- OU URL image -->
-  <div class="mb-4">
-    <hr class="my-4">
-    <p class="text-muted text-center mb-3">OU</p>
-    <%= form.label :image_url, "URL de l'image", class: "form-label fw-semibold" %>
-    <%= form.url_field :image_url, 
-        class: "form-control form-control-liquid",
-        placeholder: "https://example.com/image.jpg" %>
-    <div class="form-text">
-      <i class="bi bi-info-circle me-1"></i>
-      Si vous préférez utiliser une URL plutôt qu'un upload.
-    </div>
-    <% if product&.image_url.present? && !product&.image&.attached? %>
-      <div class="mt-3">
-        <%= image_tag product.image_url, 
-            class: "img-thumbnail",
-            style: "max-height: 200px;",
-            onerror: "this.style.display='none';" %>
-      </div>
-    <% end %>
-  </div>
 
   <!-- Preview des nouvelles images uploadées -->
   <div class="image-preview-grid mt-4" data-image-upload-target="previewGrid" style="display: none;">

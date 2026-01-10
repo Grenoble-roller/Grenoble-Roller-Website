@@ -5,7 +5,8 @@ module AdminPanel
     before_action :set_initiation, only: %i[show
                                              presences update_presences
                                              convert_waitlist notify_waitlist
-                                             toggle_volunteer]
+                                             toggle_volunteer
+                                             return_material]
     before_action :authorize_initiation
 
     # GET /admin-panel/initiations
@@ -191,6 +192,40 @@ module AdminPanel
       else
         redirect_to admin_panel_initiation_path(@initiation),
                     alert: "Impossible de modifier le statut bénévole"
+      end
+    end
+
+    # POST /admin-panel/initiations/:id/return_material
+    # Marque le matériel comme rendu et remet les rollers en stock
+    def return_material
+      authorize [ :admin_panel, @initiation ], :return_material?
+
+      # Vérifier que l'initiation est passée
+      if @initiation.start_at.present? && @initiation.start_at > Time.current
+        redirect_to presences_admin_panel_initiation_path(@initiation),
+                    alert: "L'initiation n'est pas encore terminée"
+        return
+      end
+
+      # Vérifier que le matériel n'a pas déjà été rendu
+      if @initiation.stock_returned_at.present?
+        redirect_to presences_admin_panel_initiation_path(@initiation),
+                    alert: "Le matériel a déjà été marqué comme rendu le #{l(@initiation.stock_returned_at, format: :short)}"
+        return
+      end
+
+      # Remettre le stock en place
+      rollers_returned = @initiation.return_roller_stock
+
+      if rollers_returned && rollers_returned > 0
+        redirect_to presences_admin_panel_initiation_path(@initiation),
+                    notice: "Matériel rendu avec succès. #{rollers_returned} roller(s) remis en stock."
+      elsif rollers_returned == 0
+        redirect_to presences_admin_panel_initiation_path(@initiation),
+                    notice: "Aucun matériel à remettre en stock pour cette initiation."
+      else
+        redirect_to presences_admin_panel_initiation_path(@initiation),
+                    alert: "Erreur lors de la remise en stock du matériel."
       end
     end
 

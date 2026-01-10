@@ -381,50 +381,29 @@ class MembershipsController < ApplicationController
     # Vérifier les réponses au questionnaire de santé (9 questions)
     has_health_issue = false
     all_answered_no = true
+    all_answered = true
     (1..9).each do |i|
       answer = membership_params["health_question_#{i}"]
-      if answer == "yes"
+      if answer.blank?
+        all_answered = false
+        all_answered_no = false
+      elsif answer == "yes"
         has_health_issue = true
         all_answered_no = false
       elsif answer == "no"
         # Réponse NON, continue
-      else
-        all_answered_no = false # Pas encore répondu
       end
     end
 
-    # Déterminer le statut du questionnaire selon la catégorie
-    is_ffrs = membership_params[:category] == "with_ffrs" || @membership.category == "with_ffrs"
-
-    if is_ffrs
-      # FFRS : Questionnaire obligatoire
-      if has_health_issue
-        # Au moins une réponse OUI : certificat obligatoire
-        @membership.health_questionnaire_status = "medical_required"
-        if membership_params[:medical_certificate].blank? && !@membership.medical_certificate.attached?
-          redirect_to edit_membership_path(@membership), alert: "Pour la licence FFRS, un certificat médical est obligatoire si vous avez répondu 'Oui' à au moins une question de santé."
-          return
-        end
-      elsif all_answered_no
-        # Toutes réponses NON : vérifier si nouvelle licence FFRS
-        @membership.health_questionnaire_status = "ok"
-        # Vérifier si l'utilisateur a déjà eu une licence FFRS pour un enfant
-        previous_ffrs = current_user.memberships.children.where(category: "with_ffrs").where.not(id: @membership.id).exists?
-        if !previous_ffrs && membership_params[:medical_certificate].blank? && !@membership.medical_certificate.attached?
-          # Nouvelle licence FFRS : certificat obligatoire même si toutes réponses NON
-          redirect_to edit_membership_path(@membership), alert: "Pour une nouvelle licence FFRS, un certificat médical est obligatoire."
-          return
-        end
-        # TODO: Générer attestation automatique si renouvellement
-      else
-        # Pas toutes les questions répondues
-        redirect_to edit_membership_path(@membership), alert: "Le questionnaire de santé est obligatoire pour la licence FFRS. Veuillez répondre à toutes les questions."
-        return
-      end
-    else
-      # STANDARD : Questionnaire optionnel, pas de certificat obligatoire
-      @membership.health_questionnaire_status = has_health_issue ? "medical_required" : "ok"
+    # Traiter Standard et FFRS de la même manière : questionnaire obligatoire, certificat médical jamais obligatoire
+    # Vérifier que toutes les questions sont répondues
+    unless all_answered
+      redirect_to edit_membership_path(@membership), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions."
+      return
     end
+
+    # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
+    @membership.health_questionnaire_status = has_health_issue ? "medical_required" : "ok"
 
     # Mettre à jour les réponses du questionnaire
     (1..9).each do |i|
@@ -656,49 +635,29 @@ class MembershipsController < ApplicationController
     # Vérifier les réponses au questionnaire de santé (9 questions)
     has_health_issue = false
     all_answered_no = true
+    all_answered = true
     (1..9).each do |i|
       answer = membership_params["health_question_#{i}"]
-      if answer == "yes"
+      if answer.blank?
+        all_answered = false
+        all_answered_no = false
+      elsif answer == "yes"
         has_health_issue = true
         all_answered_no = false
-      elsif answer != "no"
-        all_answered_no = false # Pas encore répondu
+      elsif answer == "no"
+        # Réponse NON, continue
       end
     end
 
-    # Déterminer le statut du questionnaire selon la catégorie
-    is_ffrs = category == "with_ffrs"
-
-    if is_ffrs
-      # FFRS : Questionnaire obligatoire
-      if has_health_issue
-        # Au moins une réponse OUI : certificat obligatoire
-        membership_params[:health_questionnaire_status] = "medical_required"
-        if membership_params[:medical_certificate].blank?
-          redirect_to new_membership_path(type: "adult"), alert: "Pour la licence FFRS, un certificat médical est obligatoire si vous avez répondu 'Oui' à au moins une question de santé."
-          return
-        end
-      elsif all_answered_no
-        # Toutes réponses NON : vérifier si nouvelle licence FFRS
-        membership_params[:health_questionnaire_status] = "ok"
-        # Vérifier si l'utilisateur a déjà eu une licence FFRS
-        previous_ffrs = current_user.memberships.personal.where(category: "with_ffrs").exists?
-        if !previous_ffrs && membership_params[:medical_certificate].blank?
-          # Nouvelle licence FFRS : certificat obligatoire même si toutes réponses NON
-          redirect_to new_membership_path(type: "adult"), alert: "Pour une nouvelle licence FFRS, un certificat médical est obligatoire."
-          return
-        end
-        # TODO: Générer attestation automatique si renouvellement
-      else
-        # Pas toutes les questions répondues
-        redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire pour la licence FFRS. Veuillez répondre à toutes les questions."
-        return
-      end
-    else
-      # STANDARD : Questionnaire obligatoire pour créer l'adhésion, mais pas de certificat médical requis
-      # Note: Le questionnaire est vérifié avant paiement et avant "déjà adhérent"
-      membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
+    # Traiter Standard et FFRS de la même manière : questionnaire obligatoire, certificat médical jamais obligatoire
+    # Vérifier que toutes les questions sont répondues
+    unless all_answered
+      redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions."
+      return
     end
+
+    # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
+    membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
 
     # Adhésion simple uniquement (plus d'option T-shirt)
     with_tshirt = false
@@ -1249,34 +1208,11 @@ class MembershipsController < ApplicationController
       return Membership.new.tap { |m| m.errors.add(:base, "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions avant de continuer.") }
     end
 
-    # Déterminer le statut du questionnaire selon la catégorie
-    is_ffrs = category == "with_ffrs"
-
-    if is_ffrs
-      # FFRS : Questionnaire obligatoire
-      if has_health_issue
-        # Au moins une réponse OUI : certificat obligatoire
-        if child_params[:medical_certificate].blank?
-          return Membership.new.tap { |m| m.errors.add(:medical_certificate, "est obligatoire pour la licence FFRS si vous avez répondu 'Oui' à au moins une question de santé") }
-        end
-      elsif all_answered_no
-        # Toutes réponses NON : vérifier si nouvelle licence FFRS
-        # Vérifier si l'utilisateur a déjà eu une licence FFRS pour un enfant
-        previous_ffrs = current_user.memberships.children.where(category: "with_ffrs").exists?
-        if !previous_ffrs && child_params[:medical_certificate].blank?
-          # Nouvelle licence FFRS : certificat obligatoire même si toutes réponses NON
-          return Membership.new.tap { |m| m.errors.add(:medical_certificate, "est obligatoire pour une nouvelle licence FFRS") }
-        end
-        # TODO: Générer attestation automatique si renouvellement
-      else
-        # Pas toutes les questions répondues
-        return Membership.new.tap { |m| m.errors.add(:base, "Le questionnaire de santé est obligatoire pour la licence FFRS. Veuillez répondre à toutes les questions.") }
-      end
-    end
-
+    # Traiter Standard et FFRS de la même manière : questionnaire obligatoire, certificat médical jamais obligatoire
+    # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
     # Préparer les attributs du questionnaire de santé
     health_attrs = {
-      health_questionnaire_status: is_ffrs ? (has_health_issue ? "medical_required" : "ok") : (has_health_issue ? "medical_required" : "ok")
+      health_questionnaire_status: has_health_issue ? "medical_required" : "ok"
     }
     (1..9).each do |i|
       answer = child_params["health_question_#{i}"]
@@ -1425,35 +1361,15 @@ class MembershipsController < ApplicationController
       end
     end
 
+    # Traiter Standard et FFRS de la même manière : questionnaire obligatoire, certificat médical jamais obligatoire
     # Vérifier que toutes les questions sont répondues
     unless all_answered
       redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions avant de continuer."
       return
     end
 
-    is_ffrs = category == "with_ffrs"
-
-    if is_ffrs
-      if has_health_issue
-        membership_params[:health_questionnaire_status] = "medical_required"
-        if membership_params[:medical_certificate].blank?
-          redirect_to new_membership_path(type: "adult"), alert: "Pour la licence FFRS, un certificat médical est obligatoire si vous avez répondu 'Oui' à au moins une question de santé."
-          return
-        end
-      elsif all_answered_no
-        membership_params[:health_questionnaire_status] = "ok"
-        previous_ffrs = current_user.memberships.personal.where(category: "with_ffrs").exists?
-        if !previous_ffrs && membership_params[:medical_certificate].blank?
-          redirect_to new_membership_path(type: "adult"), alert: "Pour une nouvelle licence FFRS, un certificat médical est obligatoire."
-          return
-        end
-      else
-        redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire pour la licence FFRS. Veuillez répondre à toutes les questions."
-        return
-      end
-    else
-      membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
-    end
+    # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
+    membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
 
     # Préparer les attributs du questionnaire de santé
     health_attrs = {

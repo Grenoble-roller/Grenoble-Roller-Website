@@ -144,8 +144,8 @@ class Event::InitiationPolicy < ApplicationPolicy
   end
 
   def create?
-    # Seuls les admins peuvent créer des initiations (pas les organisateurs)
-    user&.role&.level.to_i >= 60 # ADMIN+
+    # Les organisateurs (level 40) et plus peuvent créer des initiations
+    user&.role&.level.to_i >= 40 # ORGANIZER (40) ou plus
   end
 
   def new?

@@ -1,0 +1,150 @@
+<% 
+  breadcrumb_items = [
+    { label: "Participations", url: admin_panel_attendances_path },
+    { label: "Participation ##{@attendance.id}", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Participation #<%= @attendance.id %></h1>
+  <div class="d-flex gap-2">
+    <%= link_to "Modifier", edit_admin_panel_attendance_path(@attendance), class: "btn btn-outline-liquid-primary" %>
+    <%= link_to "Retour", admin_panel_attendances_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Informations principales -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations principales</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">ID</dt>
+          <dd class="col-sm-9">#<%= @attendance.id %></dd>
+
+          <dt class="col-sm-3">Utilisateur</dt>
+          <dd class="col-sm-9">
+            <%= link_to @attendance.user.to_s, admin_panel_user_path(@attendance.user), class: "text-decoration-none" %>
+          </dd>
+
+          <dt class="col-sm-3">Événement</dt>
+          <dd class="col-sm-9">
+            <%= link_to @attendance.event.title, admin_panel_event_path(@attendance.event), class: "text-decoration-none" %>
+          </dd>
+
+          <dt class="col-sm-3">Statut</dt>
+          <dd class="col-sm-9">
+            <% badge_class = case @attendance.status
+                 when "paid" then "bg-success"
+                 when "registered" then "bg-primary"
+                 when "pending" then "bg-warning"
+                 when "canceled" then "bg-secondary"
+                 when "present" then "bg-info"
+                 when "no_show" then "bg-danger"
+                 else "bg-secondary"
+               end %>
+            <span class="badge <%= badge_class %>"><%= @attendance.status %></span>
+          </dd>
+
+          <dt class="col-sm-3">Bénévole</dt>
+          <dd class="col-sm-9">
+            <% if @attendance.is_volunteer? %>
+              <span class="badge bg-success">Oui</span>
+            <% else %>
+              <span class="badge bg-secondary">Non</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Essai gratuit utilisé</dt>
+          <dd class="col-sm-9">
+            <% if @attendance.free_trial_used? %>
+              <span class="badge bg-warning">Oui</span>
+            <% else %>
+              <span class="badge bg-success">Non</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Besoin matériel</dt>
+          <dd class="col-sm-9">
+            <% if @attendance.needs_equipment? %>
+              <span class="badge bg-info">Oui</span>
+            <% else %>
+              <span class="badge bg-secondary">Non</span>
+            <% end %>
+          </dd>
+
+          <% if @attendance.needs_equipment? %>
+            <dt class="col-sm-3">Taille rollers</dt>
+            <dd class="col-sm-9">
+              <% if @attendance.roller_size.present? %>
+                <%= @attendance.roller_size %> (EU)
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            </dd>
+          <% end %>
+
+          <% if @attendance.equipment_note.present? %>
+            <dt class="col-sm-3">Note matériel</dt>
+            <dd class="col-sm-9"><%= @attendance.equipment_note %></dd>
+          <% end %>
+
+          <% if @attendance.child_membership.present? %>
+            <dt class="col-sm-3">Enfant</dt>
+            <dd class="col-sm-9">
+              <%= @attendance.child_membership.child_first_name %> <%= @attendance.child_membership.child_last_name %>
+            </dd>
+          <% end %>
+
+          <% if @attendance.payment.present? %>
+            <dt class="col-sm-3">Paiement</dt>
+            <dd class="col-sm-9">
+              <%= link_to "Paiement ##{@attendance.payment.id}", "#", class: "text-decoration-none" %>
+            </dd>
+          <% end %>
+
+          <% if @attendance.stripe_customer_id.present? %>
+            <dt class="col-sm-3">Stripe Customer ID</dt>
+            <dd class="col-sm-9"><%= @attendance.stripe_customer_id %></dd>
+          <% end %>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Informations système -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations système</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Créé le</dt>
+          <dd><%= @attendance.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+
+          <dt>Modifié le</dt>
+          <dd><%= @attendance.updated_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <%= link_to "Modifier", edit_admin_panel_attendance_path(@attendance), class: "btn btn-liquid-primary w-100 mb-2" %>
+        <%= button_to "Supprimer", admin_panel_attendance_path(@attendance), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cette participation ?" } %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -45,7 +45,9 @@ export default class extends Controller {
   // ==========================================
 
   validateField(event) {
-    const field = event.target
+    const field = event?.target
+    if (!field || !field.name) return
+    
     const fieldName = field.name
     
     let isValid = true
@@ -53,16 +55,20 @@ export default class extends Controller {
 
     switch(fieldName) {
       case "product[name]":
+        if (!this.hasNameFieldTarget) return
         isValid = this.validateName(field.value)
         if (!isValid) {
           errorMessage = "Le nom doit contenir au moins 3 caractères et ne peut pas dépasser 140 caractères"
         }
         this.updateFieldState(this.nameFieldTarget, isValid, errorMessage, this.nameFeedbackTarget)
-        this.updateCharCount(field.value, this.nameCharCountTarget, 140)
+        if (this.hasNameCharCountTarget) {
+          this.updateCharCount(field.value, this.nameCharCountTarget, 140)
+        }
         break
 
       case "product[slug]":
-        isValid = this.validateSlug(field.value)
+        if (!this.hasSlugFieldTarget) return
+        isValid = this.validateSlugValue(field.value)
         if (!isValid) {
           errorMessage = "Le slug doit contenir uniquement des lettres minuscules, chiffres et tirets"
         }
@@ -70,6 +76,7 @@ export default class extends Controller {
         break
 
       case "product[category_id]":
+        if (!this.hasCategoryFieldTarget) return
         isValid = field.value !== ""
         if (!isValid) {
           errorMessage = "Veuillez sélectionner une catégorie"
@@ -78,6 +85,7 @@ export default class extends Controller {
         break
 
       case "product[price_cents]":
+        if (!this.hasPriceFieldTarget) return
         isValid = this.validatePrice(field.value)
         if (!isValid) {
           errorMessage = "Le prix doit être supérieur à 0"
@@ -93,7 +101,7 @@ export default class extends Controller {
     return value.length >= 3 && value.length <= 140
   }
 
-  validateSlug(value) {
+  validateSlugValue(value) {
     if (value === "") return true // Slug optionnel, généré auto si vide
     return /^[a-z0-9-]+$/.test(value)
   }
@@ -104,21 +112,23 @@ export default class extends Controller {
   }
 
   validateAll() {
-    if (this.hasNameFieldTarget) {
+    if (this.hasNameFieldTarget && this.nameFieldTarget) {
       this.validateField({ target: this.nameFieldTarget })
     }
-    if (this.hasSlugFieldTarget) {
+    if (this.hasSlugFieldTarget && this.slugFieldTarget) {
       this.validateField({ target: this.slugFieldTarget })
     }
-    if (this.hasCategoryFieldTarget) {
+    if (this.hasCategoryFieldTarget && this.categoryFieldTarget) {
       this.validateField({ target: this.categoryFieldTarget })
     }
-    if (this.hasPriceFieldTarget) {
+    if (this.hasPriceFieldTarget && this.priceFieldTarget) {
       this.validateField({ target: this.priceFieldTarget })
     }
   }
 
   updateFieldState(field, isValid, errorMessage, feedbackTarget) {
+    if (!field) return
+    
     if (isValid) {
       field.classList.remove("is-invalid")
       field.classList.add("is-valid")
@@ -268,14 +278,17 @@ export default class extends Controller {
         body: formData,
         headers: {
           "X-CSRF-Token": document.querySelector('[name="csrf-token"]').content,
-          "Accept": "text/vnd.turbo-stream.html"
+          "Accept": "application/json"
         }
       })
 
       if (response.ok) {
+        const data = await response.json()
         this.lastSaveTime = new Date()
         this.showStatusBar("Enregistré automatiquement", true)
       } else {
+        const errorData = await response.json().catch(() => ({ errors: ["Erreur lors de l'enregistrement"] }))
+        console.error("Auto-save error:", errorData)
         this.showStatusBar("Erreur lors de l'enregistrement", false)
       }
     } catch (error) {
@@ -318,11 +331,12 @@ export default class extends Controller {
   }
 
   async previewVariants(event) {
-    const checkedOptions = Array.from(
-      document.querySelectorAll('input[name="option_ids[]"]:checked')
+    // Collecter les option_value_ids sélectionnés
+    const checkedOptionValues = Array.from(
+      document.querySelectorAll('input[name="option_value_ids[]"]:checked')
     ).map(el => el.value)
 
-    if (checkedOptions.length === 0) {
+    if (checkedOptionValues.length === 0) {
       if (this.hasPreviewBoxTarget) {
         this.previewBoxTarget.style.display = "none"
       }
@@ -341,7 +355,24 @@ export default class extends Controller {
             "Content-Type": "application/json",
             "X-CSRF-Token": document.querySelector('[name="csrf-token"]').content
           },
-          body: JSON.stringify({ option_ids: checkedOptions })
+          body: JSON.stringify({ option_value_ids: checkedOptionValues })
+        })
+
+        const data = await response.json()
+        this.updatePreview(data)
+      } catch (error) {
+        console.error("Preview variants error:", error)
+      }
+    } else {
+      // Utiliser l'URL configurée
+      try {
+        const response = await fetch(this.previewVariantsUrlValue, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ option_value_ids: checkedOptionValues })
         })
 
         const data = await response.json()
@@ -400,12 +431,14 @@ export default class extends Controller {
   // ==========================================
 
   validateSlug(event) {
-    const field = event.target
-    const value = field.value.trim()
+    const field = event?.target
+    if (!field) return
+    
+    const value = field.value?.trim() || ""
 
     // Si vide, générer automatiquement depuis le nom
-    if (value === "" && this.hasNameFieldTarget) {
-      const name = this.nameFieldTarget.value
+    if (value === "" && this.hasNameFieldTarget && this.nameFieldTarget) {
+      const name = this.nameFieldTarget.value || ""
       if (name) {
         const autoSlug = name
           .toLowerCase()

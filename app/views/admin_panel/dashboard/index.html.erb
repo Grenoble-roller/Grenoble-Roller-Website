@@ -5,8 +5,115 @@
     <p class="text-muted">Bienvenue, <%= current_user.first_name || current_user.email %></p>
   </div>
 
-  <!-- STATISTIQUES (4 cartes Liquid Glass) -->
+  <!-- MODE MAINTENANCE (Admin uniquement - en haut pour visibilité) -->
+  <% if @can_toggle_maintenance %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card card-liquid rounded-liquid shadow-liquid <%= @maintenance_enabled ? 'border-danger' : 'border-warning' %>">
+          <div class="card-body py-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <span class="fs-5"><%= @maintenance_enabled ? '🔒' : '⚙️' %></span>
+                <div>
+                  <strong class="<%= @maintenance_enabled ? 'text-danger' : 'text-warning' %>">
+                    Mode Maintenance <%= @maintenance_enabled ? 'ACTIF' : 'INACTIF' %>
+                  </strong>
+                  <small class="text-muted d-block">
+                    <%= @maintenance_enabled ? 'Les visiteurs non connectés voient la page de maintenance' : 'Tous les utilisateurs peuvent accéder au site' %>
+                  </small>
+                </div>
+              </div>
+              <% if @maintenance_enabled %>
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmDisableMaintenanceModal">
+                  Désactiver ✓
+                </button>
+              <% else %>
+                <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#confirmEnableMaintenanceModal">
+                  Activer 🔒
+                </button>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmation pour activer le mode maintenance -->
+    <div class="modal fade" id="confirmEnableMaintenanceModal" tabindex="-1" aria-labelledby="confirmEnableMaintenanceModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h2 class="modal-title h5" id="confirmEnableMaintenanceModalLabel">
+              <i class="bi bi-exclamation-triangle me-2"></i>Activer le mode maintenance
+            </h2>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning mb-3">
+              <strong>⚠️ Attention :</strong> Cette action va bloquer l'accès au site pour tous les utilisateurs non administrateurs.
+            </div>
+            <p class="mb-2">
+              En activant le mode maintenance :
+            </p>
+            <ul class="mb-0">
+              <li>Tous les visiteurs non connectés verront la page de maintenance</li>
+              <li>Seuls les administrateurs (ADMIN/SUPERADMIN, level >= 60) pourront accéder au site</li>
+              <li>Les utilisateurs non administrateurs seront bloqués</li>
+            </ul>
+            <p class="mt-3 mb-0 text-muted">
+              <strong>Êtes-vous sûr de vouloir activer le mode maintenance ?</strong>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+            <%= form_with url: toggle_admin_panel_maintenance_path, method: :patch, local: true, class: "d-inline" do |f| %>
+              <%= f.submit "Oui, activer le mode maintenance", class: "btn btn-danger" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmation pour désactiver le mode maintenance -->
+    <div class="modal fade" id="confirmDisableMaintenanceModal" tabindex="-1" aria-labelledby="confirmDisableMaintenanceModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h2 class="modal-title h5" id="confirmDisableMaintenanceModalLabel">
+              <i class="bi bi-check-circle me-2"></i>Désactiver le mode maintenance
+            </h2>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-info mb-3">
+              <strong>ℹ️ Information :</strong> Cette action va rétablir l'accès normal au site pour tous les utilisateurs.
+            </div>
+            <p class="mb-2">
+              En désactivant le mode maintenance :
+            </p>
+            <ul class="mb-0">
+              <li>Tous les utilisateurs pourront à nouveau accéder au site</li>
+              <li>La page de maintenance ne sera plus affichée</li>
+              <li>Le site fonctionnera normalement</li>
+            </ul>
+            <p class="mt-3 mb-0 text-muted">
+              <strong>Êtes-vous sûr de vouloir désactiver le mode maintenance ?</strong>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+            <%= form_with url: toggle_admin_panel_maintenance_path, method: :patch, local: true, class: "d-inline" do |f| %>
+              <%= f.submit "Oui, désactiver le mode maintenance", class: "btn btn-success" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- KPIs PRINCIPAUX (8 cartes Liquid Glass) -->
   <div class="row g-3 mb-4">
+    <!-- Utilisateurs -->
     <div class="col-md-6 col-lg-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
@@ -16,68 +123,223 @@
       </div>
     </div>
 
+    <!-- Produits -->
     <div class="col-md-6 col-lg-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
           <h5 class="card-title text-muted">Produits</h5>
           <h3 class="mb-0"><%= @stats[:total_products] %></h3>
+          <small class="text-muted"><%= @stats[:active_products] %> actifs</small>
         </div>
       </div>
     </div>
 
+    <!-- Commandes -->
     <div class="col-md-6 col-lg-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
           <h5 class="card-title text-muted">Commandes</h5>
           <h3 class="mb-0"><%= @stats[:total_orders] %></h3>
+          <small class="text-muted"><%= @stats[:pending_orders] %> en attente</small>
         </div>
       </div>
     </div>
 
+    <!-- CA Total -->
     <div class="col-md-6 col-lg-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted">En attente</h5>
-          <h3 class="mb-0"><%= @stats[:pending_orders] %></h3>
+          <h5 class="card-title text-muted">CA Total</h5>
+          <h3 class="mb-0"><%= number_to_currency(@stats[:total_revenue], unit: '€', precision: 0) %></h3>
+          <small class="text-muted">Commandes payées/expédiées</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Faible -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid border-warning">
+        <div class="card-body">
+          <h5 class="card-title text-warning">⚠️ Stock Faible</h5>
+          <h3 class="mb-0 text-warning"><%= @low_stock_count %></h3>
+          <small class="text-muted">&lt; 10 unités</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rupture Stock -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid border-danger">
+        <div class="card-body">
+          <h5 class="card-title text-danger">🔴 Rupture</h5>
+          <h3 class="mb-0 text-danger"><%= @out_of_stock_count %></h3>
+          <small class="text-muted">0 unité disponible</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Initiations à venir -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-body">
+          <h5 class="card-title text-muted">Initiations</h5>
+          <h3 class="mb-0"><%= @upcoming_initiations.count %></h3>
+          <small class="text-muted">À venir</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commandes Payées -->
+    <div class="col-md-6 col-lg-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid border-success">
+        <div class="card-body">
+          <h5 class="card-title text-success">✅ Payées</h5>
+          <h3 class="mb-0 text-success"><%= @stats[:paid_orders] %></h3>
+          <small class="text-muted">En préparation</small>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- COMMANDES RÉCENTES -->
-  <div class="card card-liquid rounded-liquid shadow-liquid">
-    <div class="card-header">
-      <h5 class="mb-0">Commandes Récentes</h5>
-    </div>
-    <div class="card-body">
-      <% if @recent_orders.any? %>
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Client</th>
-                <th>Total</th>
-                <th>Statut</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @recent_orders.each do |order| %>
-                <tr>
-                  <td data-label="ID">#<%= order.id %></td>
-                  <td data-label="Client"><%= order.user.email %></td>
-                  <td data-label="Total"><%= number_to_currency(order.total_cents / 100.0, unit: '€') %></td>
-                  <td data-label="Statut"><span class="badge badge-liquid-secondary"><%= order.status %></span></td>
-                  <td data-label="Date"><%= order.created_at.strftime('%d/%m/%Y %H:%M') %></td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+  <!-- GRAPHIQUE VENTES (7 derniers jours) -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header">
+          <h5 class="mb-0">Ventes (7 derniers jours)</h5>
         </div>
-      <% else %>
-        <p class="text-muted text-center py-4">Aucune commande récente</p>
-      <% end %>
+        <div class="card-body">
+          <div class="chart-container" style="height: 200px;">
+            <% if @sales_by_day.any? && @sales_by_day.values.max > 0 %>
+              <div class="d-flex align-items-end justify-content-between" style="height: 100%; gap: 4px;">
+                <% @sales_by_day.each do |date, amount| %>
+                  <div class="flex-fill d-flex flex-column align-items-center" style="max-width: calc(100% / <%= @sales_by_day.count %>);">
+                    <div class="bg-primary rounded-top w-100" style="height: <%= (amount / @sales_by_day.values.max * 100) %>%; min-height: 4px; transition: height 0.3s ease;"></div>
+                    <small class="text-muted mt-2 text-center" style="font-size: 0.7rem;"><%= date.strftime('%d/%m') %></small>
+                    <small class="text-muted text-center" style="font-size: 0.65rem;"><%= number_to_currency(amount, unit: '€', format: '%n', precision: 0) %></small>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-muted text-center py-4">Aucune vente sur les 7 derniers jours</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEUX COLONNES : Commandes Récentes + Initiations à Venir -->
+  <div class="row g-4">
+    <!-- Commandes Récentes -->
+    <div class="col-lg-8">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Commandes Récentes</h5>
+          <%= link_to 'Voir toutes', admin_panel_orders_path, class: 'btn btn-sm btn-outline-primary' %>
+        </div>
+        <div class="card-body">
+          <% if @recent_orders.any? %>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @recent_orders.each do |order| %>
+                    <tr>
+                      <td data-label="ID">#<%= order.id %></td>
+                      <td data-label="Client"><%= order.user.email %></td>
+                      <td data-label="Total"><%= number_to_currency(order.total_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></td>
+                      <td data-label="Statut">
+                        <span class="badge badge-liquid-<%= case order.status
+                          when 'paid' then 'success'
+                          when 'pending' then 'warning'
+                          when 'shipped' then 'info'
+                          when 'cancelled' then 'danger'
+                          else 'secondary'
+                        end %>">
+                          <%= order.status %>
+                        </span>
+                      </td>
+                      <td data-label="Date"><%= order.created_at.strftime('%d/%m/%Y %H:%M') %></td>
+                      <td data-label="Actions">
+                        <%= link_to 'Voir', admin_panel_order_path(order), class: 'btn btn-sm btn-outline-primary' %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="text-muted text-center py-4">Aucune commande récente</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Initiations à Venir -->
+    <div class="col-lg-4">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Initiations à Venir</h5>
+          <%= link_to 'Voir toutes', admin_panel_initiations_path, class: 'btn btn-sm btn-outline-primary' %>
+        </div>
+        <div class="card-body">
+          <% if @upcoming_initiations.any? %>
+            <div class="list-group list-group-flush">
+              <% @upcoming_initiations.each do |initiation| %>
+                <div class="list-group-item px-0">
+                  <h6 class="mb-1"><%= initiation.title %></h6>
+                  <small class="text-muted">
+                    <%= l(initiation.start_at, format: :short) %>
+                  </small>
+                  <div class="mt-2">
+                    <span class="badge bg-info">
+                      <%= initiation.participants_count %> / <%= initiation.max_participants %>
+                    </span>
+                    <% if initiation.volunteers_count > 0 %>
+                      <span class="badge bg-success">
+                        <%= initiation.volunteers_count %> bénévoles
+                      </span>
+                    <% end %>
+                  </div>
+                  <%= link_to 'Voir', admin_panel_initiation_path(initiation), class: 'btn btn-sm btn-outline-primary mt-2' %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p class="text-muted text-center py-4">Aucune initiation à venir</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS RAPIDES -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header">
+          <h5 class="mb-0">Actions Rapides</h5>
+        </div>
+        <div class="card-body">
+          <div class="btn-group flex-wrap" role="group">
+            <%= link_to '+ Produit', new_admin_panel_product_path, class: 'btn btn-primary' %>
+            <%= link_to 'Inventaire', admin_panel_inventory_path, class: 'btn btn-outline-primary' %>
+            <%= link_to 'Commandes', admin_panel_orders_path, class: 'btn btn-outline-primary' %>
+            <%= link_to 'Initiations', admin_panel_initiations_path, class: 'btn btn-outline-primary' %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+

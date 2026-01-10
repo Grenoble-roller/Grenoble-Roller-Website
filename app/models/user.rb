@@ -28,6 +28,12 @@ class User < ApplicationRecord
   before_validation :set_default_role, on: :create
   after_create :send_welcome_email_and_confirmation
 
+  # Validation pour empêcher l'assignation de rôles supérieurs
+  # Cette validation est complémentaire aux vérifications dans les controllers
+  # Elle utilise un contexte pour recevoir l'utilisateur qui fait la modification
+  # Ne s'applique que si assigner_user est défini (dans les controllers)
+  validate :role_level_not_higher_than_assigner, if: -> { role_id_changed? && role_id.present? && assigner_user.present? }
+
   # Bloquer l'authentification si l'email n'est pas confirmé
   # En développement/test, on permet quand même pour faciliter les tests
   def active_for_authentication?
@@ -165,11 +171,29 @@ class User < ApplicationRecord
     age < 16
   end
 
+  # Attribut virtuel pour stocker l'utilisateur qui fait la modification (utilisé pour la validation)
+  attr_accessor :assigner_user
+
   private
 
   def set_default_role
     # Priorité au code stable, fallback sur un libellé courant
     self.role ||= Role.find_by(code: "USER") || Role.find_by(name: "Utilisateur") || Role.first
+  end
+
+  def role_level_not_higher_than_assigner
+    return unless assigner_user
+    return unless assigner_user.role&.level
+    return unless role&.level
+
+    # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
+    assigner_level = assigner_user.role.level.to_i
+    new_role_level = role.level.to_i
+
+    # Si le nouveau rôle est supérieur au rôle de l'assigneur, c'est une erreur
+    if new_role_level > assigner_level
+      errors.add(:role_id, "Vous ne pouvez pas assigner un rôle supérieur au vôtre")
+    end
   end
 
   def normalize_phone

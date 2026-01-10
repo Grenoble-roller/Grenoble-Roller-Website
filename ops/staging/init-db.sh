@@ -87,22 +87,46 @@ fi
 log_info "ℹ️  Solid Queue utilise PostgreSQL (migrations incluses dans db:migrate)"
 
 # 3. Seed de la base de données
-log "🌱 Exécution du seed..."
-log_warning "⚠️  Cette opération va peupler la base de données"
+# ⚠️ IMPORTANT : Utiliser seeds_staging.rb qui NE SUPPRIME PAS les données existantes
+# seeds.rb contient des destroy_all qui supprimeraient toutes les données !
+log "🌱 Exécution du seed staging..."
+log_warning "⚠️  Cette opération va peupler la base de données (SANS supprimer les données existantes)"
+log_info "   Utilisation de db/seeds_staging.rb (find_or_create_by! uniquement)"
+
+# Vérifier que seeds_staging.rb existe
+if [ ! -f "$REPO_DIR/db/seeds_staging.rb" ]; then
+    log_error "❌ Fichier db/seeds_staging.rb introuvable"
+    log_error "   Ce fichier est requis pour staging (sans destroy_all)"
+    exit 1
+fi
+
 read -p "Continuer ? (o/N) : " choice || choice="N"
 if [[ ! "$choice" =~ ^[OoYy]$ ]]; then
     log_info "Seed annulé"
     exit 0
 fi
 
-if docker exec "$CONTAINER_NAME" bin/rails db:seed 2>&1 | tee -a /tmp/init-db.log; then
-    log_success "✅ Seed terminé avec succès"
+# Copier seeds_staging.rb dans le conteneur si nécessaire
+log "📋 Copie de seeds_staging.rb dans le conteneur..."
+if docker cp "$REPO_DIR/db/seeds_staging.rb" "${CONTAINER_NAME}:/rails/db/seeds_staging.rb"; then
+    log_success "✅ Fichier copié dans le conteneur"
+else
+    log_error "❌ Échec de la copie du fichier"
+    exit 1
+fi
+
+# Exécuter seeds_staging.rb via runner (car Rails ne charge pas seeds_staging.rb par défaut)
+if docker exec "$CONTAINER_NAME" bin/rails runner "load Rails.root.join('db', 'seeds_staging.rb')" 2>&1 | tee -a /tmp/init-db.log; then
+    log_success "✅ Seed staging terminé avec succès"
     
     # Vérifier le résultat
+    ROLE_COUNT=$(docker exec "$CONTAINER_NAME" bin/rails runner "puts Role.count" 2>/dev/null | tr -d '\n\r' || echo "0")
     USER_COUNT=$(docker exec "$CONTAINER_NAME" bin/rails runner "puts User.count" 2>/dev/null | tr -d '\n\r' || echo "0")
-    log_info "📊 ${USER_COUNT} utilisateur(s) créé(s)"
+    log_info "📊 Résultat:"
+    log_info "   - Rôles: ${ROLE_COUNT}"
+    log_info "   - Utilisateurs: ${USER_COUNT}"
 else
-    log_error "❌ Échec du seed"
+    log_error "❌ Échec du seed staging"
     log_error "Consultez les logs ci-dessus pour plus de détails"
     exit 1
 fi

@@ -1,0 +1,145 @@
+<% 
+  breadcrumb_items = [
+    { label: "Inventaire", url: admin_panel_inventory_path },
+    { label: "Mouvements", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h3 mb-2">Mouvements d'inventaire</h1>
+    <p class="text-muted mb-0">Historique complet des mouvements de stock</p>
+  </div>
+  <%= link_to admin_panel_inventory_path, 
+      class: "btn btn-outline-secondary" do %>
+    <i class="bi bi-arrow-left me-1" aria-hidden="true"></i>
+    Retour au dashboard
+  <% end %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_inventory_transfers_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :reason_cont, "Raison", class: "form-label" %>
+        <%= f.search_field :reason_cont, 
+            class: "form-control form-control-liquid", 
+            placeholder: "Rechercher par raison..." %>
+      </div>
+      <div class="col-md-4">
+        <%= f.label :inventory_product_variant_product_name_cont, "Produit", class: "form-label" %>
+        <%= f.search_field :inventory_product_variant_product_name_cont, 
+            class: "form-control form-control-liquid", 
+            placeholder: "Rechercher par produit..." %>
+      </div>
+      <div class="col-md-4 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_inventory_transfers_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Tableau des mouvements -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-header card-liquid-primary d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">
+      <i class="bi bi-clock-history me-2" aria-hidden="true"></i>
+      Historique des mouvements
+      <% if @movements.any? %>
+        <span class="badge badge-liquid-info ms-2"><%= @movements.count %></span>
+      <% end %>
+    </h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Produit</th>
+            <th>SKU</th>
+            <th>Raison</th>
+            <th>Quantité</th>
+            <th>Stock avant</th>
+            <th>Par</th>
+            <th>Référence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @movements.any? %>
+            <% @movements.each do |movement| %>
+              <tr>
+                <td>
+                  <span class="text-muted small">
+                    <%= l(movement.created_at, format: :short) rescue movement.created_at.strftime('%d/%m/%Y %H:%M') %>
+                  </span>
+                </td>
+                <td>
+                  <strong><%= movement.inventory.product_variant.product.name %></strong>
+                </td>
+                <td>
+                  <code class="small"><%= movement.inventory.product_variant.sku %></code>
+                </td>
+                <td>
+                  <span class="badge badge-liquid-info">
+                    <%= movement.reason&.humanize || movement.reason %>
+                  </span>
+                </td>
+                <td>
+                  <% if movement.quantity > 0 %>
+                    <span class="text-success">
+                      <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
+                      +<%= number_with_precision(movement.quantity, precision: 0) %>
+                    </span>
+                  <% else %>
+                    <span class="text-danger">
+                      <i class="bi bi-dash-circle me-1" aria-hidden="true"></i>
+                      <%= number_with_precision(movement.quantity, precision: 0) %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <span class="text-muted"><%= movement.before_qty %></span>
+                  <small class="text-muted d-block">
+                    → <%= movement.before_qty + movement.quantity %>
+                  </small>
+                </td>
+                <td>
+                  <small class="text-muted">
+                    <%= movement.user&.email || 'Système' %>
+                  </small>
+                </td>
+                <td>
+                  <% if movement.reference.present? %>
+                    <code class="small"><%= movement.reference %></code>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="9" class="text-center text-muted py-5">
+                <i class="bi bi-inbox me-2" aria-hidden="true" style="font-size: 2rem;"></i>
+                <p class="mb-0 mt-2">Aucun mouvement trouvé</p>
+                <small class="text-muted">Les mouvements d'inventaire apparaîtront ici</small>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% if @pagy %>
+    <div class="card-footer bg-transparent border-top">
+      <div class="d-flex justify-content-center">
+        <%== pagy_bootstrap_nav(@pagy) if respond_to?(:pagy_bootstrap_nav) %>
+      </div>
+    </div>
+  <% end %>
+</div>

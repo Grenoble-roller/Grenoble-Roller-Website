@@ -1,6 +1,17 @@
 module ApplicationHelper
   include ActionView::Helpers::TextHelper
-  include Pagy::Frontend
+  # Pagy 43 : Utilise series_nav avec :bootstrap comme style
+  def pagy_bootstrap_nav(pagy, **options)
+    pagy.series_nav(:bootstrap, **options)
+  end
+
+  def pagy_nav(pagy, **options)
+    pagy.series_nav(**options)
+  end
+
+  def pagy_info(pagy, **options)
+    pagy.info_tag(**options)
+  end
 
   # Alias de la méthode originale pluralize avant surcharge
   alias_method :original_pluralize, :pluralize
@@ -11,6 +22,7 @@ module ApplicationHelper
   end
 
   def format_price(amount_cents)
+    return "Prix non disponible" if amount_cents.nil?
     amount = amount_cents / 100.0
     # Formater sans décimales si c'est un nombre entier
     formatted = amount == amount.to_i ? amount.to_i.to_s : sprintf("%.2f", amount)
@@ -38,6 +50,20 @@ module ApplicationHelper
   end
 
   # Helper supprimé : plus d'image par défaut, l'image est obligatoire
+
+  # Sécurise une URL externe en validant qu'elle commence par http:// ou https://
+  # Retourne nil si l'URL n'est pas valide, ce qui empêche les attaques XSS
+  def safe_external_url(url)
+    return nil if url.blank?
+
+    url = url.to_s.strip
+    # Valider que l'URL commence par http:// ou https://
+    if url.match?(/\Ahttps?:\/\//i)
+      url
+    else
+      nil
+    end
+  end
 
   # Surcharge de pluralize pour gérer correctement le français
   # Gère les expressions composées comme "place disponible" → "places disponibles"

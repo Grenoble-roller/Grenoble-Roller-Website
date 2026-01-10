@@ -1,18 +1,21 @@
 FactoryBot.define do
   factory :user do
+    sequence(:first_name) { |n| "User#{n}" }
+    sequence(:last_name) { |n| "Tester#{n}" }
+    sequence(:email) { |n| "user#{n}_#{Time.now.to_i}@example.com" } # Email unique avec timestamp
+    password { 'password12345' } # Minimum 12 caractères requis
+    phone { '0612345678' }
+    skill_level { 'intermediate' }
+    confirmed_at { Time.current } # Par défaut, utilisateur confirmé
+
+    # ✅ Utiliser association pour éviter find_or_create_by! (état partagé)
+    # Utiliser find_or_create_by! uniquement pour les rôles standards avec codes fixes
     after(:build) do |user|
       user.role ||= Role.find_or_create_by!(code: 'USER') do |r|
         r.name = 'Utilisateur'
         r.level = 10
       end
     end
-    sequence(:first_name) { |n| "User#{n}" }
-    sequence(:last_name) { |n| "Tester#{n}" }
-    sequence(:email) { |n| "user#{n}@example.com" }
-    password { 'password12345' } # Minimum 12 caractères requis
-    phone { '0612345678' }
-    skill_level { 'intermediate' }
-    confirmed_at { Time.current } # Par défaut, utilisateur confirmé
 
     trait :initiation do
       after(:build) do |user|

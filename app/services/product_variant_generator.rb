@@ -75,6 +75,96 @@ class ProductVariantGenerator
     }
   end
 
+  # NOUVEAU : Preview avec valeurs individuelles sélectionnées
+  def self.preview_from_values(product_id, option_value_ids)
+    return { count: 0, preview_skus: [], estimated_time: 0, warning: nil } if option_value_ids.blank?
+
+    # Convertir en tableau si nécessaire (peut venir comme string depuis params)
+    option_value_ids = Array(option_value_ids).map(&:to_i).reject(&:zero?)
+    return { count: 0, preview_skus: [], estimated_time: 0, warning: nil } if option_value_ids.empty?
+
+    option_values = OptionValue.where(id: option_value_ids).includes(:option_type).order(:value)
+    return { count: 0, preview_skus: [], estimated_time: 0, warning: nil } if option_values.empty?
+
+    # Grouper par option_type
+    grouped_by_type = option_values.group_by(&:option_type)
+    option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
+
+    return { count: 0, preview_skus: [], estimated_time: 0, warning: nil } if option_values_array.empty?
+
+    # Vérifier qu'on a au moins 2 groupes pour faire un produit cartésien
+    if option_values_array.length < 2
+      # Si un seul type d'option, chaque valeur devient une variante
+      combinations = option_values_array.first.map { |ov| [ ov ] }
+    else
+      # Produit cartésien de tous les groupes
+      # Exemple: [BLACK, VIOLET].product([L, M, S]) = 6 combinaisons
+      combinations = option_values_array.first.product(*option_values_array[1..-1])
+    end
+
+    count = combinations&.length || 0
+
+    {
+      count: count,
+      preview_skus: combinations&.first(5)&.map { |combo| generate_sku_template(combo) } || [],
+      estimated_time: count * 5,  # secondes
+      warning: count > 20 ? "Beaucoup de variantes ! Vérifiez bien." : nil
+    }
+  end
+
+  # NOUVEAU : Générer combinaisons avec valeurs individuelles sélectionnées
+  def self.generate_combinations_from_values(product, option_value_ids)
+    return 0 if option_value_ids.blank? || product.nil?
+
+    option_values = OptionValue.where(id: option_value_ids).includes(:option_type).order(:value)
+    return 0 if option_values.empty?
+
+    # Grouper par option_type
+    grouped_by_type = option_values.group_by(&:option_type)
+    option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
+
+    return 0 if option_values_array.empty?
+
+    # Vérifier qu'on a au moins 2 groupes pour faire un produit cartésien
+    if option_values_array.length < 2
+      # Si un seul type d'option, chaque valeur devient une variante
+      combinations = option_values_array.first.map { |ov| [ ov ] }
+    else
+      # Produit cartésien de tous les groupes
+      combinations = option_values_array.first.product(*option_values_array[1..-1])
+    end
+
+    return 0 if combinations.nil? || combinations.empty?
+
+    ActiveRecord::Base.transaction do
+      combinations.each do |combo|
+        # Générer SKU sûr + unique
+        sku = generate_sku_safely(product, combo)
+
+        variant = product.product_variants.build(
+          sku: sku,
+          price_cents: product.price_cents,
+          currency: product.currency || "EUR",
+          stock_qty: 0,
+          is_active: false  # Créer inactif par défaut, nécessite une image pour activer
+        )
+        # Ignorer la validation d'image lors de la génération automatique
+        variant.instance_variable_set(:@skip_image_validation, true)
+        variant.save!(validate: false)
+
+        # Lier les options
+        combo.each do |option_value|
+          VariantOptionValue.create!(
+            variant: variant,
+            option_value: option_value
+          )
+        end
+      end
+    end
+
+    combinations.length
+  end
+
   # NOUVEAU : Générer combinaisons (avec transaction)
   def self.generate_combinations(product, option_ids)
     return 0 if option_ids.blank? || product.nil?
@@ -93,13 +183,16 @@ class ProductVariantGenerator
         # Générer SKU sûr + unique
         sku = generate_sku_safely(product, combo)
 
-        variant = product.product_variants.create!(
+        variant = product.product_variants.build(
           sku: sku,
           price_cents: product.price_cents,  # NOUVEAU : Héritage prix
           currency: product.currency || "EUR",
           stock_qty: 0,
-          is_active: product.is_active
+          is_active: false  # Créer inactif par défaut, nécessite une image pour activer
         )
+        # Ignorer la validation d'image lors de la génération automatique
+        variant.instance_variable_set(:@skip_image_validation, true)
+        variant.save!(validate: false)
 
         # Lier les options
         combo.each do |option_value|
@@ -114,7 +207,80 @@ class ProductVariantGenerator
     combinations.length
   end
 
-  # NOUVEAU : Générer options manquantes (en édition)
+  # NOUVEAU : Générer options manquantes (en édition) avec option_value_ids
+  def self.generate_missing_combinations_from_values(product, option_value_ids)
+    return 0 if option_value_ids.blank? || product.nil?
+
+    # Convertir en tableau si nécessaire
+    option_value_ids = Array(option_value_ids).map(&:to_i).reject(&:zero?)
+    return 0 if option_value_ids.empty?
+
+    option_values = OptionValue.where(id: option_value_ids).includes(:option_type).order(:value)
+    return 0 if option_values.empty?
+
+    # Grouper par option_type
+    grouped_by_type = option_values.group_by(&:option_type)
+    option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
+
+    return 0 if option_values_array.empty?
+
+    # Générer toutes les combinaisons possibles
+    if option_values_array.length < 2
+      combinations = option_values_array.first.map { |ov| [ ov ] }
+    else
+      combinations = option_values_array.first.product(*option_values_array[1..-1])
+    end
+
+    return 0 if combinations.nil? || combinations.empty?
+
+    # Récupérer les combinaisons existantes pour éviter les doublons
+    # Pour chaque variante existante, récupérer ses option_value_ids triés
+    existing_combinations = product.product_variants
+      .includes(:variant_option_values)
+      .map do |variant|
+        variant.variant_option_values.map(&:option_value_id).sort
+      end
+
+    # Filtrer les combinaisons qui n'existent pas encore
+    new_combinations = combinations.reject do |combo|
+      combo_ids = combo.map(&:id).sort
+      existing_combinations.include?(combo_ids)
+    end
+
+    # Log pour déboguer
+    Rails.logger.info("ProductVariantGenerator: #{combinations.length} combinaisons possibles, #{existing_combinations.length} existantes, #{new_combinations.length} nouvelles")
+
+    return 0 if new_combinations.empty?
+
+    # Créer les nouvelles variantes
+    ActiveRecord::Base.transaction do
+      new_combinations.each do |combo|
+        sku = generate_sku_safely(product, combo)
+
+        variant = product.product_variants.build(
+          sku: sku,
+          price_cents: product.price_cents,
+          currency: product.currency || "EUR",
+          stock_qty: 0,
+          is_active: false  # Créer inactif par défaut, nécessite une image pour activer
+        )
+        # Ignorer la validation d'image lors de la génération automatique
+        variant.instance_variable_set(:@skip_image_validation, true)
+        variant.save!(validate: false)
+
+        combo.each do |option_value|
+          VariantOptionValue.create!(
+            variant: variant,
+            option_value: option_value
+          )
+        end
+      end
+    end
+
+    new_combinations.length
+  end
+
+  # NOUVEAU : Générer options manquantes (en édition) avec option_ids (ancien système)
   def self.generate_missing_combinations(product, option_ids)
     return 0 if option_ids.blank? || product.nil?
 
@@ -140,13 +306,16 @@ class ProductVariantGenerator
       combinations.each do |combo|
         sku = generate_sku_safely(product, combo)
 
-        variant = product.product_variants.create!(
+        variant = product.product_variants.build(
           sku: sku,
           price_cents: product.price_cents,
           currency: product.currency || "EUR",
           stock_qty: 0,
-          is_active: product.is_active
+          is_active: false  # Créer inactif par défaut, nécessite une image pour activer
         )
+        # Ignorer la validation d'image lors de la génération automatique
+        variant.instance_variable_set(:@skip_image_validation, true)
+        variant.save!(validate: false)
 
         combo.each do |option_value|
           VariantOptionValue.create!(
@@ -241,11 +410,14 @@ class ProductVariantGenerator
       price_cents: base_price_cents,
       currency: product.currency || "EUR",
       stock_qty: base_stock_qty,
-      is_active: true
+      is_active: false  # Créer inactif par défaut, nécessite une image pour activer
     )
 
+    # Ignorer la validation d'image lors de la génération automatique
+    variant.instance_variable_set(:@skip_image_validation, true)
+
     # Sauvegarder pour avoir l'ID
-    unless variant.save
+    unless variant.save(validate: false)
       return variant
     end
 

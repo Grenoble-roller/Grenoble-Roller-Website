@@ -2,7 +2,25 @@
 
 <p>Bonjour <%= @user.first_name %>,</p>
 
-<p>Nous vous rappelons que vous êtes inscrit(e) à l'événement <strong><%= @event.title %></strong> qui aura lieu <strong>demain</strong> !</p>
+<% if @attendances.count > 1 %>
+  <p>Nous vous rappelons que <strong><%= @attendances.count %> participants</strong> sont inscrits à l'événement <strong><%= @event.title %></strong> qui aura lieu <strong>demain</strong> !</p>
+  
+  <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
+    <h3 style="margin-top: 0; color: #333; font-size: 18px;">👥 Participants inscrits</h3>
+    <ul style="margin: 10px 0; padding-left: 20px;">
+      <% @attendances.each do |attendance| %>
+        <li style="margin: 8px 0;">
+          <strong><%= attendance.participant_name %></strong>
+          <% if attendance.equipment_note.present? %>
+            <br><small style="color: #666;">📦 Matériel : <%= attendance.equipment_note %></small>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% else %>
+  <p>Nous vous rappelons que vous êtes inscrit(e) à l'événement <strong><%= @event.title %></strong> qui aura lieu <strong>demain</strong> !</p>
+<% end %>
 
 <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
   <h3 style="margin-top: 0; color: #333; font-size: 18px;">📅 Détails de l'événement</h3>
@@ -22,7 +40,7 @@
     <% if @event.price_cents > 0 %>
       <tr>
         <td style="padding: 8px 0; color: #666;">💰 Prix :</td>
-        <td style="padding: 8px 0;"><strong><%= number_to_currency(@event.price_cents / 100.0, unit: '€') %></strong></td>
+        <td style="padding: 8px 0;"><strong><%= number_to_currency(@event.price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong></td>
       </tr>
     <% end %>
     <% if @event.route.present? %>
@@ -37,10 +55,17 @@
 <% if @is_initiation %>
   <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
     <h3 style="margin-top: 0; color: #333; font-size: 18px;">🎓 Rappel initiation</h3>
-    <% if @attendance.equipment_note.present? %>
+    <% if @attendances.any? { |a| a.equipment_note.present? } %>
       <p style="margin: 10px 0;">
-        <strong>📦 Matériel demandé :</strong> <%= @attendance.equipment_note %>
-        <br><small style="color: #666;">N'oubliez pas votre matériel demandé !</small>
+        <strong>📦 Matériel demandé :</strong>
+        <ul style="margin: 10px 0; padding-left: 20px;">
+          <% @attendances.select { |a| a.equipment_note.present? }.each do |attendance| %>
+            <li style="margin: 5px 0;">
+              <strong><%= attendance.participant_name %> :</strong> <%= attendance.equipment_note %>
+            </li>
+          <% end %>
+        </ul>
+        <small style="color: #666;">N'oubliez pas votre matériel demandé !</small>
       </p>
     <% end %>
     <p style="margin: 10px 0; color: #666; font-size: 14px;">

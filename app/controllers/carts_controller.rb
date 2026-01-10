@@ -11,17 +11,20 @@ class CartsController < ApplicationController
     quantity = params[:quantity].to_i
     quantity = 1 if quantity <= 0
 
-    variant = ProductVariant.includes(:product).find_by(id: variant_id)
+    variant = ProductVariant.includes(:product, :inventory).find_by(id: variant_id)
     unless variant && variant.is_active && variant.product&.is_active
       return redirect_to shop_path, alert: "Cette variante n'est pas disponible."
     end
-    if variant.stock_qty.to_i <= 0
+    # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
+    available_stock = variant.inventory&.available_qty || variant.stock_qty.to_i
+    if available_stock <= 0
       return redirect_to shop_path, alert: "Article en rupture de stock."
     end
 
     key = variant_id.to_s
     current_qty = (session[:cart][key] || 0).to_i
-    capped_qty = [ current_qty + quantity, variant.stock_qty.to_i ].min
+    requested_total = current_qty + quantity
+    capped_qty = [ requested_total, available_stock ].min
     session[:cart][key] = capped_qty
 
     if capped_qty == current_qty
@@ -29,6 +32,12 @@ class CartsController < ApplicationController
     else
       product_name = variant.product.name
       added_qty = capped_qty - current_qty
+
+      # Afficher un message d'alerte si la quantité demandée dépasse le stock disponible
+      if requested_total > available_stock
+        flash[:alert] = "Stock insuffisant. Seulement #{added_qty} unité#{added_qty > 1 ? 's' : ''} ajoutée#{added_qty > 1 ? 's' : ''} au panier."
+      end
+
       message = if added_qty == 1
         "#{product_name} ajouté au panier"
       else
@@ -49,20 +58,21 @@ class CartsController < ApplicationController
     key = variant_id.to_s
     if quantity <= 0
       session[:cart].delete(key)
-      variant = ProductVariant.includes(:product).find_by(id: variant_id)
+      variant = ProductVariant.includes(:product, :inventory).find_by(id: variant_id)
       product_name = variant&.product&.name || "Article"
       flash[:notice] = "#{product_name} retiré du panier"
       flash[:notice_type] = "info"
       return redirect_to cart_path
     end
 
-    variant = ProductVariant.includes(:product).find_by(id: variant_id)
+    variant = ProductVariant.includes(:product, :inventory).find_by(id: variant_id)
     unless variant && variant.is_active && variant.product&.is_active
       session[:cart].delete(key)
       return redirect_to cart_path, alert: "Cette variante n’est plus disponible et a été retirée."
     end
 
-    max_qty = variant.stock_qty.to_i
+    # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
+    max_qty = variant.inventory&.available_qty || variant.stock_qty.to_i
     if max_qty <= 0
       session[:cart].delete(key)
       return redirect_to cart_path, alert: "Article en rupture, retiré du panier."
@@ -106,7 +116,7 @@ class CartsController < ApplicationController
   def build_cart_items
     variant_ids = session[:cart].keys
     return [] if variant_ids.empty?
-    variants = ProductVariant.where(id: variant_ids).includes(:product).index_by(&:id)
+    variants = ProductVariant.where(id: variant_ids).includes(:product, :inventory).index_by(&:id)
     session[:cart].map do |vid, qty|
       variant = variants[vid.to_i]
       next nil unless variant

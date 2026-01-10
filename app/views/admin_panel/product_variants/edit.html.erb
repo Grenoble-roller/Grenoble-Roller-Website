@@ -44,9 +44,37 @@
 
           <div class="row">
             <div class="col-md-6 mb-3">
-              <%= f.label :price_cents, "Prix (en centimes) *", class: "form-label" %>
-              <%= f.number_field :price_cents, class: "form-control", required: true, min: 0, step: 1 %>
+              <%= f.label :price_euros, "Prix (€) *", class: "form-label" %>
+              <div class="input-group">
+                <%= number_field_tag :price_euros, 
+                    (f.object.price_cents / 100.0 if f.object.price_cents.present?),
+                    class: "form-control", 
+                    required: true, 
+                    min: 0, 
+                    step: 0.01,
+                    placeholder: "40.00" %>
+                <span class="input-group-text">€</span>
+              </div>
+              <div class="form-text">Ex: 40,00 = 40 euros</div>
+              <%= f.hidden_field :price_cents, id: "variant_price_cents" %>
             </div>
+            <script>
+              document.addEventListener('DOMContentLoaded', function() {
+                const priceEurosInput = document.querySelector('input[name="price_euros"]');
+                const priceCentsInput = document.getElementById('variant_price_cents');
+                
+                if (priceEurosInput && priceCentsInput) {
+                  function updateCents() {
+                    const euros = parseFloat(priceEurosInput.value) || 0;
+                    priceCentsInput.value = Math.round(euros * 100);
+                  }
+                  
+                  priceEurosInput.addEventListener('input', updateCents);
+                  priceEurosInput.addEventListener('change', updateCents);
+                  updateCents(); // Initialiser au chargement
+                }
+              });
+            </script>
 
             <div class="col-md-6 mb-3">
               <%= f.label :currency, "Devise *", class: "form-label" %>
@@ -67,11 +95,16 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :image, "Image", class: "form-label" %>
-            <%= f.file_field :image, accept: "image/*", class: "form-control" %>
-            <% if @variant.image.attached? %>
+            <%= f.label :images, "Images", class: "form-label" %>
+            <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
+            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
+            <% if @variant.images.attached? %>
               <div class="mt-2">
-                <%= image_tag @variant.image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                <% @variant.images.each do |image| %>
+                  <div class="d-inline-block me-2 mb-2">
+                    <%= image_tag image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                  </div>
+                <% end %>
               </div>
             <% end %>
           </div>

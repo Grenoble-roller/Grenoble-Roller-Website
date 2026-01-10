@@ -1,0 +1,139 @@
+
+> test:a11y:pa11y
+> pa11y-ci --config .pa11yci.json
+
+Running Pa11y on 6 URLs:
+ > http://localhost:3000/ - 2 errors
+ > http://localhost:3000/a-propos - 2 errors
+ > http://localhost:3000/shop - 2 errors
+ > http://localhost:3000/events - 2 errors
+ > http://localhost:3000/users/sign_in - 2 errors
+ > http://localhost:3000/users/sign_up - 2 errors
+
+Errors in http://localhost:3000/:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+Errors in http://localhost:3000/a-propos:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+Errors in http://localhost:3000/shop:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+Errors in http://localhost:3000/events:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+Errors in http://localhost:3000/users/sign_in:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+Errors in http://localhost:3000/users/sign_up:
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(1) > p > a)
+
+   <a class="text-decoration-underline ms-1"
+   href="/politique-confidentialite">En savoir plus</a>
+
+ • This element has insufficient contrast at this conformance level. Expected a
+   contrast ratio of at least 4.5:1, but text in this element has a contrast
+   ratio of 3.98:1. Recommendation:  change text colour to #0072ed.
+
+   (#cookie-consent-banner > div > div > div:nth-child(2) > a)
+
+   <a class="btn btn-sm btn-outline-liquid-primary" aria-label="Personnaliser
+   les préférences de cookies"
+   href="/cookie_consent/preferences">Personnaliser</a>
+
+✘ 0/6 URLs passed

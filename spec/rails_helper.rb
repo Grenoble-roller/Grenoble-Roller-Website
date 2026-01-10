@@ -23,7 +23,14 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
+# ⚠️ PROTECTION CRITIQUE : Ne charger spec/support QUE en environnement de test
+# Les fichiers dans spec/support (notamment database_cleaner.rb) ne doivent JAMAIS
+# être chargés en staging/production car ils contiennent du code destructif
+if Rails.env.test?
+  Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
+else
+  raise "❌ ERREUR CRITIQUE : spec/support ne peut être chargé qu'en environnement de test! (actuel: #{Rails.env})"
+end
 
 # Ensures that the test database schema matches the current schema file.
 # If there are pending migrations it will invoke `db:test:prepare` to
@@ -55,10 +62,10 @@ RSpec.configure do |config|
     Rails.root.join('spec/fixtures')
   ]
 
-  # If you're not using ActiveRecord, or you'd prefer not to run each of your
-  # examples within a transaction, remove the following line or assign false
-  # instead of true.
-  config.use_transactional_fixtures = true
+  # ✅ CRITIQUE: Désactiver les transactions pour permettre DatabaseCleaner
+  # de gérer le nettoyage avec la bonne stratégie (transaction vs truncation)
+  # Les tests request nécessitent truncation car Devise accède à la BD depuis la session
+  config.use_transactional_fixtures = false
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false

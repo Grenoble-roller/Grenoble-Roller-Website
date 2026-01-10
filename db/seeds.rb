@@ -1,4 +1,14 @@
 # db/seeds.rb
+#
+# ⚠️ ATTENTION : Ce fichier SUPPRIME TOUTES les données existantes avant de créer de nouvelles données !
+# Il contient des `destroy_all` qui vident complètement la base de données.
+#
+# ⚠️ NE PAS UTILISER EN STAGING/PRODUCTION !
+# - Pour staging : utiliser `db/seeds_staging.rb` (sans destroy_all)
+# - Pour production : utiliser `db/seeds_production.rb` (sans destroy_all)
+#
+# Usage développement uniquement :
+#   docker compose -f ops/dev/docker-compose.yml exec web bin/rails db:seed
 
 require "securerandom"
 
@@ -20,13 +30,10 @@ def fill_health_questionnaire(has_issue: false)
   health_attrs
 end
 
-# Helper pour créer une image de test pour les événements
-def attach_test_image_to_event(event)
-  # Créer un fichier PNG minimal valide (1x1 pixel)
+# Helper pour créer une image PNG de test (1x1 pixel)
+def create_test_png_image
   require 'stringio'
-
   # PNG minimal valide (1x1 pixel transparent)
-  # Format PNG standard avec signature, IHDR, IDAT minimal, IEND
   png_bytes = [
     0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, # PNG signature
     0x00, 0x00, 0x00, 0x0D, # IHDR chunk length (13 bytes)
@@ -40,15 +47,17 @@ def attach_test_image_to_event(event)
     0x78, 0x9C, 0x63, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, # zlib compressed data (minimal)
     0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 # IEND
   ].pack('C*')
+  io = StringIO.new(png_bytes)
+  io.set_encoding(Encoding::BINARY)
+  io
+end
 
+# Helper pour créer une image de test pour les événements
+def attach_test_image_to_event(event)
   begin
-    # Utiliser StringIO pour éviter les problèmes d'encodage
-    io = StringIO.new(png_bytes)
-    io.set_encoding(Encoding::BINARY)
-    # Utiliser un nom de fichier temporaire si l'événement n'a pas encore d'ID
     filename = event.persisted? ? "event_#{event.id}_cover.png" : "event_cover.png"
     event.cover_image.attach(
-      io: io,
+      io: create_test_png_image,
       filename: filename,
       content_type: 'image/png'
     )
@@ -56,6 +65,86 @@ def attach_test_image_to_event(event)
     Rails.logger.warn("Impossible d'attacher une image de test à l'événement : #{e.message}")
   end
 end
+
+# Helper pour créer un Product avec image attachée
+def create_product_with_image(attrs)
+  product = Product.new(attrs)
+  # Désactiver temporairement toutes les validations pour pouvoir attacher l'image
+  product.save!(validate: false)
+  filename = attrs[:slug] ? "#{attrs[:slug]}.png" : "product_#{product.id}_image.png"
+  attach_test_image_to_product(product, filename)
+  # Recharger le produit pour s'assurer que l'image est bien attachée
+  product.reload
+  # Vérifier que l'image est attachée avant de continuer
+  unless product.image.attached?
+    raise "Impossible d'attacher l'image au produit #{attrs[:name]}"
+  end
+  # Le produit est déjà sauvegardé avec l'image attachée, pas besoin de re-sauvegarder
+  # Les variants seront créés après et la validation has_at_least_one_active_variant
+  # sera satisfaite une fois qu'au moins un variant actif sera créé
+  product
+end
+
+# Helper pour attacher une image de test aux Product
+def attach_test_image_to_product(product, filename = nil)
+  filename ||= product.persisted? ? "product_#{product.id}_image.png" : "product_image.png"
+  product.image.attach(
+    io: create_test_png_image,
+    filename: filename,
+    content_type: 'image/png'
+  )
+rescue => e
+  Rails.logger.warn("Erreur lors de l'attachement de l'image au produit #{product.name}: #{e.message}")
+  # Ne pas lever d'exception, juste logger l'erreur
+end
+
+# Helper pour attacher une image de test aux ProductVariant
+# ⚠️ IMPORTANT : L'image doit être attachée AVANT d'activer le variant
+# Pattern d'utilisation :
+#   1. Créer le variant avec is_active: false
+#   2. Appeler attach_test_image_to_variant(variant)
+#   3. Activer avec variant.update_column(:is_active, true)
+def attach_test_image_to_variant(variant, filename = nil)
+  begin
+    filename ||= variant.persisted? ? "variant_#{variant.id}_image.png" : "variant_image.png"
+    variant.images.attach(
+      io: create_test_png_image,
+      filename: filename,
+      content_type: 'image/png'
+    )
+  rescue => e
+    Rails.logger.warn("Impossible d'attacher une image de test au variant : #{e.message}")
+  end
+end
+
+# Helper pour créer un ProductVariant avec image (contourne la validation)
+def create_variant_with_image(product:, sku:, price_cents:, stock_qty:, currency: "EUR", is_active: true, image_url: nil, **attrs)
+  # Créer le variant avec is_active: false temporairement pour éviter la validation d'image
+  variant = ProductVariant.new(
+    product: product,
+    sku: sku,
+    price_cents: price_cents,
+    stock_qty: stock_qty,
+    currency: currency,
+    is_active: false, # Temporairement false
+    image_url: image_url,
+    **attrs
+  )
+  variant.save!(validate: false) # Sauvegarder sans validation pour pouvoir attacher l'image
+
+  # Attacher l'image
+  attach_test_image_to_variant(variant, "#{sku.downcase.gsub(/[^a-z0-9]/, '_')}.png")
+
+  # Activer le variant maintenant que l'image est attachée
+  variant.update!(is_active: is_active) if is_active
+
+  variant
+end
+
+# ⚠️ ATTENTION : Ce seed SUPPRIME TOUTES les données existantes !
+# Ne PAS utiliser en staging/production !
+# Pour staging : utiliser db/seeds_staging.rb (sans destroy_all)
+# Pour production : utiliser db/seeds_production.rb (sans destroy_all)
 
 # 🧹 Nettoyage (dans l'ordre pour éviter les erreurs FK)
 # Phase 2 - Events
@@ -70,6 +159,7 @@ Partner.destroy_all
 OrderItem.destroy_all
 Order.destroy_all
 Payment.destroy_all
+Inventory.delete_all # Supprimer avant ProductVariant (contrainte FK)
 VariantOptionValue.delete_all
 OptionValue.delete_all
 OptionType.delete_all
@@ -94,7 +184,10 @@ roles_seed = [
 ]
 
 roles_seed.each do |attrs|
-  Role.create!(attrs)
+  Role.find_or_create_by!(code: attrs[:code]) do |role|
+    role.name = attrs[:name]
+    role.level = attrs[:level]
+  end
 end
 
 admin_role = Role.find_by!(code: "ADMIN")
@@ -353,7 +446,7 @@ color_violet = OptionValue.find_by!(option_type: option_types[1], value: "Violet
 # ---------------------------
 # 1. CASQUE LED - 3 tailles (S, M, L)
 # ---------------------------
-casque_led = Product.create!(
+casque_led = create_product_with_image(
   name: "Casque LED Grenoble Roller",
   slug: "casque-led",
   category: categories[1],
@@ -366,22 +459,33 @@ casque_led = Product.create!(
 )
 
 apparel_sizes.each do |size_ov|
-  variant = ProductVariant.create!(
+  # Créer le variant avec is_active: false pour éviter la validation d'image
+  variant = ProductVariant.new(
     product: casque_led,
     sku: "CASQ-LED-#{size_ov.value}",
     price_cents: 55_00,
     stock_qty: [ 5, 8, 3 ][apparel_sizes.index(size_ov)],
     currency: "EUR",
-    is_active: true,
+    is_active: false, # Temporairement false
     image_url: casque_led.image_url
   )
+  # Désactiver temporairement la validation des options (elles seront créées après)
+  variant.instance_variable_set(:@skip_option_validation, true)
+  variant.save!(validate: false) # Sauvegarder sans validation
+  # Attacher une image de test pour satisfaire la validation
+  attach_test_image_to_variant(variant, "casque_led_#{size_ov.value}.png")
+  # Créer les VariantOptionValue maintenant
   VariantOptionValue.create!(variant:, option_value: size_ov)
+  # Recharger le variant pour s'assurer que l'image est bien attachée
+  variant.reload
+  # Activer le variant maintenant que l'image est attachée (update_column évite la validation)
+  variant.update_column(:is_active, true) if variant.images.attached?
 end
 
 # ---------------------------
 # 2. CASQUETTE - Taille unique, blanche
 # ---------------------------
-casquette = Product.create!(
+casquette = create_product_with_image(
   name: "Casquette Grenoble Roller",
   slug: "casquette-grenoble-roller",
   category: categories[2],
@@ -393,16 +497,21 @@ casquette = Product.create!(
   image_url: "produits/casquette.png"
 )
 
-variant_casquette = ProductVariant.create!(
+variant_casquette = ProductVariant.new(
   product: casquette,
   sku: "CASQ-UNIQUE",
   price_cents: 15_00,
   stock_qty: 20,
   currency: "EUR",
-  is_active: true,
+  is_active: false, # Temporairement false
   image_url: casquette.image_url
 )
+variant_casquette.instance_variable_set(:@skip_option_validation, true)
+variant_casquette.save!(validate: false)
+attach_test_image_to_variant(variant_casquette, "casquette.png")
 VariantOptionValue.create!(variant: variant_casquette, option_value: color_white)
+variant_casquette.reload
+variant_casquette.update_column(:is_active, true) if variant_casquette.images.attached?
 
 # ---------------------------
 # 3. SAC À DOS + ROLLER - 1 produit, 4 variantes couleur
@@ -433,16 +542,19 @@ sac_roller = Product.create!(
     price_cents: 45_00,
     stock_qty: 10,
     currency: "EUR",
-    is_active: true,
+    is_active: false, # Temporairement false
     image_url: sac_roller.image_url # Image principale pour toutes les couleurs
   )
+  attach_test_image_to_variant(variant, "sac_roller_#{color_ov.value}.png")
+  variant.reload
+  variant.update_column(:is_active, true) if variant.images.attached?
   VariantOptionValue.create!(variant:, option_value: color_ov)
 end
 
 # ---------------------------
 # 4. SAC ROLLER SIMPLE - Taille et couleur uniques
 # ---------------------------
-sac_simple = Product.create!(
+sac_simple = create_product_with_image(
   name: "Sac Roller Simple",
   slug: "sac-roller-simple",
   category: categories[2],
@@ -454,15 +566,20 @@ sac_simple = Product.create!(
   image_url: "produits/Sac roller simple.png"
 )
 
-variant_sac_simple = ProductVariant.create!(
+variant_sac_simple = ProductVariant.new(
   product: sac_simple,
   sku: "SAC-SIMPLE",
   price_cents: 25_00,
   stock_qty: 15,
   currency: "EUR",
-  is_active: true,
+  is_active: false, # Temporairement false
   image_url: sac_simple.image_url
 )
+variant_sac_simple.instance_variable_set(:@skip_option_validation, true)
+variant_sac_simple.save!(validate: false)
+attach_test_image_to_variant(variant_sac_simple, "sac_simple.png")
+variant_sac_simple.reload
+variant_sac_simple.update_column(:is_active, true) if variant_sac_simple.images.attached?
 
 # ---------------------------
 # 5. T-SHIRT - Clair et plusieurs tailles
@@ -480,23 +597,28 @@ tshirt = Product.create!(
 )
 
 apparel_sizes.each do |size_ov|
-  variant = ProductVariant.create!(
+  variant = ProductVariant.new(
     product: tshirt,
     sku: "TSHIRT-#{size_ov.value}",
     price_cents: 20_00,
     stock_qty: [ 8, 12, 6 ][apparel_sizes.index(size_ov)],
     currency: "EUR",
-    is_active: true,
+    is_active: false, # Temporairement false
     image_url: tshirt.image_url
   )
+  variant.instance_variable_set(:@skip_option_validation, true)
+  variant.save!(validate: false)
+  attach_test_image_to_variant(variant, "tshirt_#{size_ov.value}.png")
   VariantOptionValue.create!(variant:, option_value: size_ov)
+  variant.reload
+  variant.update_column(:is_active, true) if variant.images.attached?
 end
 
 # ---------------------------
 # 6. VESTE - 1 produit, 3 couleurs x plusieurs tailles
 #    (1 image principale commune pour l'instant)
 # ---------------------------
-veste_product = Product.create!(
+veste_product = create_product_with_image(
   name: "Veste Grenoble Roller",
   slug: "veste-grenoble-roller",
   category: categories[2],
@@ -523,24 +645,29 @@ vestes_colors = [
 
 vestes_colors.each do |color_ov|
   apparel_sizes.each_with_index do |size_ov, idx|
-    variant = ProductVariant.create!(
+    variant = ProductVariant.new(
       product: veste_product,
       sku: "VESTE-#{color_ov.value.upcase}-#{size_ov.value}",
       price_cents: 40_00,
       stock_qty: [ 5, 10, 7 ][idx],
       currency: "EUR",
-      is_active: true,
+      is_active: false, # Temporairement false
       image_url: veste_images[color_ov.value] || veste_product.image_url
     )
+    variant.instance_variable_set(:@skip_option_validation, true)
+    variant.save!(validate: false)
+    attach_test_image_to_variant(variant, "veste_#{color_ov.value}_#{size_ov.value}.png")
     VariantOptionValue.create!(variant:, option_value: size_ov)
     VariantOptionValue.create!(variant:, option_value: color_ov)
+    variant.reload
+    variant.update_column(:is_active, true) if variant.images.attached?
   end
 end
 
 puts "✅ Produits créés avec leurs variantes et options !"
 
 # Produit désactivé (pour tests)
-disabled_product = Product.create!(
+disabled_product = create_product_with_image(
   name: "Gourde Grenoble Roller (désactivée)",
   slug: "gourde-gr-desactivee",
   category: categories[2],
@@ -551,7 +678,7 @@ disabled_product = Product.create!(
   is_active: false,
   image_url: "produits/Sac roller simple.png"
 )
-ProductVariant.create!(
+variant_disabled = ProductVariant.new(
   product: disabled_product,
   sku: "GOURDE-STD",
   price_cents: 12_00,
@@ -560,6 +687,9 @@ ProductVariant.create!(
   is_active: false,
   image_url: disabled_product.image_url
 )
+variant_disabled.instance_variable_set(:@skip_option_validation, true)
+variant_disabled.save!(validate: false)
+# Pas besoin d'attacher d'image car is_active: false
 
 # 🛒 Création des OrderItems (APRÈS la création des variants)
 puts "Création des articles de commande..."

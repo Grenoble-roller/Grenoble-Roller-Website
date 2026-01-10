@@ -6,8 +6,13 @@ class OrdersController < ApplicationController
   def ensure_email_confirmed
     return true unless user_signed_in?
 
-    # En test, on peut bypass si nécessaire, mais par défaut on bloque
-    unless current_user.confirmed?
+    # Recharger l'utilisateur depuis la DB pour éviter les problèmes de cache
+    # Utiliser current_user.id directement pour éviter les problèmes de cache
+    user_id = current_user.id
+    user = User.find(user_id)
+
+    # Vérifier confirmed_at directement (pas confirmed? qui peut être mis en cache)
+    unless user.confirmed_at.present?
       confirmation_link = view_context.link_to(
         "demandez un nouvel email de confirmation",
         new_user_confirmation_path,
@@ -16,7 +21,7 @@ class OrdersController < ApplicationController
       redirect_to root_path,
                   alert: "Vous devez confirmer votre adresse email pour effectuer cette action. " \
                          "Vérifiez votre boîte mail ou #{confirmation_link}".html_safe
-      return false
+      return false # Arrêter l'exécution du callback (alternative à throw(:abort))
     end
     true
   end
@@ -32,15 +37,39 @@ class OrdersController < ApplicationController
   end
 
   def create
+    # Double vérification de la confirmation email (en plus du callback)
+    # Recharger l'utilisateur depuis la DB pour éviter les problèmes de cache
+    # Utiliser current_user.id directement pour éviter les problèmes de cache
+    user_id = current_user.id
+    user = User.find(user_id)
+
+    # Vérifier confirmed_at directement (pas confirmed? qui peut être mis en cache)
+    unless user.confirmed_at.present?
+      confirmation_link = view_context.link_to(
+        "demandez un nouvel email de confirmation",
+        new_user_confirmation_path,
+        class: "alert-link"
+      )
+      return redirect_to root_path,
+                    alert: "Vous devez confirmer votre adresse email pour effectuer cette action. " \
+                           "Vérifiez votre boîte mail ou #{confirmation_link}".html_safe
+    end
+
     cart_items = build_cart_items
     return redirect_to cart_path, alert: "Votre panier est vide." if cart_items.empty?
 
     # Vérifier le stock avant de créer la commande
+    # Utilise le système Inventories (available_qty = stock_qty - reserved_qty)
     stock_errors = []
     cart_items.each do |ci|
       variant = ci[:variant]
       requested_qty = ci[:quantity]
-      available_stock = variant.stock_qty.to_i
+      # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
+      available_stock = if variant.inventory
+                          variant.inventory.available_qty
+      else
+                          variant.stock_qty.to_i
+      end
 
       if !variant.is_active || !variant.product&.is_active
         stock_errors << "#{variant.product.name} (#{variant.sku}) n'est plus disponible"
@@ -84,8 +113,8 @@ class OrdersController < ApplicationController
           unit_price_cents: ci[:unit_price_cents]
         )
 
-        # Déduire le stock
-        variant.decrement!(:stock_qty, ci[:quantity])
+        # Le stock sera réservé automatiquement via le callback after_create :reserve_stock dans Order
+        # Plus besoin de décrementer manuellement stock_qty
       end
       order
     end
@@ -188,15 +217,11 @@ class OrdersController < ApplicationController
 
     # Transaction pour garantir la cohérence
     Order.transaction do
-      # Restaurer le stock
-      @order.order_items.each do |item|
-        variant = item.variant
-        if variant
-          variant.increment!(:stock_qty, item.quantity)
-        end
-      end
+      # Le stock sera libéré automatiquement via le callback handle_stock_on_status_change
+      # lors du changement de statut vers "cancelled"
+      # Plus besoin de restaurer manuellement le stock
 
-      # Mettre à jour le statut
+      # Mettre à jour le statut (le callback va gérer la libération du stock réservé)
       @order.update!(status: "cancelled")
     end
 

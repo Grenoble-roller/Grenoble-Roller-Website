@@ -103,10 +103,23 @@ export default class extends Controller {
       variant = null
     } else {
       // Trouver la variante correspondante
+      // Une variante correspond si :
+      // - Elle a la même taille (ou pas de sélection de taille)
+      // - Elle a la même couleur (ou pas de sélection de couleur)
+      // - ET elle a du stock
       variant = this.variantsValue.find(v => {
-        const matchSize = !hasSizeSelect ? true : (v.sizeId === sizeId || v.sizeId === null)
-        const matchColor = !hasColorSelect ? true : (v.colorId === colorId || v.colorId === null)
-        return matchSize && matchColor
+        // Vérifier la correspondance de la taille
+        const matchSize = !hasSizeSelect 
+          ? true 
+          : (v.sizeId === sizeId)
+        
+        // Vérifier la correspondance de la couleur
+        const matchColor = !hasColorSelect 
+          ? true 
+          : (v.colorId === colorId)
+        
+        // La variante doit correspondre ET avoir du stock
+        return matchSize && matchColor && v.stock > 0
       })
     }
 
@@ -190,7 +203,7 @@ export default class extends Controller {
     }
 
     if (!variant) {
-      // Aucune variante valide pour stock/prix
+      // Aucune variante valide pour stock/prix (soit pas de sélection complète, soit pas de stock)
       if (this.hasVariantInputTarget) {
         this.variantInputTarget.value = ''
       }
@@ -209,16 +222,28 @@ export default class extends Controller {
       // Réinitialiser la quantité max
       if (this.hasQtyFieldTarget) {
         this.qtyFieldTarget.max = 0
+        // Réinitialiser la quantité à 1 si elle est invalide
+        const current = parseInt(this.qtyFieldTarget.value || '1', 10)
+        if (current < 1 || isNaN(current)) {
+          this.qtyFieldTarget.value = 1
+        }
       }
 
-      // Afficher le prix minimum
+      // Afficher le prix minimum si des variantes existent
       if (this.hasPriceDisplayTarget) {
         if (this.variantsValue && this.variantsValue.length > 0) {
-          const minPrice = Math.min(...this.variantsValue.map(v => v.price))
-          const hasMultiple = this.variantsValue.length > 1
-          this.priceDisplayTarget.textContent = hasMultiple 
-            ? 'À partir de ' + this.formatPrice(minPrice * qty) 
-            : this.formatPrice(minPrice * qty)
+          // Filtrer les variantes avec stock pour calculer le prix minimum
+          const variantsWithStock = this.variantsValue.filter(v => v.stock > 0)
+          if (variantsWithStock.length > 0) {
+            const minPrice = Math.min(...variantsWithStock.map(v => v.price))
+            const hasMultiple = variantsWithStock.length > 1
+            this.priceDisplayTarget.textContent = hasMultiple 
+              ? 'À partir de ' + this.formatPrice(minPrice * qty) 
+              : this.formatPrice(minPrice * qty)
+          } else {
+            // Toutes les variantes sont en rupture
+            this.priceDisplayTarget.textContent = 'Rupture de stock'
+          }
         } else {
           // Pas de variantes disponibles
           this.priceDisplayTarget.textContent = 'Prix non disponible'

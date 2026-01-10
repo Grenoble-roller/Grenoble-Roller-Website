@@ -66,7 +66,7 @@
                   <%= order.user&.first_name || order.user&.email || "N/A" %>
                 </td>
                 <td data-label="Email"><%= order.user&.email || "N/A" %></td>
-                <td data-label="Total"><%= number_to_currency(order.total_cents / 100.0, unit: '€') %></td>
+                <td data-label="Total"><%= number_to_currency(order.total_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></td>
                 <td data-label="Statut"><%= status_badge(order.status) %></td>
                 <td data-label="Date"><%= order.created_at.strftime('%d/%m/%Y %H:%M') %></td>
                 <td data-label="Actions">

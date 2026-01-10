@@ -16,7 +16,8 @@ class Order < ApplicationRecord
   # failed: Échouée (paiement refusé)
 
   # Callbacks pour gérer le stock et les notifications
-  after_update :restore_stock_if_canceled, if: :saved_change_to_status?
+  after_commit :reserve_stock, on: :create  # NOUVEAU : Réserver le stock à la création (après commit pour avoir les order_items)
+  before_update :handle_stock_on_status_change, if: :will_save_change_to_status?
   after_update :notify_status_change, if: :saved_change_to_status?
 
   def self.ransackable_attributes(_auth_object = nil)
@@ -29,26 +30,54 @@ class Order < ApplicationRecord
 
   private
 
-  # Remet les articles en stock si la commande est annulée
-  # IMPORTANT : Le stock est géré uniquement au niveau des variantes (ProductVariant),
-  # pas au niveau du produit (Product)
-  def restore_stock_if_canceled
-    # Vérifier si le statut vient de passer à "cancelled"
-    previous_status = attribute_was(:status) || status_before_last_save
+  # NOUVEAU : Réserver le stock à la création de la commande
+  # Le stock est réservé (reserved_qty) mais pas encore déduit (stock_qty)
+  def reserve_stock
+    return unless status == "pending"
+
+    order_items.includes(variant: :inventory).each do |item|
+      variant = item.variant
+      next unless variant&.inventory
+
+      variant.inventory.reserve_stock(item.quantity, id, user)
+    end
+  end
+
+  # AMÉLIORÉ : Gérer le stock selon le changement de statut
+  # Utilise le système Inventories (reserve/release/move_stock)
+  def handle_stock_on_status_change
+    previous_status = status_was || attribute_was(:status)
     current_status = status
 
-    # Si le statut est passé à "cancelled" et qu'il était différent avant
-    if current_status == "cancelled" &&
-       previous_status != "cancelled" &&
-       previous_status.present?
+    return unless previous_status.present? && previous_status != current_status
 
-      order_items.includes(:variant).each do |item|
+    # Précharger les order_items avec leurs variants et inventaires
+    items = order_items.includes(variant: :inventory).to_a
+
+    case current_status
+    when "paid", "preparation"
+      # Stock déjà réservé, rien à faire
+      # Le stock reste réservé jusqu'à l'expédition
+
+    when "shipped"
+      # Déduire définitivement du stock et libérer la réservation
+      items.each do |item|
         variant = item.variant
-        next unless variant
+        next unless variant&.inventory
 
-        # Remettre la quantité en stock de la variante uniquement
-        # Le stock est géré uniquement au niveau des variantes
-        variant.increment!(:stock_qty, item.quantity)
+        # Déduire du stock réel (stock_qty)
+        variant.inventory.move_stock(-item.quantity, "order_fulfilled", id.to_s, user)
+        # Libérer la réservation (reserved_qty)
+        variant.inventory.release_stock(item.quantity, id, user)
+      end
+
+    when "cancelled", "refunded"
+      # Libérer le stock réservé (sans déduire du stock réel car pas encore expédié)
+      items.each do |item|
+        variant = item.variant
+        next unless variant&.inventory
+
+        variant.inventory.release_stock(item.quantity, id, user)
       end
     end
   end

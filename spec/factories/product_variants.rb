@@ -3,12 +3,21 @@
 FactoryBot.define do
   factory :product_variant do
     association :product
-    sku { "SKU-#{SecureRandom.hex(4)}" }
+    sku { "SKU-#{SecureRandom.hex(4).upcase}" }
     price_cents { 5000 }
     currency { 'EUR' }
-    image_url { 'https://example.com/variant-image.jpg' }
     stock_qty { 10 }
-    is_active { true }
+    is_active { false }  # Inactif par défaut, nécessite une image pour activer
+
+    after(:build) do |variant|
+      # Si la variante est active, attacher une image
+      if variant.is_active?
+        image_path = Rails.root.join('spec', 'fixtures', 'files', 'test-image.jpg')
+        if File.exist?(image_path)
+          variant.images.attach(io: File.open(image_path), filename: 'test-image.jpg')
+        end
+      end
+    end
 
     # Créer automatiquement des option_values pour éviter les erreurs dans la vue
     after(:create) do |variant|

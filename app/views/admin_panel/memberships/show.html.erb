@@ -1,0 +1,252 @@
+<% 
+  breadcrumb_items = [
+    { label: "Adhésions", url: admin_panel_memberships_path },
+    { label: "Adhésion ##{@membership.id}", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Adhésion #<%= @membership.id %></h1>
+  <div class="d-flex gap-2">
+    <% if @membership.status == "pending" %>
+      <%= button_to "Activer", activate_admin_panel_membership_path(@membership), method: :patch, 
+          class: "btn btn-success" %>
+      <% if @membership.payment&.provider == "helloasso" %>
+        <%= button_to "Vérifier HelloAsso", check_payment_admin_panel_membership_path(@membership), method: :post, 
+            class: "btn btn-warning",
+            title: "Forcer la vérification du statut du paiement auprès d'HelloAsso" %>
+      <% end %>
+    <% end %>
+    <%= link_to "Modifier", edit_admin_panel_membership_path(@membership), class: "btn btn-outline-liquid-primary" %>
+    <%= link_to "Retour", admin_panel_memberships_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Informations adhésion -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations adhésion</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">ID</dt>
+          <dd class="col-sm-9">#<%= @membership.id %></dd>
+
+          <dt class="col-sm-3">Utilisateur</dt>
+          <dd class="col-sm-9">
+            <%= link_to @membership.user&.to_s || "N/A", admin_panel_user_path(@membership.user) if @membership.user %>
+          </dd>
+
+          <dt class="col-sm-3">Type</dt>
+          <dd class="col-sm-9">
+            <% if @membership.is_child_membership? %>
+              <span class="badge bg-warning">Enfant</span>
+            <% else %>
+              <span class="badge bg-info">Personnelle</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Catégorie</dt>
+          <dd class="col-sm-9">
+            <%= @membership.category == "standard" ? "Standard (10€)" : "FFRS (56.55€)" %>
+          </dd>
+
+          <dt class="col-sm-3">Statut</dt>
+          <dd class="col-sm-9">
+            <% case @membership.status %>
+            <% when "active" %>
+              <span class="badge bg-success">Active</span>
+            <% when "pending" %>
+              <span class="badge bg-warning">En attente</span>
+            <% when "expired" %>
+              <span class="badge bg-danger">Expirée</span>
+            <% when "trial" %>
+              <span class="badge bg-secondary">Essai</span>
+            <% else %>
+              <span class="badge bg-secondary"><%= @membership.status %></span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Saison</dt>
+          <dd class="col-sm-9"><%= @membership.season || "-" %></dd>
+
+          <dt class="col-sm-3">Dates</dt>
+          <dd class="col-sm-9">
+            <% if @membership.start_date && @membership.end_date %>
+              Du <%= @membership.start_date.strftime("%d/%m/%Y") %> au <%= @membership.end_date.strftime("%d/%m/%Y") %>
+            <% else %>
+              N/A
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Montant</dt>
+          <dd class="col-sm-9">
+            <strong><%= number_to_currency(@membership.total_amount_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong>
+            <% if @membership.tshirt_price_cents && @membership.tshirt_price_cents > 0 %>
+              <br>
+              <small class="text-muted">Dont T-shirt: <%= number_to_currency(@membership.tshirt_price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></small>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Paiement</dt>
+          <dd class="col-sm-9">
+            <% if @membership.payment %>
+              <%= link_to "Paiement ##{@membership.payment.id}", admin_panel_payment_path(@membership.payment) if defined?(admin_panel_payment_path) %>
+            <% else %>
+              <span class="text-muted">Aucun paiement</span>
+            <% end %>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Informations enfant -->
+    <% if @membership.is_child_membership? %>
+      <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Informations enfant</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Prénom</dt>
+            <dd class="col-sm-9"><%= @membership.child_first_name || "-" %></dd>
+
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9"><%= @membership.child_last_name || "-" %></dd>
+
+            <dt class="col-sm-3">Date de naissance</dt>
+            <dd class="col-sm-9">
+              <%= @membership.child_date_of_birth&.strftime("%d/%m/%Y") || "-" %>
+              <% if @membership.child_age %>
+                (<%= @membership.child_age %> ans)
+              <% end %>
+            </dd>
+
+            <dt class="col-sm-3">Parent</dt>
+            <dd class="col-sm-9">
+              <%= @membership.parent_name || "-" %><br>
+              <small class="text-muted"><%= @membership.parent_email %></small><br>
+              <small class="text-muted"><%= @membership.parent_phone %></small>
+            </dd>
+
+            <dt class="col-sm-3">Autorisation parentale</dt>
+            <dd class="col-sm-9">
+              <% if @membership.parent_authorization %>
+                <span class="badge bg-success">Oui</span>
+                <% if @membership.parent_authorization_date %>
+                  <br>
+                  <small class="text-muted">Le <%= @membership.parent_authorization_date.strftime("%d/%m/%Y") %></small>
+                <% end %>
+              <% else %>
+                <span class="badge bg-danger">Non</span>
+              <% end %>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Questionnaire de santé -->
+    <% if @membership.health_questionnaire_status.present? %>
+      <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Questionnaire de santé</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Statut</dt>
+            <dd class="col-sm-9">
+              <% case @membership.health_questionnaire_status %>
+              <% when "ok" %>
+                <span class="badge bg-success">OK</span>
+              <% when "medical_required" %>
+                <span class="badge bg-warning">Certificat requis</span>
+              <% else %>
+                <span class="badge bg-secondary"><%= @membership.health_questionnaire_status %></span>
+              <% end %>
+            </dd>
+
+            <dt class="col-sm-3">Certificat médical</dt>
+            <dd class="col-sm-9">
+              <% if @membership.medical_certificate.attached? %>
+                <%= link_to "Télécharger le certificat", rails_blob_path(@membership.medical_certificate, disposition: "attachment"), 
+                    target: "_blank", class: "btn btn-sm btn-outline-primary" %>
+              <% else %>
+                <span class="text-muted">Non fourni</span>
+              <% end %>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Consentements -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Consentements</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">RGPD</dt>
+          <dd class="col-sm-9">
+            <%= @membership.rgpd_consent ? "✓ Oui" : "✗ Non" %>
+          </dd>
+
+          <dt class="col-sm-3">Mentions légales</dt>
+          <dd class="col-sm-9">
+            <%= @membership.legal_notices_accepted ? "✓ Oui" : "✗ Non" %>
+          </dd>
+
+          <dt class="col-sm-3">Partage données FFRS</dt>
+          <dd class="col-sm-9">
+            <%= @membership.ffrs_data_sharing_consent ? "✓ Oui" : "✗ Non" %>
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Actions -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <% if @membership.status == "pending" %>
+          <%= button_to "Activer", activate_admin_panel_membership_path(@membership), method: :patch, 
+              class: "btn btn-success w-100 mb-2" %>
+          <% if @membership.payment&.provider == "helloasso" %>
+            <%= button_to "Vérifier paiement HelloAsso", check_payment_admin_panel_membership_path(@membership), method: :post, 
+                class: "btn btn-warning w-100 mb-2",
+                title: "Forcer la vérification du statut du paiement auprès d'HelloAsso" %>
+          <% end %>
+        <% end %>
+        <%= link_to "Modifier", edit_admin_panel_membership_path(@membership), class: "btn btn-liquid-primary w-100 mb-2" %>
+        <%= button_to "Supprimer", admin_panel_membership_path(@membership), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cette adhésion ?" } %>
+      </div>
+    </div>
+
+    <!-- Informations système -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mt-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations système</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Créé le</dt>
+          <dd><%= @membership.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+
+          <dt>Modifié le</dt>
+          <dd><%= @membership.updated_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

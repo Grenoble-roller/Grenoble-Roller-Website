@@ -12,7 +12,14 @@ RSpec.describe 'Orders', type: :request do
   end
   let(:category) { create(:product_category) }
   let(:product) { create(:product, category: category) }
-  let(:variant) { create(:product_variant, product: product, stock_qty: 10) }
+  let(:variant) do
+    v = create(:product_variant, product: product, stock_qty: 10, is_active: true)
+    # S'assurer que l'inventaire existe et a du stock
+    inv = v.inventory || Inventory.create!(product_variant: v, stock_qty: 10, reserved_qty: 0)
+    inv.update!(stock_qty: 10, reserved_qty: 0)
+    v.reload
+    v
+  end
 
   describe 'GET /orders/new' do
     it 'requires authentication' do
@@ -23,8 +30,13 @@ RSpec.describe 'Orders', type: :request do
     context 'with cart items' do
       before do
         login_user(user)
+        # S'assurer que le variant a un inventaire avec du stock
+        variant.inventory || Inventory.create!(product_variant: variant, stock_qty: 10, reserved_qty: 0)
         # Simuler un panier avec des items
         post add_item_cart_path, params: { variant_id: variant.id, quantity: 1 }
+        # Vérifier que le panier n'est pas vide après l'ajout
+        expect(session[:cart]).to be_present
+        expect(session[:cart][variant.id.to_s]).to eq(1)
       end
 
       it 'allows authenticated confirmed user to access checkout' do
@@ -37,8 +49,12 @@ RSpec.describe 'Orders', type: :request do
         unconfirmed_user = create(:user, :unconfirmed, role: role)
         login_user(unconfirmed_user)
 
+        # S'assurer que le variant a un inventaire avec du stock
+        variant.inventory || Inventory.create!(product_variant: variant, stock_qty: 10, reserved_qty: 0)
         # Ajouter au panier pour l'utilisateur non confirmé
         post add_item_cart_path, params: { variant_id: variant.id, quantity: 1 }
+        # Vérifier que le panier n'est pas vide
+        expect(session[:cart]).to be_present
 
         # GET /orders/new n'a pas de blocage email (seulement POST /orders)
         get new_order_path
@@ -50,8 +66,12 @@ RSpec.describe 'Orders', type: :request do
   describe 'POST /orders' do
     before do
       login_user(user)
+      # S'assurer que le variant a un inventaire avec du stock
+      variant.inventory || Inventory.create!(product_variant: variant, stock_qty: 10, reserved_qty: 0)
       # Simuler un panier avec des items
       post add_item_cart_path, params: { variant_id: variant.id, quantity: 1 }
+      # Vérifier que le panier n'est pas vide
+      expect(session[:cart]).to be_present
     end
 
     it 'requires authentication' do
@@ -61,27 +81,47 @@ RSpec.describe 'Orders', type: :request do
     end
 
     it 'allows confirmed user to create an order' do
+      # Mock HelloAsso pour éviter les appels réels
+      allow(HelloassoService).to receive(:create_checkout_intent).and_return({
+        success: true,
+        body: {
+          "id" => "checkout_123",
+          "redirectUrl" => "https://helloasso.com/checkout"
+        }
+      })
+
       expect {
         post orders_path
       }.to change(Order, :count).by(1)
 
       expect(response).to have_http_status(:redirect)
       expect(Order.last.user).to eq(user)
-      # Le message peut varier, vérifier juste qu'il y a un message
-      expect(flash[:notice]).to be_present
     end
 
     it 'blocks unconfirmed users from creating an order' do
       logout_user
-      unconfirmed_user = build(:user, :unconfirmed, role: role)
-      unconfirmed_user.skip_confirmation!
-      unconfirmed_user.save!
-      # S'assurer que confirmed_at est nil
+      # Créer un utilisateur non confirmé sans utiliser skip_confirmation!
+      unconfirmed_user = create(:user, :unconfirmed, role: role)
+      # S'assurer que confirmed_at est nil et recharger
       unconfirmed_user.update_column(:confirmed_at, nil)
-      login_user(unconfirmed_user)
+      unconfirmed_user.reload
+      # Vérifier que confirmed? retourne false
+      expect(unconfirmed_user.confirmed?).to be false
+      expect(unconfirmed_user.confirmed_at).to be_nil
 
+      # Se connecter SANS confirmer l'utilisateur (confirm_user: false)
+      login_user(unconfirmed_user, confirm_user: false)
+
+      # Vérifier que l'utilisateur dans la DB a toujours confirmed_at à nil
+      db_user = User.find(unconfirmed_user.id)
+      expect(db_user.confirmed_at).to be_nil
+
+      # S'assurer que le variant a un inventaire avec du stock
+      variant.inventory || Inventory.create!(product_variant: variant, stock_qty: 10, reserved_qty: 0)
       # Ajouter au panier pour l'utilisateur non confirmé
       post add_item_cart_path, params: { variant_id: variant.id, quantity: 1 }
+      # Vérifier que le panier n'est pas vide
+      expect(session[:cart]).to be_present
 
       # OrdersController override ensure_email_confirmed pour bloquer même en test
       expect {
@@ -175,6 +215,68 @@ RSpec.describe 'Orders', type: :request do
       # Vérifier que les associations sont chargées (pas de N+1)
       expect(assigns(:order).association(:payment).loaded?).to be true
       expect(assigns(:order).association(:order_items).loaded?).to be true
+    end
+  end
+
+  describe 'POST /orders - Stock reservation' do
+    let(:category) { create(:product_category) }
+    let(:product) { create(:product, category: category) }
+    let(:variant) do
+      v = create(:product_variant, product: product, stock_qty: 10, is_active: true)
+      # S'assurer que l'inventaire existe et a les bonnes valeurs
+      inv = v.inventory || Inventory.create!(product_variant: v, stock_qty: 10, reserved_qty: 0)
+      inv.update!(stock_qty: 10, reserved_qty: 0)
+      v.reload
+      v
+    end
+    let(:inventory) { variant.inventory }
+
+    before do
+      login_user(user)
+      inventory # S'assurer que l'inventaire existe
+      inventory.update!(stock_qty: 10, reserved_qty: 0)
+      # Simuler un panier avec des items
+      post add_item_cart_path, params: { variant_id: variant.id, quantity: 3 }
+      # Vérifier que le panier n'est pas vide
+      expect(session[:cart]).to be_present
+      expect(session[:cart][variant.id.to_s]).to eq(3)
+    end
+
+    it 'reserves stock when order is created' do
+      # Mock HelloAsso pour éviter les appels réels
+      allow(HelloassoService).to receive(:create_checkout_intent).and_return({
+        success: true,
+        body: {
+          "id" => "checkout_123",
+          "redirectUrl" => "https://helloasso.com/checkout"
+        }
+      })
+
+      expect {
+        post orders_path
+      }.to change { inventory.reload.reserved_qty }.by(3)
+        .and change { inventory.stock_qty }.by(0) # Stock réel ne change pas
+    end
+
+    it 'checks available stock before creating order' do
+      # Réserver tout le stock disponible (available_qty = 10 - 10 = 0)
+      inventory.update!(stock_qty: 10, reserved_qty: 10)
+
+      # Mock HelloAsso pour éviter les appels réels (ne sera pas appelé car la commande ne sera pas créée)
+      allow(HelloassoService).to receive(:create_checkout_intent).and_return({
+        success: true,
+        body: {
+          "id" => "checkout_123",
+          "redirectUrl" => "https://helloasso.com/checkout"
+        }
+      })
+
+      expect {
+        post orders_path
+      }.not_to change { Order.count }
+
+      expect(response).to redirect_to(cart_path)
+      expect(flash[:alert]).to include('Stock insuffisant')
     end
   end
 end

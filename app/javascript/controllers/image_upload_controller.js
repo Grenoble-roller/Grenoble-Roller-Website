@@ -52,8 +52,32 @@ export default class extends Controller {
   // ==========================================
 
   triggerFileInput(event) {
-    event.preventDefault()
-    this.fileInputTarget.click()
+    if (event) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    
+    // Essayer d'abord avec le target Stimulus
+    if (this.hasFileInputTarget && this.fileInputTarget) {
+      this.fileInputTarget.click()
+      return
+    }
+    
+    // Fallback : chercher directement l'input file dans le controller
+    const fileInput = this.element.querySelector('input[type="file"]')
+    if (fileInput) {
+      fileInput.click()
+      return
+    }
+    
+    // Dernier fallback : chercher par ID
+    const fileInputById = document.getElementById('product_image_input')
+    if (fileInputById) {
+      fileInputById.click()
+      return
+    }
+    
+    console.error("Image upload: No file input found")
   }
 
   handleFiles(event) {

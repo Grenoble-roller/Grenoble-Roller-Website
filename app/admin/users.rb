@@ -178,13 +178,23 @@ ActiveAdmin.register User do
   end
 
   controller do
-    def destroy
-      @user = resource
-      if @user.destroy
-        redirect_to collection_path, notice: "L'utilisateur ##{@user.id} a été supprimé avec succès."
-      else
-        redirect_to resource_path(@user), alert: "Impossible de supprimer l'utilisateur : #{@user.errors.full_messages.join(', ')}"
+    def create
+      # Vérifier que le rôle assigné n'est pas supérieur au rôle de l'utilisateur actuel
+      if params[:user] && params[:user][:role_id].present?
+        new_role = Role.find_by(id: params[:user][:role_id])
+        unless RoleAssignmentService.can_assign_role_to_user?(
+          assigner: current_admin_user,
+          target_user: resource,
+          new_role: new_role
+        )
+          flash[:error] = "Vous ne pouvez pas assigner un rôle supérieur au vôtre"
+          redirect_to collection_path
+          return
+        end
+        # Passer l'utilisateur assigneur pour la validation du modèle
+        resource.assigner_user = current_admin_user
       end
+      super
     end
 
     def update
@@ -200,8 +210,33 @@ ActiveAdmin.register User do
         unless params[:user].key?(:can_be_volunteer)
           params[:user][:can_be_volunteer] = false
         end
+
+        # Vérifier que le rôle assigné n'est pas supérieur au rôle de l'utilisateur actuel
+        if params[:user][:role_id].present?
+          new_role = Role.find_by(id: params[:user][:role_id])
+          unless RoleAssignmentService.can_assign_role_to_user?(
+            assigner: current_admin_user,
+            target_user: resource,
+            new_role: new_role
+          )
+            flash[:error] = "Vous ne pouvez pas assigner un rôle supérieur au vôtre"
+            redirect_to resource_path(resource)
+            return
+          end
+          # Passer l'utilisateur assigneur pour la validation du modèle
+          resource.assigner_user = current_admin_user
+        end
       end
       super
+    end
+
+    def destroy
+      @user = resource
+      if @user.destroy
+        redirect_to collection_path, notice: "L'utilisateur ##{@user.id} a été supprimé avec succès."
+      else
+        redirect_to resource_path(@user), alert: "Impossible de supprimer l'utilisateur : #{@user.errors.full_messages.join(', ')}"
+      end
     end
   end
 end

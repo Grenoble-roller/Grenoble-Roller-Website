@@ -21,7 +21,21 @@ const urls = [
 async function runLighthouse(url, name) {
   console.log(`\n🔍 Test Lighthouse: ${name} (${url})`);
   
-  const chrome = await chromeLauncher.launch({ chromeFlags: ['--headless'] });
+  let chrome;
+  try {
+    // Essayer de lancer Chrome avec les options par défaut
+    chrome = await chromeLauncher.launch({ 
+      chromeFlags: ['--headless', '--no-sandbox', '--disable-setuid-sandbox'] 
+    });
+  } catch (error) {
+    if (error.code === 'ERR_LAUNCHER_PATH_NOT_SET') {
+      console.log(`  ⚠️  Chrome/Chromium non trouvé. Lighthouse nécessite Chrome.`);
+      console.log(`  💡 Pour installer Chrome: sudo apt-get install -y google-chrome-stable`);
+      console.log(`  💡 Ou définir CHROME_PATH=/chemin/vers/chrome`);
+      return { name, url, score: 0, error: 'Chrome/Chromium non trouvé' };
+    }
+    throw error;
+  }
   const options = {
     logLevel: 'info',
     output: 'json',

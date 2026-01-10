@@ -1,0 +1,167 @@
+<% 
+  breadcrumb_items = [
+    { label: "Paiements", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Paiements</h1>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_payments_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-3">
+        <%= f.label :provider_eq, "Fournisseur", class: "form-label" %>
+        <%= f.select :provider_eq,
+            options_for_select([
+              ["Tous", ""],
+              ["HelloAsso", "helloasso"],
+              ["Stripe", "stripe"],
+              ["Autre", "other"]
+            ], params.dig(:q, :provider_eq)),
+            {},
+            { class: "form-select form-select-liquid" } %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :status_eq, "Statut", class: "form-label" %>
+        <%= f.select :status_eq,
+            options_for_select([
+              ["Tous", ""],
+              ["Complété", "completed"],
+              ["En attente", "pending"],
+              ["Échoué", "failed"],
+              ["Annulé", "cancelled"]
+            ], params.dig(:q, :status_eq)),
+            {},
+            { class: "form-select form-select-liquid" } %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :provider_payment_id_cont, "ID Paiement", class: "form-label" %>
+        <%= f.search_field :provider_payment_id_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par ID..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :created_at_gteq, "Date début", class: "form-label" %>
+        <%= f.date_field :created_at_gteq, class: "form-control form-control-liquid", value: params.dig(:q, :created_at_gteq) %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :created_at_lteq, "Date fin", class: "form-label" %>
+        <%= f.date_field :created_at_lteq, class: "form-control form-control-liquid", value: params.dig(:q, :created_at_lteq) %>
+      </div>
+      <div class="col-12">
+        <%= f.submit "Filtrer", class: "btn btn-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_payments_path, class: "btn btn-outline-liquid-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Liste des paiements -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @payments.any? %>
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fournisseur</th>
+              <th>Statut</th>
+              <th>Montant</th>
+              <th>ID Paiement</th>
+              <th>Commandes</th>
+              <th>Adhésions</th>
+              <th>Participations</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @payments.each do |payment| %>
+              <tr>
+                <td><%= payment.id %></td>
+                <td>
+                  <span class="badge bg-liquid-secondary"><%= payment.provider %></span>
+                </td>
+                <td>
+                  <% case payment.status %>
+                  <% when 'completed' %>
+                    <span class="badge bg-success">Complété</span>
+                  <% when 'pending' %>
+                    <span class="badge bg-warning">En attente</span>
+                  <% when 'failed' %>
+                    <span class="badge bg-danger">Échoué</span>
+                  <% when 'cancelled' %>
+                    <span class="badge bg-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= payment.status.humanize %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <strong><%= number_to_currency(payment.amount_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong>
+                </td>
+                <td>
+                  <code class="text-muted"><%= payment.provider_payment_id %></code>
+                </td>
+                <td>
+                  <% if payment.orders.any? %>
+                    <span class="badge bg-liquid-info"><%= payment.orders.count %></span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if payment.memberships.any? %>
+                    <span class="badge bg-liquid-info"><%= payment.memberships.count %></span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if payment.attendances.any? %>
+                    <span class="badge bg-liquid-info"><%= payment.attendances.count %></span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= l payment.created_at, format: :short %>
+                </td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Voir", admin_panel_payment_path(payment), class: "btn btn-outline-liquid-primary" %>
+                    <% if policy([:admin_panel, payment]).destroy? %>
+                      <%= button_to "Supprimer", admin_panel_payment_path(payment), 
+                          method: :delete,
+                          data: { 
+                            turbo_confirm: "⚠️ ATTENTION : Vous êtes sur le point de supprimer définitivement une entrée de paiement.\n\n" \
+                                          "Cette action est IRRÉVERSIBLE et peut avoir des conséquences sur :\n" \
+                                          "- Les commandes associées\n" \
+                                          "- Les adhésions associées\n" \
+                                          "- Les participations associées\n\n" \
+                                          "Êtes-vous ABSOLUMENT certain de vouloir continuer ?"
+                          },
+                          class: "btn btn-danger" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucun paiement trouvé.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,117 @@
+<% 
+  breadcrumb_items = [
+    { label: "Candidatures Organisateur", url: admin_panel_organizer_applications_path },
+    { label: "Candidature ##{@organizer_application.id}", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Candidature Organisateur #<%= @organizer_application.id %></h1>
+  <div class="d-flex gap-2">
+    <%= link_to "Retour", admin_panel_organizer_applications_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Informations principales -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations principales</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">ID</dt>
+          <dd class="col-sm-9">#<%= @organizer_application.id %></dd>
+
+          <dt class="col-sm-3">Utilisateur</dt>
+          <dd class="col-sm-9">
+            <%= link_to @organizer_application.user.to_s, admin_panel_user_path(@organizer_application.user), class: "text-decoration-none" %>
+          </dd>
+
+          <dt class="col-sm-3">Statut</dt>
+          <dd class="col-sm-9">
+            <% badge_class = case @organizer_application.status
+                 when "approved" then "bg-success"
+                 when "pending" then "bg-warning"
+                 when "rejected" then "bg-danger"
+                 else "bg-secondary"
+               end %>
+            <span class="badge <%= badge_class %>">
+              <%= @organizer_application.status == "pending" ? "En attente" : @organizer_application.status == "approved" ? "Approuvée" : "Refusée" %>
+            </span>
+          </dd>
+
+          <dt class="col-sm-3">Motivation</dt>
+          <dd class="col-sm-9">
+            <% if @organizer_application.motivation.present? %>
+              <div class="text-break"><%= simple_format(@organizer_application.motivation) %></div>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Révisé par</dt>
+          <dd class="col-sm-9">
+            <% if @organizer_application.reviewed_by.present? %>
+              <%= link_to @organizer_application.reviewed_by.to_s, admin_panel_user_path(@organizer_application.reviewed_by), class: "text-decoration-none" %>
+            <% else %>
+              <span class="text-muted">Non révisé</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Date de révision</dt>
+          <dd class="col-sm-9">
+            <% if @organizer_application.reviewed_at.present? %>
+              <%= @organizer_application.reviewed_at.strftime("%d/%m/%Y à %H:%M") %>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Informations système -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations système</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Créé le</dt>
+          <dd><%= @organizer_application.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+
+          <dt>Modifié le</dt>
+          <dd><%= @organizer_application.updated_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <% if @organizer_application.pending? %>
+          <%= button_to "Approuver", approve_admin_panel_organizer_application_path(@organizer_application), 
+              method: :patch, 
+              class: "btn btn-success w-100 mb-2",
+              data: { confirm: "Êtes-vous sûr de vouloir approuver cette candidature ?" } %>
+          <%= button_to "Refuser", reject_admin_panel_organizer_application_path(@organizer_application), 
+              method: :patch, 
+              class: "btn btn-danger w-100 mb-2",
+              data: { confirm: "Êtes-vous sûr de vouloir refuser cette candidature ?" } %>
+        <% end %>
+        <%= button_to "Supprimer", admin_panel_organizer_application_path(@organizer_application), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cette candidature ?" } %>
+      </div>
+    </div>
+  </div>
+</div>

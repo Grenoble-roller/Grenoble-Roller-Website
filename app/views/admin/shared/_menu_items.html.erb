@@ -2,6 +2,20 @@
   # Menu items modernes 2025 - Design épuré avec hiérarchie claire
 %>
 
+<!-- DASHBOARD (level >= 40 : INITIATION, ORGANIZER, MODERATOR, ADMIN, SUPERADMIN) -->
+<% if can_view_initiations? %>
+  <li class="admin-menu-item">
+    <%= link_to admin_panel_root_path, 
+        class: "admin-menu-link #{'active' if admin_panel_active?('dashboard')}",
+        title: "Dashboard",
+        aria: { label: "Voir le dashboard", current: admin_panel_active?('dashboard') ? 'page' : nil },
+        data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+      <i class="bi bi-speedometer2 admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Dashboard</span>
+    <% end %>
+  </li>
+<% end %>
+
 <!-- INITIATIONS (level >= 40 : INITIATION, MODERATOR, ADMIN, SUPERADMIN) -->
 <% if can_view_initiations? %>
   <li class="admin-menu-item">
@@ -13,6 +27,87 @@
       <i class="bi bi-people admin-menu-icon" aria-hidden="true"></i>
       <span class="admin-menu-label">Initiations</span>
     <% end %>
+  </li>
+<% end %>
+
+<!-- PAGE D'ACCUEIL (level >= 40 : ORGANIZER+) -->
+<% if can_view_initiations? %>
+  <li class="admin-menu-item">
+    <a href="#homepage-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') ? 'true' : 'false' %>"
+       aria-controls="homepage-submenu"
+       title="Page d'Accueil">
+      <i class="bi bi-house-door admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Page d'Accueil</span>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('homepage_carousels') || admin_panel_active?('homepage_announcements') %>" id="homepage-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_homepage_carousels_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('homepage_carousels')}",
+            title: "Carrousel",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-images admin-menu-subicon" aria-hidden="true"></i>
+          <span>Carrousel</span>
+        <% end %>
+      </li>
+    </ul>
+  </li>
+<% end %>
+
+<!-- ÉVÉNEMENTS (level >= 60 : ADMIN, SUPERADMIN) -->
+<% if can_access_admin_panel?(60) %>
+  <li class="admin-menu-item">
+    <a href="#evenements-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('events') || admin_panel_active?('routes') || admin_panel_active?('attendances') || admin_panel_active?('organizer_applications') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('events') || admin_panel_active?('routes') || admin_panel_active?('attendances') || admin_panel_active?('organizer_applications') ? 'true' : 'false' %>"
+       aria-controls="evenements-submenu"
+       title="Événements">
+      <i class="bi bi-calendar-event admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Événements</span>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('events') || admin_panel_active?('routes') || admin_panel_active?('attendances') || admin_panel_active?('organizer_applications') %>" id="evenements-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_events_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('events')}",
+            title: "Événements",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-calendar-event admin-menu-subicon" aria-hidden="true"></i>
+          <span>Événements</span>
+        <% end %>
+      </li>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_routes_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('routes')}",
+            title: "Routes",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-signpost admin-menu-subicon" aria-hidden="true"></i>
+          <span>Routes</span>
+        <% end %>
+      </li>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_attendances_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('attendances')}",
+            title: "Participations",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-person-check admin-menu-subicon" aria-hidden="true"></i>
+          <span>Participations</span>
+        <% end %>
+      </li>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_organizer_applications_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('organizer_applications')}",
+            title: "Candidatures Organisateur",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-person-badge admin-menu-subicon" aria-hidden="true"></i>
+          <span>Candidatures Organisateur</span>
+        <% end %>
+      </li>
+    </ul>
   </li>
 <% end %>
 
@@ -55,14 +150,120 @@
 <!-- COMMANDES (level >= 60 uniquement) -->
 <% if can_access_admin_panel?(60) %>
   <li class="admin-menu-item">
-    <%= link_to admin_panel_orders_path, 
-        class: "admin-menu-link #{'active' if admin_panel_active?('orders')}",
-        title: "Commandes",
-        aria: { label: "Voir les commandes", current: admin_panel_active?('orders') ? 'page' : nil },
-        data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+    <a href="#commandes-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('orders') || admin_panel_active?('payments') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('orders') || admin_panel_active?('payments') ? 'true' : 'false' %>"
+       aria-controls="commandes-submenu"
+       title="Commandes">
       <i class="bi bi-box-seam admin-menu-icon" aria-hidden="true"></i>
       <span class="admin-menu-label">Commandes</span>
-    <% end %>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('orders') || admin_panel_active?('payments') %>" id="commandes-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_orders_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('orders')}",
+            title: "Commandes",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-box-seam admin-menu-subicon" aria-hidden="true"></i>
+          <span>Commandes</span>
+        <% end %>
+      </li>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_payments_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('payments')}",
+            title: "Paiements",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-credit-card admin-menu-subicon" aria-hidden="true"></i>
+          <span>Paiements</span>
+        <% end %>
+      </li>
+    </ul>
+  </li>
+<% end %>
+
+<!-- UTILISATEURS (level >= 60 uniquement) -->
+<% if can_access_admin_panel?(60) %>
+  <li class="admin-menu-item">
+    <a href="#utilisateurs-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('users') || admin_panel_active?('roles') || admin_panel_active?('memberships') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('users') || admin_panel_active?('roles') || admin_panel_active?('memberships') ? 'true' : 'false' %>"
+       aria-controls="utilisateurs-submenu"
+       title="Utilisateurs">
+      <i class="bi bi-people-fill admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Utilisateurs</span>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('users') || admin_panel_active?('roles') || admin_panel_active?('memberships') %>" id="utilisateurs-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_users_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('users')}",
+            title: "Utilisateurs",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-person admin-menu-subicon" aria-hidden="true"></i>
+          <span>Utilisateurs</span>
+        <% end %>
+      </li>
+      <!-- Rôles : SUPERADMIN uniquement (level >= 70) -->
+      <% if can_access_admin_panel?(70) %>
+        <li class="admin-menu-subitem">
+          <%= link_to admin_panel_roles_path, 
+              class: "admin-menu-sublink #{'active' if admin_panel_active?('roles')}",
+              title: "Rôles",
+              data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+            <i class="bi bi-shield-check admin-menu-subicon" aria-hidden="true"></i>
+            <span>Rôles</span>
+          <% end %>
+        </li>
+      <% end %>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_memberships_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('memberships')}",
+            title: "Adhésions",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-card-checklist admin-menu-subicon" aria-hidden="true"></i>
+          <span>Adhésions</span>
+        <% end %>
+      </li>
+    </ul>
+  </li>
+<% end %>
+
+<!-- COMMUNICATION (level >= 60 uniquement) -->
+<% if can_access_admin_panel?(60) %>
+  <li class="admin-menu-item">
+    <a href="#communication-submenu" 
+       class="admin-menu-link <%= 'active' if admin_panel_active?('contact_messages') || admin_panel_active?('partners') %>"
+       data-bs-toggle="collapse"
+       aria-expanded="<%= admin_panel_active?('contact_messages') || admin_panel_active?('partners') ? 'true' : 'false' %>"
+       aria-controls="communication-submenu"
+       title="Communication">
+      <i class="bi bi-chat-dots admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Communication</span>
+      <i class="bi bi-chevron-down admin-menu-chevron ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul class="collapse <%= 'show' if admin_panel_active?('contact_messages') || admin_panel_active?('partners') %>" id="communication-submenu">
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_contact_messages_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('contact_messages')}",
+            title: "Messages de contact",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-envelope admin-menu-subicon" aria-hidden="true"></i>
+          <span>Messages de contact</span>
+        <% end %>
+      </li>
+      <li class="admin-menu-subitem">
+        <%= link_to admin_panel_partners_path, 
+            class: "admin-menu-sublink #{'active' if admin_panel_active?('partners')}",
+            title: "Partenaires",
+            data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+          <i class="bi bi-handshake admin-menu-subicon" aria-hidden="true"></i>
+          <span>Partenaires</span>
+        <% end %>
+      </li>
+    </ul>
   </li>
 <% end %>
 
@@ -83,7 +284,8 @@
 <!-- SÉPARATEUR -->
 <li class="admin-menu-divider" role="separator"></li>
 
-<!-- ACTIVEADMIN (Lien vers l'ancien admin) -->
+<!-- ACTIVEADMIN (DÉSACTIVÉ - Tout migré vers AdminPanel) -->
+<!--
 <li class="admin-menu-item">
   <%= link_to "/activeadmin", 
       class: "admin-menu-link admin-menu-link-external",
@@ -96,3 +298,4 @@
     <i class="bi bi-box-arrow-up-right admin-menu-external-icon" aria-hidden="true"></i>
   <% end %>
 </li>
+-->

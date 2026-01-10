@@ -11,10 +11,11 @@ RSpec.describe Product, type: :model do
       price_cents: 2500,
       currency: 'EUR',
       stock_qty: 10,
-      is_active: true,
-      image_url: 'https://example.org/cap.jpg'
+      is_active: true
     }
-    Product.new(defaults.merge(attrs))
+    product = Product.new(defaults.merge(attrs))
+    attach_test_image(product, :image)
+    product
   end
 
   it 'is valid with valid attributes' do
@@ -33,7 +34,7 @@ RSpec.describe Product, type: :model do
 
   it 'enforces slug uniqueness' do
     build_product.save!
-    dup = build_product(name: 'Autre', image_url: 'https://example.org/other.jpg')
+    dup = build_product(name: 'Autre')
     expect(dup).to be_invalid
     expect(dup.errors[:slug]).to be_present
   end
@@ -41,7 +42,7 @@ RSpec.describe Product, type: :model do
   it 'destroys variants when product is destroyed' do
     product = build_product
     product.save!
-    variant = ProductVariant.create!(product: product, sku: 'SKU-001', price_cents: 2500, currency: 'EUR', stock_qty: 5, is_active: true, image_url: 'https://example.org/variant.jpg')
+    variant = create_variant_with_image(product, sku: 'SKU-001', price_cents: 2500, currency: 'EUR', stock_qty: 5, is_active: true)
     expect {
       product.destroy
     }.to change { ProductVariant.count }.by(-1)

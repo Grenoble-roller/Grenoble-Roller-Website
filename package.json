@@ -5,7 +5,8 @@
     "build:css:fonts": "mkdir -p ./app/assets/builds/fonts && cp -r node_modules/bootstrap-icons/font/fonts/*.woff* ./app/assets/builds/fonts/ 2>/dev/null || echo 'Warning: Bootstrap Icons fonts not found, continuing...'",
     "build:css:compile": "SASS_PATH=node_modules:$(bundle exec ruby -e 'print Gem.loaded_specs[\"activeadmin\"].full_gem_path + \"/app/assets/stylesheets\"') sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.bootstrap.css --no-source-map --quiet-deps && SASS_PATH=node_modules:$(bundle exec ruby -e 'print Gem.loaded_specs[\"activeadmin\"].full_gem_path + \"/app/assets/stylesheets\"') sass ./app/assets/stylesheets/active_admin.scss:./app/assets/builds/active_admin.css --no-source-map --quiet-deps",
     "build:css:prefix": "postcss ./app/assets/builds/application.bootstrap.css --use=autoprefixer --output=./app/assets/builds/application.bootstrap.css && postcss ./app/assets/builds/active_admin.css --use=autoprefixer --output=./app/assets/builds/active_admin.css",
-    "build:css": "npm run build:css:fonts && npm run build:css:compile && npm run build:css:prefix",
+    "build:css:purge": "purgecss --config ./purgecss.config.js",
+    "build:css": "npm run build:css:fonts && npm run build:css:compile && npm run build:css:prefix && npm run build:css:purge",
     "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"npm run build:css\"",
     "test:a11y:pa11y": "pa11y-ci --config .pa11yci.json",
     "test:a11y:lighthouse": "node scripts/lighthouse-test.js",
@@ -24,6 +25,7 @@
     "pa11y-ci": "^4.0.1",
     "postcss": "^8.4.35",
     "postcss-cli": "^11.0.0",
+    "purgecss": "^7.0.2",
     "sass": "^1.70.0"
   },
   "browserslist": [

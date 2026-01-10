@@ -92,8 +92,9 @@
         <div class="product-grid">
           <% @products.each do |product| %>
             <% 
-              active_variants = product.product_variants.where(is_active: true).includes(variant_option_values: { option_value: :option_type })
-              has_stock = active_variants.any? { |v| v.stock_qty > 0 }
+              active_variants = product.product_variants.where(is_active: true).includes(:inventory, variant_option_values: { option_value: :option_type })
+              # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
+              has_stock = active_variants.any? { |v| (v.inventory&.available_qty || v.stock_qty.to_i) > 0 }
               min_price = active_variants.minimum(:price_cents) || product.price_cents
               max_price = active_variants.maximum(:price_cents) || product.price_cents
               has_multiple_prices = min_price != max_price
@@ -103,15 +104,17 @@
               color_options = active_variants.flat_map { |v| v.option_values.select { |ov| ov.option_type.name == 'color' } }.uniq
 
               # Stock par option (pour marquer les tailles/couleurs épuisées)
+              # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
               size_stock = Hash.new(0)
               color_stock = Hash.new(0)
               active_variants.each do |v|
+                available_qty = v.inventory&.available_qty || v.stock_qty.to_i
                 v.option_values.each do |ov|
                   case ov.option_type.name
                   when 'size'
-                    size_stock[ov.id] += v.stock_qty
+                    size_stock[ov.id] += available_qty
                   when 'color'
-                    color_stock[ov.id] += v.stock_qty
+                    color_stock[ov.id] += available_qty
                   end
                 end
               end

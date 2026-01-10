@@ -1,0 +1,177 @@
+<%= form_with model: [:admin_panel, @carousel], 
+    local: true, 
+    multipart: true, 
+    class: "carousel-form" do |f| %>
+  
+  <% if @carousel.errors.any? %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <h5 class="alert-heading">
+        <i class="bi bi-exclamation-triangle me-2"></i>Erreurs à corriger
+      </h5>
+      <ul class="mb-0">
+        <% @carousel.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">
+        <%= @carousel.persisted? ? "Modifier le slide" : "Nouveau slide" %>
+      </h1>
+      <p class="text-muted mb-0">
+        <% if @carousel.persisted? %>
+          <i class="bi bi-clock-history me-1"></i>
+          Dernière modification : <%= time_ago_in_words(@carousel.updated_at) %>
+        <% else %>
+          Remplissez les informations ci-dessous
+        <% end %>
+      </p>
+    </div>
+    <div class="btn-group">
+      <%= link_to admin_panel_homepage_carousels_path, class: "btn btn-outline-secondary" do %>
+        <i class="bi bi-arrow-left me-1"></i>Retour
+      <% end %>
+      <%= f.submit "Enregistrer", class: "btn btn-liquid-primary" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Formulaire principal -->
+    <div class="col-lg-8">
+      <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Informations</h5>
+        </div>
+        <div class="card-body">
+          <!-- Titre -->
+          <div class="mb-3">
+            <%= f.label :title, "Titre *", class: "form-label fw-semibold" %>
+            <%= f.text_field :title, 
+                class: "form-control form-control-liquid", 
+                placeholder: "Titre du slide",
+                required: true %>
+            <div class="form-text">Titre principal affiché sur le slide</div>
+          </div>
+
+          <!-- Sous-titre -->
+          <div class="mb-3">
+            <%= f.label :subtitle, "Sous-titre", class: "form-label fw-semibold" %>
+            <%= f.text_field :subtitle, 
+                class: "form-control form-control-liquid", 
+                placeholder: "Sous-titre optionnel" %>
+            <div class="form-text">Texte secondaire affiché sous le titre</div>
+          </div>
+
+          <!-- Lien URL -->
+          <div class="mb-3">
+            <%= f.label :link_url, "Lien URL", class: "form-label fw-semibold" %>
+            <%= f.url_field :link_url, 
+                class: "form-control form-control-liquid", 
+                placeholder: "https://..." %>
+            <div class="form-text">URL vers laquelle rediriger au clic sur le slide (optionnel)</div>
+          </div>
+
+          <!-- Position -->
+          <div class="mb-3">
+            <%= f.label :position, "Position", class: "form-label fw-semibold" %>
+            <%= f.number_field :position, 
+                class: "form-control form-control-liquid", 
+                min: 1,
+                value: @carousel.position || (HomepageCarousel.maximum(:position) || 0) + 1 %>
+            <div class="form-text">Ordre d'affichage dans le carrousel (1 = premier)</div>
+          </div>
+
+          <!-- Dates -->
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <%= f.label :published_at, "Date de publication", class: "form-label fw-semibold" %>
+              <%= f.datetime_local_field :published_at, 
+                  class: "form-control form-control-liquid",
+                  value: @carousel.published_at&.strftime("%Y-%m-%dT%H:%M") %>
+            </div>
+            <div class="col-md-6">
+              <%= f.label :expires_at, "Date d'expiration", class: "form-label fw-semibold" %>
+              <%= f.datetime_local_field :expires_at, 
+                  class: "form-control form-control-liquid",
+                  value: @carousel.expires_at&.strftime("%Y-%m-%dT%H:%M") %>
+              <div class="form-text">Laisser vide pour ne pas expirer</div>
+            </div>
+          </div>
+
+          <!-- Publié -->
+          <div class="mb-3">
+            <div class="form-check">
+              <%= f.check_box :published, class: "form-check-input" %>
+              <%= f.label :published, "Publié", class: "form-check-label" %>
+            </div>
+            <div class="form-text">Cocher pour publier immédiatement le slide</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="col-lg-4">
+      <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Image *</h5>
+        </div>
+        <div class="card-body">
+          <% if @carousel.image.attached? %>
+            <div class="mb-3">
+              <%= image_tag @carousel.image.variant(resize_to_limit: [400, 200]), 
+                  class: "img-fluid rounded w-100", 
+                  style: "max-height: 200px; object-fit: cover;" %>
+            </div>
+          <% else %>
+            <div class="bg-light d-flex align-items-center justify-content-center rounded mb-3" style="height: 200px;">
+              <i class="bi bi-image fs-1 text-muted"></i>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= f.file_field :image, 
+                class: "form-control form-control-liquid",
+                accept: "image/*",
+                required: @carousel.new_record? %>
+            <div class="form-text">
+              Format recommandé : 1920x600px (ratio 3.2:1)<br>
+              Formats acceptés : JPG, PNG, WebP
+            </div>
+          </div>
+
+          <% if @carousel.image.attached? %>
+            <div class="alert alert-info mb-0">
+              <i class="bi bi-info-circle me-2"></i>
+              Une image est déjà attachée. Uploadez une nouvelle image pour la remplacer.
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Aperçu -->
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header">
+          <h5 class="mb-0">Aperçu</h5>
+        </div>
+        <div class="card-body">
+          <div class="bg-light rounded p-3 text-center" style="min-height: 150px;">
+            <% if @carousel.image.attached? %>
+              <%= image_tag @carousel.image.variant(resize_to_limit: [600, 200]), 
+                  class: "img-fluid rounded", 
+                  style: "max-height: 150px; object-fit: cover;" %>
+            <% else %>
+              <i class="bi bi-image fs-1 text-muted"></i>
+              <p class="text-muted small mb-0 mt-2">Aperçu après upload</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

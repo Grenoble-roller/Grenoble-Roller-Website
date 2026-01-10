@@ -22,7 +22,7 @@ RSpec.describe ProductCategory, type: :model do
 
   it 'restricts destroy when products exist' do
     category = ProductCategory.create!(name: 'Cat', slug: "cat-#{SecureRandom.hex(3)}")
-    product = Product.create!(category: category, name: 'T-shirt', slug: "tshirt-#{SecureRandom.hex(3)}", price_cents: 1500, currency: 'EUR', stock_qty: 0, is_active: true, image_url: 'https://example.org/img.jpg')
+    product = create_product_with_image(category: category, name: 'T-shirt', slug: "tshirt-#{SecureRandom.hex(3)}", price_cents: 1500, currency: 'EUR', stock_qty: 0, is_active: true)
     expect {
       category.destroy
     }.to raise_error(ActiveRecord::DeleteRestrictionError)

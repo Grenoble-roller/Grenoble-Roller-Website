@@ -1,0 +1,264 @@
+<% 
+  breadcrumb_items = [
+    { label: "Paiements", url: admin_panel_payments_path },
+    { label: "Paiement ##{@payment.id}", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Paiement #<%= @payment.id %></h1>
+  <div>
+    <%= link_to "Retour à la liste", admin_panel_payments_path, class: "btn btn-outline-liquid-secondary" %>
+    <% if policy([:admin_panel, @payment]).destroy? %>
+      <%= button_to "Supprimer", admin_panel_payment_path(@payment), 
+          method: :delete,
+          data: { 
+            turbo_confirm: "⚠️ ATTENTION : Vous êtes sur le point de supprimer définitivement une entrée de paiement.\n\n" \
+                          "Cette action est IRRÉVERSIBLE et peut avoir des conséquences sur :\n" \
+                          "- Les commandes associées\n" \
+                          "- Les adhésions associées\n" \
+                          "- Les participations associées\n\n" \
+                          "Êtes-vous ABSOLUMENT certain de vouloir continuer ?"
+          },
+          class: "btn btn-danger" %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Informations principales -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header bg-liquid-primary text-white">
+    <h5 class="mb-0">Informations du paiement</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">ID</dt>
+          <dd class="col-sm-8"><%= @payment.id %></dd>
+
+          <dt class="col-sm-4">Fournisseur</dt>
+          <dd class="col-sm-8">
+            <span class="badge bg-liquid-secondary"><%= @payment.provider %></span>
+          </dd>
+
+          <dt class="col-sm-4">Statut</dt>
+          <dd class="col-sm-8">
+            <% case @payment.status %>
+            <% when 'completed' %>
+              <span class="badge bg-success">Complété</span>
+            <% when 'pending' %>
+              <span class="badge bg-warning">En attente</span>
+            <% when 'failed' %>
+              <span class="badge bg-danger">Échoué</span>
+            <% when 'cancelled' %>
+              <span class="badge bg-danger">Annulé</span>
+            <% else %>
+              <span class="badge bg-secondary"><%= @payment.status.humanize %></span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-4">Montant</dt>
+          <dd class="col-sm-8">
+            <strong class="text-liquid-success fs-5">
+              <%= number_to_currency(@payment.amount_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %>
+            </strong>
+          </dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">ID Paiement</dt>
+          <dd class="col-sm-8">
+            <code class="text-muted"><%= @payment.provider_payment_id %></code>
+          </dd>
+
+          <dt class="col-sm-4">Devise</dt>
+          <dd class="col-sm-8"><%= @payment.currency || 'EUR' %></dd>
+
+          <dt class="col-sm-4">Créé le</dt>
+          <dd class="col-sm-8"><%= l @payment.created_at, format: :long %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Commandes associées -->
+<% if @orders.any? %>
+  <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+    <div class="card-header bg-liquid-info text-white">
+      <h5 class="mb-0">Commandes associées (<%= @orders.count %>)</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Utilisateur</th>
+              <th>Total</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @orders.each do |order| %>
+              <tr>
+                <td>
+                  <%= link_to "##{order.id}", admin_panel_order_path(order), class: "text-liquid-primary" %>
+                </td>
+                <td>
+                  <%= order.user&.email || '-' %>
+                </td>
+                <td>
+                  <strong><%= number_to_currency(order.total_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong>
+                </td>
+                <td>
+                  <%= status_badge(order.status) %>
+                </td>
+                <td><%= l order.created_at, format: :short %></td>
+                <td>
+                  <%= link_to "Voir", admin_panel_order_path(order), class: "btn btn-sm btn-outline-liquid-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Adhésions associées -->
+<% if @memberships.any? %>
+  <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+    <div class="card-header bg-liquid-success text-white">
+      <h5 class="mb-0">Adhésions associées (<%= @memberships.count %>)</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Utilisateur</th>
+              <th>Type</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @memberships.each do |membership| %>
+              <tr>
+                <td>
+                  <%= link_to "##{membership.id}", admin_panel_membership_path(membership), class: "text-liquid-primary" %>
+                </td>
+                <td>
+                  <%= membership.user&.email || '-' %>
+                </td>
+                <td>
+                  <% case membership.category %>
+                  <% when 'standard' %>
+                    <span class="badge bg-liquid-secondary">Standard</span>
+                  <% when 'with_ffrs' %>
+                    <span class="badge bg-liquid-info">Avec FFRS</span>
+                  <% else %>
+                    <span class="badge bg-liquid-secondary"><%= membership.category.humanize %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <% case membership.status %>
+                  <% when 'pending' %>
+                    <span class="badge bg-warning">En attente</span>
+                  <% when 'active' %>
+                    <span class="badge bg-success">Active</span>
+                  <% when 'expired' %>
+                    <span class="badge bg-danger">Expirée</span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= membership.status.humanize %></span>
+                  <% end %>
+                </td>
+                <td><%= l membership.created_at, format: :short %></td>
+                <td>
+                  <%= link_to "Voir", admin_panel_membership_path(membership), class: "btn btn-sm btn-outline-liquid-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Participations associées -->
+<% if @attendances.any? %>
+  <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+    <div class="card-header bg-liquid-warning text-white">
+      <h5 class="mb-0">Participations associées (<%= @attendances.count %>)</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Utilisateur</th>
+              <th>Événement</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @attendances.each do |attendance| %>
+              <tr>
+                <td>
+                  <%= link_to "##{attendance.id}", admin_panel_attendance_path(attendance), class: "text-liquid-primary" %>
+                </td>
+                <td>
+                  <%= attendance.user&.email || '-' %>
+                </td>
+                <td>
+                  <% if attendance.event %>
+                    <%= link_to attendance.event.title, admin_panel_event_path(attendance.event), class: "text-liquid-primary" %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% case attendance.status %>
+                  <% when 'pending', 'registered' %>
+                    <span class="badge bg-warning">En attente</span>
+                  <% when 'paid', 'present' %>
+                    <span class="badge bg-success">Payé</span>
+                  <% when 'canceled', 'cancelled' %>
+                    <span class="badge bg-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= attendance.status.humanize %></span>
+                  <% end %>
+                </td>
+                <td><%= l attendance.created_at, format: :short %></td>
+                <td>
+                  <%= link_to "Voir", admin_panel_attendance_path(attendance), class: "btn btn-sm btn-outline-liquid-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Message si aucun élément associé -->
+<% if @orders.empty? && @memberships.empty? && @attendances.empty? %>
+  <div class="alert alert-liquid-info">
+    <i class="bi bi-info-circle"></i> Aucune commande, adhésion ou participation associée à ce paiement.
+  </div>
+<% end %>

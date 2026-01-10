@@ -1,106 +1,14 @@
-# 📚 Documentation - Développement en Cours
+# 📚 Documentation - Développement
 
-**Section** : Documentation des fonctionnalités en cours de développement, plans d'implémentation, audits et améliorations à venir.
+**Section** : Documentation des fonctionnalités en développement
 
 ---
 
 ## 📋 Vue d'Ensemble
 
-Cette section contient toute la documentation liée aux **fonctionnalités en développement**, aux **plans d'implémentation**, aux **audits nécessitant des actions**, et aux **améliorations planifiées**.
+Cette section est réservée pour la documentation des **fonctionnalités en cours de développement** (WIP), des **plans d'implémentation non terminés**, et des **audits nécessitant des actions**.
 
-**Principe** : Les fichiers sont organisés par **domaine fonctionnel** pour faciliter la navigation et la maintenance.
-
----
-
-## 📁 Structure par Domaine
-
-### 📧 Mailing & Notifications
-**Dossier** : Fichier principal dans `development/`
-
-Documentation complète du système de mailing automatique :
-- Mailers et leurs méthodes
-- Jobs automatiques (rappels, renouvellements)
-- Préférences utilisateur
-- Configuration SMTP
-- Tests et sécurité
-
-**Fichiers** :
-- `mailing-system-complete.md` - Documentation complète du système de mailing (18 emails, 4 jobs, configuration, tests)
-
----
-
-### 🎨 UX & Améliorations
-**Dossier** : [`ux-improvements/`](ux-improvements/)
-
-Backlog d'améliorations UX et plans d'action :
-- Analyses de parcours utilisateur
-- Quick wins identifiés
-- Améliorations prioritaires
-
-**Fichiers** :
-- `ux-improvements-backlog.md` - Backlog complet (119 améliorations identifiées)
-- `todo-restant.md` - Récapitulatif des tâches restantes
-- `quick-wins-helloasso.md` - Quick wins et intégration HelloAsso
-
----
-
-### ⚙️ Admin Panel
-**Dossier** : [`admin-panel/`](admin-panel/)
-
-Documentation stratégique et plans d'amélioration pour l'admin panel :
-- Analyses stratégiques
-- Plans d'implémentation
-
-**Fichiers** :
-- `admin-panel-strategic-analysis.md` - Analyse stratégique complète
-
----
-
-### ♿ Accessibilité
-**Dossier** : [`accessibility/`](accessibility/)
-
-Audits et plans d'action pour l'accessibilité :
-- Audits d'accessibilité
-- Plans d'action Lighthouse
-- Guides de test
-
-**Fichiers** :
-- `accessibility-audit.md` - Audit complet d'accessibilité
-- `lighthouse-action-plan.md` - Plan d'action Lighthouse
-- `a11y-testing.md` - Guide de test d'accessibilité
-
----
-
-### 🚀 Phase 2
-**Dossier** : [`phase2/`](phase2/)
-
-Documentation des fonctionnalités Phase 2 (non encore implémentées) :
-- Plans de développement
-- Migrations et modèles prévus
-
-**Fichiers** :
-- `cycle-01-phase-2-plan.md` - Plan Phase 2 (Events & Admin)
-- `phase2-migrations-models.md` - Migrations et modèles Phase 2
-
----
-
-### 🧪 Testing
-**Dossier** : [`testing/`](testing/)
-
-Documentation des tests en cours ou à améliorer :
-- Roadmaps de tests
-- Todolists de corrections
-
-**Fichiers** :
-- `ROADMAP.md` - Roadmap des tests RSpec
-- `TODOLIST.md` - Todolist des corrections de tests
-
----
-
-### 🏗️ Infrastructure
-**Dossier** : [`infrastructure/`](infrastructure/)
-
-Documentation infrastructure en développement (pour l'instant vide, prêt pour futurs fichiers).
+**Statut actuel** : ⚠️ **Éléments identifiés à implémenter** (voir ci-dessous)
 
 ---
 
@@ -118,44 +26,80 @@ Documentation infrastructure en développement (pour l'instant vide, prêt pour 
 - ✅ Plan **complètement implémenté** → Archiver ou déplacer vers section complétée
 - ✅ Audit **toutes actions réalisées** → Déplacer vers section appropriée
 
----
-
-## 📝 Conventions
-
-### Nommage
-- **kebab-case** uniquement
-- **Descriptif** : Utiliser des noms descriptifs (ex: `ux-improvements-backlog.md` pas `backlog.md`)
-
-### Frontmatter
-Tous les documents doivent avoir un frontmatter YAML :
-```yaml
----
-title: "Document Title"
-status: "wip|planned|in-review|blocked"
-version: "1.0"
-created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
-authors: ["Author Name"]
-tags: ["tag1", "tag2"]
----
-```
-
-### Statuts possibles
-- `wip` : En cours de développement actif
-- `planned` : Planifié mais pas encore commencé
-- `in-review` : En cours de revue/validation
-- `blocked` : Bloqué (dépendance externe, décision en attente)
-- `deprecated` : Déprécié, ne plus utiliser
+**Exemples de déplacements récents** :
+- ✅ `admin-panel/` → `04-rails/admin-panel/` (100% complété)
+- ✅ `cron/` → `04-rails/background-jobs/` (Solid Queue actif, migration terminée)
+- ✅ `phase2/` → `02-shape-up/building/` (Phase 2 terminée)
+- ✅ `ux-improvements/` → `09-product/` (Améliorations UX terminées)
 
 ---
 
-## 🔗 Liens Utils
+## 📋 Éléments à Implémenter
+
+**Dernière mise à jour** : 2025-01-30
+
+### 🔴 Priorité Haute
+
+#### Pagination (Partielle)
+- ✅ Pagination "Mes sorties" (événements à venir/passés) - **IMPLÉMENTÉ**
+- ✅ Pagination événements passés (tableau) - **IMPLÉMENTÉ**
+- ⚠️ Pagination événements à venir (liste publique) - **DÉLIBÉRÉMENT LIMITÉE À 6** (minicards pour mise en avant)
+- ✅ Pagination initiations (liste publique) - **IMPLÉMENTÉ** (6 minicards à venir + tableau paginé pour passées)
+- ❌ Pagination commandes (liste utilisateur) - **À évaluer selon volume**
+- ❌ Pagination attendances (admin) - **À évaluer selon volume**
+
+**Note** : Pagy 43 est installé et fonctionnel. La pagination événements/initiations à venir est volontairement limitée à 6 pour mise en avant visuelle.
+
+**Référence** : [`../00-overview/features-status.md`](../00-overview/features-status.md)
+
+---
+
+### 🟡 Priorité Moyenne
+
+#### Page d'Accueil - Amélioration & Autonomie Bénévoles
+- ❌ Système de communication bénévoles (carrousel images, annonces, etc.)
+- ❌ Interface d'administration autonome pour bénévoles (gestion contenu homepage)
+
+**Impact** : Haut (autonomie bénévoles)  
+**Effort** : Moyen  
+**Références** :
+- [`homepage-quick-wins.md`](./homepage-quick-wins.md) - **NOUVEAU** - Quick wins (difficulté faible + impact élevé)
+- [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - Plan complet avec gestion admin détaillée
+- [`homepage-reflection.md`](./homepage-reflection.md) - Réflexion initiale + prompt Perplexity
+
+#### Calendrier Interactif
+- ❌ Vue calendrier (FullCalendar) pour événements
+- ❌ Vue calendrier pour "Mes sorties"
+
+**Impact** : Moyen  
+**Effort** : Moyen  
+**Référence** : [`../02-shape-up/building/cycle-01-building-log.md`](../02-shape-up/building/cycle-01-building-log.md)
+
+---
+
+## 📚 Documentation Terminée (Déplacée)
+
+### Phase 2 - Événements & Admin
+**Emplacement** : [`../02-shape-up/building/`](../02-shape-up/building/)
+- `cycle-01-phase-2-plan.md` - Plan Phase 2 (Events & Admin) ✅ **COMPLETED**
+- `phase2-migrations-models.md` - Migrations et modèles Phase 2 ✅ **TERMINÉ**
+
+### Améliorations UX
+**Emplacement** : [`../09-product/`](../09-product/)
+- `quick-wins-helloasso.md` - Intégration HelloAsso ✅ **100% INTÉGRÉ**
+- `ux-improvements-backlog.md` - Référence historique des améliorations UX ✅
+- `todo-restant.md` - Récapitulatif des fonctionnalités essentielles terminées ✅
+
+---
+
+## 🔗 Liens Utiles
 
 - **Documentation principale** : [`../README.md`](../README.md)
+- **État des fonctionnalités** : [`../00-overview/features-status.md`](../00-overview/features-status.md)
 - **Shape Up** : [`../02-shape-up/`](../02-shape-up/)
 - **Architecture** : [`../03-architecture/`](../03-architecture/)
 - **Product** : [`../09-product/`](../09-product/)
 
 ---
 
-**Dernière mise à jour** : 2025-12-20
+**Dernière mise à jour** : 2025-01-30 (Nettoyage complet + réflexion page d'accueil avec autonomie bénévoles)

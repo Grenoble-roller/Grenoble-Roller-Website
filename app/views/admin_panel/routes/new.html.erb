@@ -1,0 +1,103 @@
+<% 
+  breadcrumb_items = [
+    { label: "Routes", url: admin_panel_routes_path },
+    { label: "Nouvelle route", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Nouvelle route</h1>
+  <%= link_to "Retour", admin_panel_routes_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-body">
+        <%= form_with model: [:admin_panel, @route], local: true, multipart: true do |f| %>
+          <% if @route.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>Erreurs:</h5>
+              <ul class="mb-0">
+                <% @route.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <h5>Informations principales</h5>
+            <div class="row">
+              <div class="col-12 mb-3">
+                <%= f.label :name, "Nom *", class: "form-label" %>
+                <%= f.text_field :name, class: "form-control form-control-liquid", required: true %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :difficulty, "Difficulté", class: "form-label" %>
+                <%= f.select :difficulty, 
+                    options_for_select([
+                      ["Non définie", ""],
+                      ["Facile", "easy"],
+                      ["Intermédiaire", "medium"],
+                      ["Difficile", "hard"]
+                    ], @route.difficulty),
+                    {},
+                    { class: "form-select form-control-liquid" } %>
+              </div>
+              <div class="col-md-3 mb-3">
+                <%= f.label :distance_km, "Distance (km)", class: "form-label" %>
+                <%= f.number_field :distance_km, class: "form-control form-control-liquid", step: 0.1, min: 0 %>
+              </div>
+              <div class="col-md-3 mb-3">
+                <%= f.label :elevation_m, "Dénivelé (m)", class: "form-label" %>
+                <%= f.number_field :elevation_m, class: "form-control form-control-liquid", step: 1, min: 0 %>
+              </div>
+              <div class="col-12 mb-3">
+                <%= f.label :gpx_url, "URL GPX", class: "form-label" %>
+                <%= f.url_field :gpx_url, class: "form-control form-control-liquid" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Carte</h5>
+            <div class="row">
+              <div class="col-12 mb-3">
+                <%= f.label :map_image, "Image de carte", class: "form-label" %>
+                <%= f.file_field :map_image, class: "form-control form-control-liquid", accept: "image/*" %>
+                <small class="text-muted">Upload une carte (recommandé)</small>
+              </div>
+              <div class="col-12 mb-3">
+                <%= f.label :map_image_url, "URL de carte (déprécié)", class: "form-label" %>
+                <%= f.url_field :map_image_url, class: "form-control form-control-liquid" %>
+                <small class="text-muted">Ou utilisez une URL (déprécié, pour transition)</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Description</h5>
+            <div class="row">
+              <div class="col-12 mb-3">
+                <%= f.label :description, "Description", class: "form-label" %>
+                <%= f.text_area :description, class: "form-control form-control-liquid", rows: 5 %>
+              </div>
+              <div class="col-12 mb-3">
+                <%= f.label :safety_notes, "Notes de sécurité", class: "form-label" %>
+                <%= f.text_area :safety_notes, class: "form-control form-control-liquid", rows: 3 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <%= f.submit "Créer", class: "btn btn-liquid-primary" %>
+            <%= link_to "Annuler", admin_panel_routes_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

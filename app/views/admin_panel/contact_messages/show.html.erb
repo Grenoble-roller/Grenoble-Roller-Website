@@ -1,0 +1,55 @@
+<% 
+  breadcrumb_items = [
+    { label: "Messages de contact", url: admin_panel_contact_messages_path },
+    { label: "Message ##{@contact_message.id}", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Message #<%= @contact_message.id %></h1>
+  <div>
+    <%= link_to "Retour à la liste", admin_panel_contact_messages_path, class: "btn btn-outline-liquid-secondary" %>
+    <%= link_to "Répondre", "mailto:#{@contact_message.email}?subject=#{ERB::Util.url_encode("Re: #{@contact_message.subject}")}", 
+        class: "btn btn-liquid-primary", target: "_blank" %>
+    <%= button_to "Supprimer", admin_panel_contact_message_path(@contact_message), 
+        method: :delete,
+        data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" },
+        class: "btn btn-danger" %>
+  </div>
+</div>
+
+<!-- Informations du message -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header bg-liquid-primary text-white">
+    <h5 class="mb-0">Informations du message</h5>
+  </div>
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-3">ID</dt>
+      <dd class="col-sm-9"><%= @contact_message.id %></dd>
+
+      <dt class="col-sm-3">Nom</dt>
+      <dd class="col-sm-9"><strong><%= @contact_message.name %></strong></dd>
+
+      <dt class="col-sm-3">Email</dt>
+      <dd class="col-sm-9">
+        <%= mail_to @contact_message.email, @contact_message.email, class: "text-liquid-primary" %>
+      </dd>
+
+      <dt class="col-sm-3">Sujet</dt>
+      <dd class="col-sm-9"><strong><%= @contact_message.subject %></strong></dd>
+
+      <dt class="col-sm-3">Message</dt>
+      <dd class="col-sm-9">
+        <div class="border rounded p-3 bg-light">
+          <%= simple_format(@contact_message.message) %>
+        </div>
+      </dd>
+
+      <dt class="col-sm-3">Date d'envoi</dt>
+      <dd class="col-sm-9"><%= l @contact_message.created_at, format: :long %></dd>
+    </dl>
+  </div>
+</div>

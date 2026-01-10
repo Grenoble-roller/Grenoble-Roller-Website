@@ -32,7 +32,7 @@
           </dd>
 
           <dt class="col-sm-3">Total</dt>
-          <dd class="col-sm-9"><strong><%= number_to_currency(@order.total_cents / 100.0, unit: '€') %></strong></dd>
+          <dd class="col-sm-9"><strong><%= number_to_currency(@order.total_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong></dd>
 
           <dt class="col-sm-3">Statut</dt>
           <dd class="col-sm-9"><%= status_badge(@order.status) %></dd>
@@ -62,13 +62,25 @@
                 </tr>
               </thead>
               <tbody>
-                <% @order.order_items.each do |item| %>
+                <% @order.order_items.includes(variant: :inventory).each do |item| %>
+                  <% variant = item.variant %>
+                  <% inventory = variant&.inventory %>
                   <tr>
-                    <td data-label="Produit"><%= item.variant&.product&.name || "N/A" %></td>
-                    <td data-label="Variante"><code><%= item.variant&.sku || "N/A" %></code></td>
+                    <td data-label="Produit"><%= variant&.product&.name || "N/A" %></td>
+                    <td data-label="Variante">
+                      <code><%= variant&.sku || "N/A" %></code>
+                      <% if inventory %>
+                        <br>
+                        <small class="text-muted">
+                          Stock: <%= inventory.stock_qty %> | 
+                          Réservé: <span class="<%= inventory.reserved_qty > 0 ? 'text-warning' : '' %>"><%= inventory.reserved_qty %></span> | 
+                          Disponible: <span class="<%= inventory.available_qty <= 5 ? 'text-danger' : 'text-success' %>"><%= inventory.available_qty %></span>
+                        </small>
+                      <% end %>
+                    </td>
                     <td data-label="Quantité"><%= item.quantity %></td>
-                    <td data-label="Prix unitaire"><%= number_to_currency(item.unit_price_cents / 100.0, unit: '€') %></td>
-                    <td data-label="Total"><%= number_to_currency(item.unit_price_cents * item.quantity / 100.0, unit: '€') %></td>
+                    <td data-label="Prix unitaire"><%= number_to_currency(item.unit_price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></td>
+                    <td data-label="Total"><%= number_to_currency(item.unit_price_cents * item.quantity / 100.0, unit: '€', separator: ',', delimiter: ' ') %></td>
                   </tr>
                 <% end %>
               </tbody>

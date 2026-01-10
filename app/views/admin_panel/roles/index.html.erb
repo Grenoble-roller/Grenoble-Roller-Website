@@ -1,0 +1,80 @@
+<% 
+  breadcrumb_items = [
+    { label: "Rôles", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Rôles</h1>
+  <%= link_to "Nouveau rôle", new_admin_panel_role_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_roles_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :name_cont, "Nom", class: "form-label" %>
+        <%= f.search_field :name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par nom..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :code_cont, "Code", class: "form-label" %>
+        <%= f.search_field :code_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par code..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :level_eq, "Level", class: "form-label" %>
+        <%= f.number_field :level_eq, class: "form-control form-control-liquid", placeholder: "Level..." %>
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_roles_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Tableau des rôles -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @roles.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Code</th>
+              <th>Level</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @roles.each do |role| %>
+              <tr>
+                <td data-label="ID">#<%= role.id %></td>
+                <td data-label="Nom"><%= role.name %></td>
+                <td data-label="Code"><code><%= role.code %></code></td>
+                <td data-label="Level">
+                  <span class="badge bg-primary"><%= role.level %></span>
+                </td>
+                <td data-label="Description"><%= role.description&.truncate(50) || "-" %></td>
+                <td data-label="Actions">
+                  <%= link_to "Voir", admin_panel_role_path(role), class: "btn btn-sm btn-outline-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render 'admin_panel/shared/pagination' %>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucun rôle trouvé</p>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,143 @@
+<% 
+  breadcrumb_items = [
+    { label: "Partenaires", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Partenaires</h1>
+  <%= link_to "Nouveau partenaire", new_admin_panel_partner_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-12">
+        <div class="btn-group" role="group">
+          <%= link_to "Tous", admin_panel_partners_path, 
+              class: "btn btn-sm #{params[:scope].blank? ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+          <%= link_to "Actifs", admin_panel_partners_path(scope: 'active'), 
+              class: "btn btn-sm #{params[:scope] == 'active' ? 'btn-liquid-success' : 'btn-outline-liquid-success'}" %>
+          <%= link_to "Inactifs", admin_panel_partners_path(scope: 'inactive'), 
+              class: "btn btn-sm #{params[:scope] == 'inactive' ? 'btn-liquid-secondary' : 'btn-outline-liquid-secondary'}" %>
+        </div>
+      </div>
+    </div>
+    <hr>
+    <%= search_form_for @q, url: admin_panel_partners_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :name_cont, "Nom", class: "form-label" %>
+        <%= f.search_field :name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par nom..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :is_active_eq, "Statut", class: "form-label" %>
+        <%= f.select :is_active_eq,
+            options_for_select([
+              ["Tous", ""],
+              ["Actif", "true"],
+              ["Inactif", "false"]
+            ], params.dig(:q, :is_active_eq)),
+            {},
+            { class: "form-select form-select-liquid" } %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :created_at_gteq, "Date début", class: "form-label" %>
+        <%= f.date_field :created_at_gteq, class: "form-control form-control-liquid", value: params.dig(:q, :created_at_gteq) %>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">&nbsp;</label>
+        <div>
+          <%= f.submit "Filtrer", class: "btn btn-liquid-primary w-100" %>
+        </div>
+      </div>
+      <div class="col-12">
+        <%= link_to "Réinitialiser", admin_panel_partners_path, class: "btn btn-outline-liquid-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Liste des partenaires -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @partners.any? %>
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Logo</th>
+              <th>Nom</th>
+              <th>URL</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @partners.each do |partner| %>
+              <tr>
+                <td><%= partner.id %></td>
+                <td>
+                  <% if partner.logo_url.present? %>
+                    <% if partner.logo_url.start_with?('http://', 'https://') %>
+                      <%= image_tag partner.logo_url, height: 50, style: "border-radius: 8px;", alt: partner.name, onerror: "this.style.display='none'; this.nextElementSibling.style.display='inline';" %>
+                      <span class="text-muted" style="display: none;">-</span>
+                    <% else %>
+                      <% begin %>
+                    <%= image_tag partner.logo_url, height: 50, style: "border-radius: 8px;", alt: partner.name %>
+                      <% rescue Propshaft::MissingAssetError, Sprockets::Rails::Helper::AssetNotFound => e %>
+                        <span class="text-muted" title="Image non trouvée: <%= partner.logo_url %>">-</span>
+                      <% end %>
+                    <% end %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td><strong><%= partner.name %></strong></td>
+                <td>
+                  <% if partner.url.present? %>
+                    <%= link_to partner.url, partner.url, target: "_blank", class: "text-liquid-primary", rel: "noopener" %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if partner.is_active %>
+                    <span class="badge bg-success">Actif</span>
+                  <% else %>
+                    <span class="badge bg-secondary">Inactif</span>
+                  <% end %>
+                </td>
+                <td><%= l partner.updated_at, format: :short %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Voir", admin_panel_partner_path(partner), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Modifier", edit_admin_panel_partner_path(partner), class: "btn btn-outline-liquid-secondary" %>
+                    <%= button_to "Supprimer", admin_panel_partner_path(partner), 
+                        method: :delete,
+                        data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce partenaire ?" },
+                        class: "btn btn-danger" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucun partenaire trouvé.</p>
+        <%= link_to "Créer le premier partenaire", new_admin_panel_partner_path, class: "btn btn-liquid-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

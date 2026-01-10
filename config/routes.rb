@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  ActiveAdmin.routes(self)
+  # ActiveAdmin désactivé - Tout migré vers AdminPanel (2025-01-13)
+  # ActiveAdmin.routes(self)
 
   # ===== NOUVEAU PANEL ADMIN =====
   namespace :admin_panel, path: "admin-panel" do
@@ -46,6 +47,13 @@ Rails.application.routes.draw do
       collection { get :export }
     end
 
+    # Paiements
+    resources :payments, only: [ :index, :show, :destroy ]
+
+    # Communication
+    resources :contact_messages, path: "contact-messages", only: [ :index, :show, :destroy ]
+    resources :partners
+
     # Initiations
     resources :initiations do
       member do
@@ -54,11 +62,65 @@ Rails.application.routes.draw do
         post :convert_waitlist
         post :notify_waitlist
         patch :toggle_volunteer
+        post :return_material
+      end
+    end
+
+    # Événements (Randonnées)
+    # Note: new/create/edit/update sont gérés par le controller public EventsController
+    resources :events, only: [ :index, :show, :destroy ] do
+      member do
+        post :convert_waitlist
+        post :notify_waitlist
+      end
+    end
+
+    # Routes (Parcours)
+    resources :routes
+
+    # Participations (Attendances)
+    resources :attendances
+
+    # Candidatures Organisateur
+    # Note: new/create/edit/update ne sont pas nécessaires (candidatures créées par les utilisateurs)
+    resources :organizer_applications, only: [ :index, :show, :destroy ] do
+      member do
+        patch :approve
+        patch :reject
       end
     end
 
     # Roller Stock
     resources :roller_stocks, path: "roller-stocks"
+
+    # Utilisateurs
+    resources :users
+    resources :roles
+    resources :memberships do
+      member do
+        patch :activate
+      end
+    end
+
+    # Maintenance Mode (admin uniquement)
+    resource :maintenance, only: [], controller: "maintenance" do
+      member do
+        patch :toggle
+      end
+    end
+
+    # Homepage Content (level >= 40 : ORGANIZER+)
+    resources :homepage_carousels, path: "homepage-carousels" do
+      member do
+        post :publish
+        post :unpublish
+        patch :move_up
+        patch :move_down
+      end
+      collection do
+        patch :reorder
+      end
+    end
   end
 
   # Ressource REST pour le mode maintenance
@@ -85,6 +147,9 @@ Rails.application.routes.draw do
     passwords: "passwords",
     confirmations: "confirmations"
   }
+
+  # Route AJAX pour vérifier si un email existe déjà (validation en temps réel)
+  get "/users/check_email", to: "registrations#check_email", as: "check_email_users"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -105,6 +170,7 @@ Rails.application.routes.draw do
   root "pages#index"
 
   # Static pages
+  get "/welcome", to: "pages#welcome", as: "welcome"
   get "/a-propos", to: "pages#about", as: "about"
   # Redirection 301 de /association vers /a-propos (fusion des pages)
   get "/association", to: redirect("/a-propos", status: 301), as: "association"
@@ -145,6 +211,8 @@ Rails.application.routes.draw do
       patch :upgrade
       # Renouveler une adhésion expirée (enfant uniquement)
       post :renew
+      # Vérifier le paiement HelloAsso
+      post :check_payment
     end
     collection do
       # Paiement groupé pour plusieurs enfants en attente
@@ -218,7 +286,9 @@ Rails.application.routes.draw do
   get "/conditions-generales-vente", to: "legal_pages#cgv" # Alias pour CGV
   get "/cgu", to: "legal_pages#cgu", as: "cgu"
   get "/conditions-generales-utilisation", to: "legal_pages#cgu" # Alias pour CGU
-  get "/contact", to: "legal_pages#contact", as: "contact"
+  # Formulaire de contact public
+  get "/contact", to: "contact_messages#new", as: "contact"
+  post "/contact", to: "contact_messages#create"
   get "/faq", to: "legal_pages#faq", as: "faq"
   get "/questions-frequentes", to: "legal_pages#faq" # Alias pour FAQ
 

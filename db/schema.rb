@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_24_032423) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_05_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -145,6 +145,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_032423) do
     t.string "season"
     t.timestamptz "start_at", null: false
     t.string "status", limit: 20, default: "draft", null: false
+    t.datetime "stock_returned_at"
     t.string "title", limit: 140, null: false
     t.string "type"
     t.datetime "updated_at", null: false
@@ -154,6 +155,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_032423) do
     t.index ["status", "start_at"], name: "index_events_on_status_and_start_at"
     t.index ["type", "season"], name: "index_events_on_type_and_season"
     t.index ["type"], name: "index_events_on_type"
+  end
+
+  create_table "homepage_carousels", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "link_url"
+    t.integer "position", default: 0
+    t.boolean "published", default: false, null: false
+    t.datetime "published_at"
+    t.string "subtitle"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_homepage_carousels_on_position"
+    t.index ["published", "expires_at"], name: "index_homepage_carousels_on_published_and_expires_at"
+    t.index ["published"], name: "index_homepage_carousels_on_published"
   end
 
   create_table "inventories", force: :cascade do |t|

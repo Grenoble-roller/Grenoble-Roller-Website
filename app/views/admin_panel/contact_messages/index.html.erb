@@ -1,0 +1,98 @@
+<% 
+  breadcrumb_items = [
+    { label: "Messages de contact", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Messages de contact</h1>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_contact_messages_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-3">
+        <%= f.label :name_cont, "Nom", class: "form-label" %>
+        <%= f.search_field :name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par nom..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :email_cont, "Email", class: "form-label" %>
+        <%= f.search_field :email_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par email..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :subject_cont, "Sujet", class: "form-label" %>
+        <%= f.search_field :subject_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par sujet..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :created_at_gteq, "Date début", class: "form-label" %>
+        <%= f.date_field :created_at_gteq, class: "form-control form-control-liquid", value: params.dig(:q, :created_at_gteq) %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :created_at_lteq, "Date fin", class: "form-label" %>
+        <%= f.date_field :created_at_lteq, class: "form-control form-control-liquid", value: params.dig(:q, :created_at_lteq) %>
+      </div>
+      <div class="col-12">
+        <%= f.submit "Filtrer", class: "btn btn-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_contact_messages_path, class: "btn btn-outline-liquid-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Liste des messages -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @contact_messages.any? %>
+      <div class="table-responsive">
+        <table class="table table-liquid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Sujet</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @contact_messages.each do |message| %>
+              <tr>
+                <td><%= message.id %></td>
+                <td><strong><%= message.name %></strong></td>
+                <td>
+                  <%= mail_to message.email, message.email, class: "text-liquid-primary" %>
+                </td>
+                <td><%= message.subject %></td>
+                <td><%= l message.created_at, format: :short %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Voir", admin_panel_contact_message_path(message), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Répondre", "mailto:#{message.email}?subject=#{ERB::Util.url_encode("Re: #{message.subject}")}", 
+                        class: "btn btn-outline-liquid-success", target: "_blank" %>
+                    <%= button_to "Supprimer", admin_panel_contact_message_path(message), 
+                        method: :delete,
+                        data: { turbo_confirm: "Êtes-vous sûr de vouloir supprimer ce message ?" },
+                        class: "btn btn-danger" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="mt-4">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucun message de contact trouvé.</p>
+      </div>
+    <% end %>
+  </div>
+</div>

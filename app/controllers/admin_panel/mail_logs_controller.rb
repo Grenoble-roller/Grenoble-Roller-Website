@@ -67,6 +67,8 @@ module AdminPanel
     private
 
     def ensure_superadmin
+      # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
+      # Level 70 = SUPERADMIN uniquement
       unless current_user&.role&.level.to_i >= 70
         redirect_to admin_panel_initiations_path, alert: "Accès réservé aux super-administrateurs"
       end

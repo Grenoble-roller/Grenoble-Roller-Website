@@ -17,6 +17,13 @@ class Event::Initiation < Event
   # Callback pour forcer distance_km = 0 pour les initiations (avant validation)
   before_validation :set_distance_km_to_zero, on: [ :create, :update ]
 
+  # Callback pour planifier l'envoi du rapport participants le jour de l'initiation à 7h
+  # Créé automatiquement quand l'initiation est publiée
+  after_commit :schedule_participants_report, on: [ :create, :update ], if: -> { should_schedule_report? && (saved_change_to_status? || saved_change_to_start_at?) }
+
+  # Callback pour annuler le job si l'initiation est annulée/rejetée après publication
+  after_commit :cancel_scheduled_report, on: [ :update ], if: -> { should_cancel_report? && saved_change_to_status? }
+
   # Méthodes métier
   def full?
     if allow_non_member_discovery?
@@ -144,5 +151,67 @@ class Event::Initiation < Event
 
   def set_distance_km_to_zero
     self.distance_km = 0
+  end
+
+  # Détermine si on doit planifier le rapport (initiation publiée avec start_at dans le futur)
+  def should_schedule_report?
+    published? && start_at.present? && start_at.future? && participants_report_sent_at.nil?
+  end
+
+  # Détermine si on doit annuler le job planifié (initiation annulée/rejetée après publication)
+  def should_cancel_report?
+    (canceled? || rejected?) && participants_report_sent_at.nil? && start_at.present? && start_at.future?
+  end
+
+  # Planifie l'envoi du rapport le jour de l'initiation à 7h00
+  def schedule_participants_report
+    return unless should_schedule_report?
+
+    # Calculer la date/heure d'exécution : jour de l'initiation à 7h00
+    report_time = start_at.beginning_of_day + 7.hours
+
+    # Si l'heure est déjà passée aujourd'hui, ne pas planifier (sécurité)
+    return if report_time.past?
+
+    # Planifier le job avec perform_at
+    InitiationParticipantsReportJob.set(wait_until: report_time).perform_later(id)
+
+    Rails.logger.info("[Event::Initiation] Rapport participants planifié pour initiation ##{id} le #{report_time}")
+  rescue StandardError => e
+    Rails.logger.error("[Event::Initiation] Erreur lors de la planification du rapport pour initiation ##{id}: #{e.message}")
+    Sentry.capture_exception(e, extra: { initiation_id: id }) if defined?(Sentry)
+  end
+
+  # Annule le job planifié si l'initiation est annulée/rejetée
+  def cancel_scheduled_report
+    return unless should_cancel_report?
+
+    # Trouver et annuler les jobs planifiés pour cette initiation
+    # Solid Queue stocke les jobs dans solid_queue_jobs avec les arguments en JSON
+    scheduled_jobs = SolidQueue::Job
+                      .where(class_name: "InitiationParticipantsReportJob")
+                      .where(finished_at: nil)
+                      .where.not(scheduled_at: nil) # Jobs planifiés uniquement
+
+    canceled_count = 0
+    scheduled_jobs.find_each do |job|
+      # Vérifier que c'est bien le bon job (arguments contient l'ID)
+      # Les arguments sont stockés en JSON dans Solid Queue
+      begin
+        job_args = JSON.parse(job.arguments) if job.arguments.present?
+        if job_args.is_a?(Array) && job_args.first == id
+          job.update(finished_at: Time.current)
+          canceled_count += 1
+        end
+      rescue JSON::ParserError
+        # Si les arguments ne sont pas en JSON valide, ignorer
+        next
+      end
+    end
+
+    Rails.logger.info("[Event::Initiation] #{canceled_count} job(s) de rapport annulé(s) pour initiation ##{id}") if canceled_count > 0
+  rescue StandardError => e
+    Rails.logger.error("[Event::Initiation] Erreur lors de l'annulation du job pour initiation ##{id}: #{e.message}")
+    Sentry.capture_exception(e, extra: { initiation_id: id }) if defined?(Sentry)
   end
 end

@@ -9,7 +9,7 @@ class Product < ApplicationRecord
 
   # VALIDATIONS
   validates :name, :slug, :price_cents, :currency, presence: true
-  validate :image_or_image_url_present
+  validate :image_present
   validates :name, length: { maximum: 140 }
   validates :slug, length: { maximum: 160 }, uniqueness: true
   validates :currency, length: { is: 3 }
@@ -88,13 +88,23 @@ class Product < ApplicationRecord
     self.slug = name.parameterize if slug.blank?
   end
 
-  def image_or_image_url_present
-    return if image.attached? || image_url.present?
-    errors.add(:base, "Une image (upload ou URL) est requise")
+  def image_present
+    return if image.attached?
+    errors.add(:base, "Une image est requise")
   end
 
   def has_at_least_one_active_variant
+    # Ne pas valider lors de la création si des variantes seront générées automatiquement
+    # La validation s'applique seulement pour les produits déjà persistés
+    return unless persisted?
+    # Ne pas valider lors d'un save_draft (auto-save) ou lors de la génération de variantes manquantes
+    return if @skip_variant_validation || @save_draft || @generate_missing
+    # Si le produit a déjà des variantes (même inactives), on peut permettre la génération de nouvelles
+    # La validation ne s'applique que si le produit n'a aucune variante du tout
     return if product_variants.exists?(is_active: true)
+    # Si le produit a des variantes mais qu'elles sont toutes inactives, on permet quand même
+    # (l'utilisateur pourra les réactiver ou en créer de nouvelles)
+    return if product_variants.any?
     errors.add(:base, "Au moins une variante active requise")
   end
 end

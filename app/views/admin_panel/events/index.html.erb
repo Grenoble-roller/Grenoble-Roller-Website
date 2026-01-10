@@ -1,0 +1,252 @@
+<% 
+  breadcrumb_items = [
+    { label: "Événements", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Événements</h1>
+  <% if current_user&.role&.level.to_i >= 60 %>
+    <%= link_to new_event_path, class: "btn btn-liquid-primary" do %>
+      <i class="bi bi-plus-circle me-2"></i>
+      Créer un événement
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_events_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :title_cont, "Titre", class: "form-label" %>
+        <%= f.search_field :title_cont, class: "form-control form-control-liquid", placeholder: "Rechercher..." %>
+      </div>
+      <div class="col-md-2">
+        <%= f.label :status_eq, "Statut", class: "form-label" %>
+        <%= f.select :status_eq,
+            options_for_select([
+              ["Tous", ""],
+              ["Brouillon", "draft"],
+              ["Publié", "published"],
+              ["Refusé", "rejected"],
+              ["Annulé", "canceled"]
+            ], params.dig(:q, :status_eq)),
+            {},
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Filtre</label>
+        <%= select_tag :scope,
+            options_for_select([
+              ["Tous", ""],
+              ["À venir uniquement", "upcoming"],
+              ["Publiés uniquement", "published"],
+              ["En attente de validation", "pending_validation"],
+              ["Refusés", "rejected"],
+              ["Annulés", "canceled"]
+            ], params[:scope]),
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-4 d-flex align-items-end justify-content-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_events_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Événements à venir -->
+<% if @upcoming_events.any? %>
+  <div class="card card-liquid-primary rounded-liquid shadow-liquid mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="bi bi-calendar-event me-2"></i>
+        Événements à venir (<%= @upcoming_events.count %>)
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Date/Heure</th>
+              <th>Statut</th>
+              <th>Places</th>
+              <th>Participants</th>
+              <th>Liste d'attente</th>
+              <th>Route</th>
+              <th>Créateur</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @upcoming_events.each do |event| %>
+              <tr>
+                <td data-label="Titre"><%= event.title %></td>
+                <td data-label="Date/Heure">
+                  <%= l(event.start_at, format: :short) if event.start_at %>
+                  <% if event.duration_min %>
+                    <br>
+                    <small class="text-muted"><%= event.duration_min %> min</small>
+                  <% end %>
+                </td>
+                <td data-label="Statut">
+                  <% case event.status %>
+                  <% when 'published' %>
+                    <span class="badge badge-liquid-success">Publié</span>
+                  <% when 'draft' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% when 'rejected' %>
+                    <span class="badge badge-liquid-danger">Refusé</span>
+                  <% when 'canceled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% end %>
+                </td>
+                <td data-label="Places">
+                  <% if event.full? %>
+                    <span class="badge badge-liquid-danger">COMPLET</span>
+                  <% elsif event.unlimited? %>
+                    <span class="badge badge-liquid-info">Illimité</span>
+                  <% else %>
+                    <span class="badge badge-liquid-success">
+                      <%= event.attendances.where.not(status: ['canceled', 'pending']).where(is_volunteer: false).count %>/<%= event.max_participants %>
+                    </span>
+                  <% end %>
+                </td>
+                <td data-label="Participants">
+                  <%= event.attendances.where.not(status: ['canceled', 'pending']).where(is_volunteer: false).count %>
+                </td>
+                <td data-label="Liste d'attente">
+                  <% waitlist_count = event.waitlist_entries.active.count %>
+                  <% if waitlist_count > 0 %>
+                    <span class="badge badge-liquid-warning"><%= waitlist_count %></span>
+                  <% else %>
+                    <span class="text-muted">0</span>
+                  <% end %>
+                </td>
+                <td data-label="Route">
+                  <%= event.route&.name || "-" %>
+                </td>
+                <td data-label="Créateur">
+                  <%= event.creator_user&.email || "-" %>
+                </td>
+                <td data-label="Actions">
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Voir", admin_panel_event_path(event), class: "btn btn-outline-liquid-primary" %>
+                    <% if current_user&.role&.level.to_i >= 60 %>
+                      <%= link_to "Modifier", edit_event_path(event), class: "btn btn-outline-secondary" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Événements passés -->
+<% if @past_events.any? %>
+  <div class="card card-liquid rounded-liquid shadow-liquid">
+    <div class="card-header">
+      <h5 class="mb-0">
+        <i class="bi bi-calendar-check me-2"></i>
+        Événements passés (<%= @past_events.count %>)
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Date/Heure</th>
+              <th>Statut</th>
+              <th>Places</th>
+              <th>Participants</th>
+              <th>Liste d'attente</th>
+              <th>Route</th>
+              <th>Créateur</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @past_events.each do |event| %>
+              <tr class="opacity-75">
+                <td data-label="Titre"><%= event.title %></td>
+                <td data-label="Date/Heure">
+                  <%= l(event.start_at, format: :short) if event.start_at %>
+                  <% if event.duration_min %>
+                    <br>
+                    <small class="text-muted"><%= event.duration_min %> min</small>
+                  <% end %>
+                </td>
+                <td data-label="Statut">
+                  <% case event.status %>
+                  <% when 'published' %>
+                    <span class="badge badge-liquid-success">Publié</span>
+                  <% when 'draft' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% when 'rejected' %>
+                    <span class="badge badge-liquid-danger">Refusé</span>
+                  <% when 'canceled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% end %>
+                </td>
+                <td data-label="Places">
+                  <% if event.full? %>
+                    <span class="badge badge-liquid-danger">COMPLET</span>
+                  <% elsif event.unlimited? %>
+                    <span class="badge badge-liquid-info">Illimité</span>
+                  <% else %>
+                    <span class="badge badge-liquid-success">
+                      <%= event.attendances.where.not(status: ['canceled', 'pending']).where(is_volunteer: false).count %>/<%= event.max_participants %>
+                    </span>
+                  <% end %>
+                </td>
+                <td data-label="Participants">
+                  <%= event.attendances.where.not(status: ['canceled', 'pending']).where(is_volunteer: false).count %>
+                </td>
+                <td data-label="Liste d'attente">
+                  <% waitlist_count = event.waitlist_entries.active.count %>
+                  <% if waitlist_count > 0 %>
+                    <span class="badge badge-liquid-warning"><%= waitlist_count %></span>
+                  <% else %>
+                    <span class="text-muted">0</span>
+                  <% end %>
+                </td>
+                <td data-label="Route">
+                  <%= event.route&.name || "-" %>
+                </td>
+                <td data-label="Créateur">
+                  <%= event.creator_user&.email || "-" %>
+                </td>
+                <td data-label="Actions">
+                  <div class="btn-group btn-group-sm">
+                    <%= link_to "Voir", admin_panel_event_path(event), class: "btn btn-outline-liquid-primary" %>
+                    <% if current_user&.role&.level.to_i >= 60 %>
+                      <%= link_to "Modifier", edit_event_path(event), class: "btn btn-outline-secondary" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Message si aucun événement -->
+<% if @upcoming_events.empty? && @past_events.empty? %>
+  <div class="alert alert-info">
+    Aucun événement trouvé.
+  </div>
+<% end %>

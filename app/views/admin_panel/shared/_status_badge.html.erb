@@ -1,0 +1,12 @@
+<% 
+  # Partial pour afficher un badge de statut avec mapping personnalisé
+  # Usage: <%= render 'admin_panel/shared/status_badge', status: payment.status, status_map: { 'completed' => { label: 'Complété', class: 'success' } } %>
+  
+  status_map ||= {}
+  status_str = status.to_s
+  config = status_map[status_str] || { label: status_str.humanize, class: 'secondary' }
+  label = config[:label] || status_str.humanize
+  css_class = config[:class] || 'secondary'
+%>
+
+<span class="badge bg-<%= css_class %>"><%= label %></span>

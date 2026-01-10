@@ -1,0 +1,86 @@
+<% 
+  breadcrumb_items = [
+    { label: "Partenaires", url: admin_panel_partners_path },
+    { label: @partner.name, url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%= @partner.name %></h1>
+  <div>
+    <%= link_to "Modifier", edit_admin_panel_partner_path(@partner), class: "btn btn-liquid-primary" %>
+    <%= link_to "Retour à la liste", admin_panel_partners_path, class: "btn btn-outline-liquid-secondary" %>
+  </div>
+</div>
+
+<!-- Informations du partenaire -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header bg-liquid-primary text-white">
+    <h5 class="mb-0">Informations du partenaire</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">ID</dt>
+          <dd class="col-sm-8"><%= @partner.id %></dd>
+
+          <dt class="col-sm-4">Nom</dt>
+          <dd class="col-sm-8"><strong><%= @partner.name %></strong></dd>
+
+          <dt class="col-sm-4">URL</dt>
+          <dd class="col-sm-8">
+            <% if @partner.url.present? %>
+              <% safe_url = safe_external_url(@partner.url) %>
+              <% if safe_url %>
+                <%= link_to @partner.url, safe_url, target: "_blank", class: "text-liquid-primary", rel: "noopener" %>
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-4">Statut</dt>
+          <dd class="col-sm-8">
+            <% if @partner.is_active %>
+              <span class="badge bg-success">Actif</span>
+            <% else %>
+              <span class="badge bg-secondary">Inactif</span>
+            <% end %>
+          </dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-4">Logo</dt>
+          <dd class="col-sm-8">
+            <% if @partner.logo_url.present? %>
+              <%= image_tag @partner.logo_url, height: 100, style: "border-radius: 8px;", alt: @partner.name %>
+            <% else %>
+              <span class="text-muted">Aucun logo</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-4">Description</dt>
+          <dd class="col-sm-8">
+            <% if @partner.description.present? %>
+              <%= simple_format(@partner.description) %>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-4">Créé le</dt>
+          <dd class="col-sm-8"><%= l @partner.created_at, format: :long %></dd>
+
+          <dt class="col-sm-4">Modifié le</dt>
+          <dd class="col-sm-8"><%= l @partner.updated_at, format: :long %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

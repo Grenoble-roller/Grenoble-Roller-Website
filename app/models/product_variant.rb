@@ -17,12 +17,14 @@ class ProductVariant < ApplicationRecord
   validates :currency, length: { is: 3 }
   validate :image_present
   validate :has_required_option_values
+  validate :image_required_if_active
 
   # NOUVEAU : Héritage prix/stock
   attr_accessor :inherit_price, :inherit_stock
 
   before_save :apply_inheritance
   after_create :create_inventory_record
+  after_update :sync_inventory_stock, if: :saved_change_to_stock_qty?
 
   # SCOPES
   scope :active, -> { where(is_active: true) }
@@ -44,6 +46,8 @@ class ProductVariant < ApplicationRecord
 
   def has_required_option_values
     # Si le produit a plusieurs variantes, celle-ci doit avoir des options
+    return unless product
+    return if @skip_option_validation # Permettre de contourner la validation (ex: seed)
     return if variant_option_values.any? || product.product_variants.count <= 1
     errors.add(:base, "Les variantes doivent avoir des options de catégorisation")
   end
@@ -54,8 +58,23 @@ class ProductVariant < ApplicationRecord
   end
 
   def image_present
+    # Permettre la création sans image si la variante est inactive
+    return unless is_active?
     return if images.attached?
+    # Permettre la création sans image si le produit parent a une image (héritage)
+    return if product&.image&.attached?
+    # Permettre la création sans image lors de la génération automatique (skip_validation)
+    return if @skip_image_validation
     errors.add(:base, "Une image (upload fichier) est requise")
+  end
+
+  def image_required_if_active
+    # Si la variante est active, elle doit avoir une image
+    return unless is_active?
+    return if images.attached?
+    # Permettre si le produit parent a une image (héritage)
+    return if product&.image&.attached?
+    errors.add(:base, "Une image est requise pour activer la variante")
   end
 
   def create_inventory_record
@@ -64,5 +83,31 @@ class ProductVariant < ApplicationRecord
       stock_qty: stock_qty || 0,
       reserved_qty: 0
     )
+  end
+
+  def sync_inventory_stock
+    # Synchroniser le stock_qty de l'inventaire avec celui de la variante
+    # IMPORTANT: On synchronise inventory.stock_qty avec variant.stock_qty
+    # La différence entre les deux représente l'ajustement de stock
+    if inventory
+      old_inv_stock = inventory.stock_qty
+      new_inv_stock = stock_qty
+      difference = new_inv_stock - old_inv_stock
+
+      if difference != 0
+        # Mettre à jour le stock de l'inventaire pour qu'il corresponde à celui de la variante
+        inventory.update_column(:stock_qty, new_inv_stock)
+        # Enregistrer le mouvement pour traçabilité
+        inventory.movements.create!(
+          quantity: difference,
+          reason: "adjustment",
+          reference: "variant_#{id}_update",
+          before_qty: old_inv_stock
+        )
+      end
+    else
+      # Si l'inventaire n'existe pas, le créer avec le stock actuel de la variante
+      create_inventory_record
+    end
   end
 end

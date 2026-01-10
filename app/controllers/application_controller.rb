@@ -3,6 +3,10 @@ class ApplicationController < ActionController::Base
   include TurnstileVerifiable
   include ApiResponder
 
+  # Pagy 43 : La méthode pagy() est disponible directement
+  # Plus besoin d'inclure Pagy::Backend (qui n'existe plus dans Pagy 43)
+  # La méthode pagy() est définie comme helper dans Pagy 43
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
   before_action :configure_permitted_parameters, if: :devise_controller?
@@ -28,6 +32,75 @@ class ApplicationController < ActionController::Base
         redirect_to new_user_session_path, alert: "Vous devez être connecté pour accéder à cette page."
       end
     end
+  end
+
+  # Pagy 43 : Helper method pour la pagination dans les contrôleurs
+  # Remplace Pagy::Backend qui n'existe plus dans Pagy 43
+  def pagy(collection, vars = {})
+    # Obtenir le nombre total d'éléments
+    count = if collection.respond_to?(:count)
+      collection.count
+    elsif collection.respond_to?(:size)
+      collection.size
+    else
+      collection.to_a.size
+    end
+
+    # Paramètres de pagination
+    page_param = vars[:page_param] || :page
+    page = (params[page_param] || vars[:page] || 1).to_i
+    items = vars[:items] || Pagy.options[:items] || 25
+
+    # Créer l'instance Pagy::Offset avec les paramètres corrects
+    # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
+    pagy_vars = {
+      count: count,
+      page: page,
+      limit: items,
+      request: request
+    }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
+
+    pagy_instance = Pagy::Offset.new(**pagy_vars)
+
+    # Paginer la collection
+    if collection.respond_to?(:limit) && collection.respond_to?(:offset)
+      # ActiveRecord::Relation
+      paginated_collection = collection.limit(pagy_instance.limit).offset(pagy_instance.offset)
+    elsif collection.respond_to?(:[])
+      # Array ou autre collection indexable
+      paginated_collection = collection[pagy_instance.offset, pagy_instance.limit] || []
+    else
+      # Fallback : convertir en array
+      array = collection.to_a
+      paginated_collection = array[pagy_instance.offset, pagy_instance.limit] || []
+    end
+
+    [ pagy_instance, paginated_collection ]
+  end
+
+  # Helper pour paginer un array (utile quand on a déjà filtré avec select)
+  def pagy_array(array, vars = {})
+    count = array.size
+    page_param = vars[:page_param] || :page
+    page = (params[page_param] || vars[:page] || 1).to_i
+    items = vars[:items] || Pagy.options[:items] || 25
+
+    # Créer l'instance Pagy::Offset avec les paramètres corrects
+    # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
+    # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
+    pagy_vars = {
+      count: count,
+      page: page,
+      limit: items,
+      request: request
+    }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
+
+    pagy_instance = Pagy::Offset.new(**pagy_vars)
+
+    paginated_array = array[pagy_instance.offset, pagy_instance.limit] || []
+
+    [ pagy_instance, paginated_array ]
   end
 
   protected
@@ -62,9 +135,10 @@ class ApplicationController < ActionController::Base
     ])
   end
 
-  def active_admin_access_denied(exception)
-    user_not_authorized(exception)
-  end
+  # ActiveAdmin désactivé - Tout migré vers AdminPanel (2025-01-13)
+  # def active_admin_access_denied(exception)
+  #   user_not_authorized(exception)
+  # end
 
   private
 

@@ -22,7 +22,7 @@
     <% if @event.price_cents > 0 %>
       <tr>
         <td style="padding: 8px 0; color: #666;">💰 Prix :</td>
-        <td style="padding: 8px 0;"><strong><%= number_to_currency(@event.price_cents / 100.0, unit: '€') %></strong></td>
+        <td style="padding: 8px 0;"><strong><%= number_to_currency(@event.price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong></td>
       </tr>
     <% end %>
     <% if @event.route.present? %>

@@ -194,23 +194,31 @@
             </h2>
             
             <div class="mb-3">
-              <% @order.order_items.each_with_index do |item, index| %>
+              <% @order.order_items.includes(variant: :inventory).each_with_index do |item, index| %>
+                <% variant = item.variant %>
+                <% inventory = variant&.inventory %>
                 <div class="cart-item mb-3 pb-3 <%= 'border-bottom' unless index == @order.order_items.count - 1 %>">
                   <div class="cart-item-image">
-                    <% if item.variant.product.image.attached? %>
-                      <%= image_tag item.variant.product.image, alt: item.variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
-                    <% elsif item.variant.product.image_url.present? %>
-                      <%= image_tag item.variant.product.image_url, alt: item.variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
+                    <% if variant.product.image.attached? %>
+                      <%= image_tag variant.product.image, alt: variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
+                    <% elsif variant.product.image_url.present? %>
+                      <%= image_tag variant.product.image_url, alt: variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
                     <% end %>
                   </div>
                   
                   <div class="cart-item-content">
                     <div class="cart-item-info">
-                      <p class="cart-item-title mb-1 fw-semibold"><%= item.variant.product.name %></p>
-                      <div class="d-flex align-items-center gap-2">
-                        <p class="small text-muted mb-0"><%= item.variant.sku %></p>
+                      <p class="cart-item-title mb-1 fw-semibold"><%= variant.product.name %></p>
+                      <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <p class="small text-muted mb-0"><%= variant.sku %></p>
                         <span class="small text-muted" aria-hidden="true">•</span>
                         <p class="small text-muted mb-0"><%= format_price(item.unit_price_cents) %> / u</p>
+                        <% if inventory && ['pending', 'paid', 'preparation'].include?(@order.status.downcase) %>
+                          <span class="small text-muted" aria-hidden="true">•</span>
+                          <small class="text-muted">
+                            Stock réservé: <span class="text-warning"><%= inventory.reserved_qty %></span>
+                          </small>
+                        <% end %>
                       </div>
                     </div>
                     

@@ -7,13 +7,15 @@ module AdminPanelHelper
   end
 
   # Vérifier si l'utilisateur est admin
+  # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
   def admin_user?
     return false unless current_user&.role
 
-    current_user.role.level.to_i >= 60 # ADMIN (60) ou SUPERADMIN (70)
+    current_user.role.level.to_i >= 60
   end
 
   # Helper pour vérifier les permissions sidebar par niveau
+  # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
   def can_access_admin_panel?(min_level = 60)
     return false unless current_user&.role
 
@@ -21,8 +23,7 @@ module AdminPanelHelper
   end
 
   # Helper pour vérifier si on peut voir les initiations (level >= 40)
-  # INITIATION (40) est forcément membre Grenoble Roller
-  # ORGANIZER (30) peut être n'importe qui, donc pas accès aux initiations
+  # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
   def can_view_initiations?
     can_access_admin_panel?(40)
   end

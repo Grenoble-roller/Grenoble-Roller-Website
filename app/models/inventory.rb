@@ -24,26 +24,26 @@ class Inventory < ApplicationRecord
   end
 
   # Réserver du stock (commande en cours)
-  def reserve_stock(quantity, order_id)
+  def reserve_stock(quantity, order_id, user = nil)
     increment!(:reserved_qty, quantity)
     movements.create!(
       quantity: 0,
       reason: "reserved",
       reference: order_id.to_s,
       before_qty: stock_qty,
-      user: Current.user
+      user: user || (defined?(Current) ? Current.user : nil)
     )
   end
 
   # Libérer du stock (commande annulée)
-  def release_stock(quantity, order_id)
+  def release_stock(quantity, order_id, user = nil)
     decrement!(:reserved_qty, quantity)
     movements.create!(
       quantity: 0,
       reason: "released",
       reference: order_id.to_s,
       before_qty: stock_qty,
-      user: Current.user
+      user: user || (defined?(Current) ? Current.user : nil)
     )
   end
 end

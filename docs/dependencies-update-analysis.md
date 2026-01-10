@@ -1,10 +1,29 @@
 # Analyse des mises à jour de dépendances Dependabot
 
-**Date d'analyse** : 2025-01-27
+**Date d'analyse** : 2025-01-27  
+**Dernière vérification** : 2025-01-13  
+**Dernière mise à jour** : 2025-01-30 (Phase 1, 2 et 3 terminées + corrections Pagy::Backend)  
+**Statut** : ✅ **Phase 1, 2 et 3 TERMINÉES** - Toutes les dépendances mises à jour et breaking changes corrigés
 
 ## Résumé exécutif
 
 Sur les 9 PRs de Dependabot, **6 peuvent être mergées immédiatement** (mises à jour mineures/patch), **2 nécessitent des tests** (GitHub Actions), et **1 nécessite une attention particulière** (Pagy - saut de version majeur).
+
+**✅ ÉTAT ACTUEL** : 
+- **Phase 1 TERMINÉE** (5 gems mises à jour) :
+  - ✅ `aws-sdk-s3` : 1.205.0 → **1.209.0**
+  - ✅ `bootsnap` : 1.19.0 → **1.20.1**
+  - ✅ `debug` : 1.11.0 → **1.11.1**
+  - ✅ `thruster` : 0.1.16 → **0.1.17**
+  - ✅ `selenium-webdriver` : 4.38.0 → **4.39.0**
+
+- **Phase 2 TERMINÉE** (3 dépendances mises à jour) :
+  - ✅ `kamal` : 2.9.0 → **2.10.1**
+  - ✅ `actions/checkout` : v4 → **v6**
+  - ✅ `actions/upload-artifact` : v4 → **v6**
+
+- **Phase 3 TERMINÉE** (migration majeure) :
+  - ✅ `pagy` : 8.6.3 → **43.2.2**
 
 ---
 
@@ -79,7 +98,7 @@ Sur les 9 PRs de Dependabot, **6 peuvent être mergées immédiatement** (mises 
 - **Risque** : ⚠️⚠️⚠️ **ÉLEVÉ**
 - **Pourquoi** : 
   - Pagy a changé sa numérotation de version (8.x → 9.x → 43.x)
-  - Utilisé dans plusieurs contrôleurs (`ProductsController`, `OrdersController`, `RollerStocksController`, `MailLogsController`)
+  - Utilisé dans plusieurs contrôleurs (`ProductsController`, `ProductVariantsController`, `MembershipsController`, `MailLogsController`, `RoutesController`)
   - Configuration dans `config/initializers/pagy.rb`
   - Helpers dans les vues (`pagy_bootstrap_nav`)
 
@@ -97,42 +116,97 @@ Sur les 9 PRs de Dependabot, **6 peuvent être mergées immédiatement** (mises 
      - Extras (`pagy/extras/bootstrap`, `pagy/extras/overflow`)
   5. **Tester toutes les pages avec pagination** :
      - `/admin-panel/products`
-     - `/admin-panel/orders`
-     - `/admin-panel/roller_stocks`
+     - `/admin-panel/product_variants`
+     - `/admin-panel/memberships`
      - `/admin-panel/mail_logs`
+     - `/admin-panel/routes`
 
 - **Alternative** : Si la migration est complexe, considérer passer d'abord à Pagy 9.x (version intermédiaire) avant de passer à 43.x
 
 ---
 
+## ✅ Checklist de suivi
+
+- [x] **Phase 1** : Mises à jour sûres (5 gems) ✅ **TERMINÉ**
+  - [x] aws-sdk-s3 : 1.205.0 → 1.209.0 ✅
+  - [x] bootsnap : 1.19.0 → 1.20.1 ✅
+  - [x] debug : 1.11.0 → 1.11.1 ✅
+  - [x] thruster : 0.1.16 → 0.1.17 ✅
+  - [x] selenium-webdriver : 4.38.0 → 4.39.0 ✅
+
+- [x] **Phase 2** : Mises à jour avec tests (3 dépendances) ✅ **TERMINÉ**
+  - [x] kamal : 2.9.0 → 2.10.1 ✅
+  - [x] actions/checkout : v4 → v6 ✅
+  - [x] actions/upload-artifact : v4 → v6 ✅
+
+- [x] **Phase 3** : Pagy (attention particulière) ✅ **TERMINÉ**
+  - [x] Rechercher guide de migration Pagy 8 → 43 ✅
+  - [x] Mettre à jour Gemfile vers pagy ~> 43.0 ✅
+  - [x] Adapter configuration initializer (Pagy.options au lieu de Pagy::DEFAULT) ✅
+  - [x] Retirer requires extras (chargement automatique via Loader) ✅
+  - [x] Corriger helpers frontend (Pagy::Frontend n'existe plus, créé helpers personnalisés dans ApplicationHelper) ✅
+  - [x] Corriger helpers backend (Pagy::Backend n'existe plus, créé méthode pagy() dans ApplicationController) ✅
+  - [x] Retirer tous les `include Pagy::Backend` des contrôleurs (11 fichiers) ✅
+  - [x] Tester localement ✅
+  - [x] Vérifier tous les contrôleurs utilisant Pagy ✅
+  - [x] Tester pagination dans les vues ✅
+
+---
+
 ## Plan d'action recommandé
 
-### Phase 1 : Mises à jour sûres (maintenant)
+### Phase 1 : Mises à jour sûres ✅ **TERMINÉE**
 ```bash
-# Merger ces PRs immédiatement
-- aws-sdk-s3
-- bootsnap
-- debug
-- thruster
-- selenium-webdriver
+# ✅ TERMINÉ - Commandes exécutées avec succès
+bundle update aws-sdk-s3 bootsnap debug thruster selenium-webdriver
+docker compose -f ops/dev/docker-compose.yml exec web bundle install
+docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rails test
 ```
 
-### Phase 2 : Mises à jour avec tests (cette semaine)
+**Temps estimé** : 10-15 minutes  
+**Risque** : ⚠️ **FAIBLE** - Mises à jour patch/minor uniquement  
+**Statut** : ✅ **TERMINÉ** - Toutes les gems mises à jour et testées avec succès
+
+### Phase 2 : Mises à jour avec tests ✅ **TERMINÉE**
 ```bash
-# Tester puis merger
-- kamal (tester déploiement staging)
-- actions/checkout (tester CI)
-- actions/upload-artifact (tester CI)
+# ✅ TERMINÉ - Commandes exécutées avec succès
+bundle update kamal
+# Mise à jour .github/workflows/ci.yml : actions/checkout@v4 → v6, actions/upload-artifact@v4 → v6
+docker compose -f ops/dev/docker-compose.yml exec web bundle install
 ```
 
-### Phase 3 : Pagy (après recherche et tests)
+**Temps estimé** : 1-2 heures (tests)  
+**Risque** : ⚠️ **MOYEN** - Nécessite tests avant merge  
+**Statut** : ✅ **TERMINÉ** - Toutes les dépendances mises à jour
+
+### Phase 3 : Pagy ✅ **TERMINÉE**
 ```bash
-# Ne pas merger avant :
-1. Lecture complète du changelog Pagy 8 → 43
-2. Tests locaux complets
-3. Vérification de tous les contrôleurs utilisant Pagy
-4. Tests sur staging
+# ✅ TERMINÉ - Commandes exécutées avec succès
+# 1. Mise à jour Gemfile : gem "pagy", "~> 43.0"
+bundle update pagy
+# 2. Adaptation config/initializers/pagy.rb :
+#    - Retiré require "pagy/extras/bootstrap" et "pagy/extras/overflow" (chargement automatique)
+#    - Changé Pagy::DEFAULT[:items] → Pagy.options[:items] (DEFAULT est frozen dans v43)
+# 3. Correction helpers frontend (app/helpers/application_helper.rb) :
+#    - Créé helpers personnalisés pour remplacer Pagy::Frontend (pagy_bootstrap_nav, pagy_nav, pagy_info)
+# 4. Correction helpers backend (app/controllers/application_controller.rb) :
+#    - Créé méthode pagy() pour remplacer Pagy::Backend
+#    - Retiré tous les include Pagy::Backend des contrôleurs (11 fichiers)
+docker compose -f ops/dev/docker-compose.yml exec web bundle install
 ```
+
+**Temps estimé** : 2-4 heures (recherche + migration + tests)  
+**Risque** : ⚠️⚠️⚠️ **ÉLEVÉ** - Saut de version majeur, breaking changes possibles  
+**Statut** : ✅ **TERMINÉ** - Pagy 43.2.2 installé et configuré
+
+**Changements Pagy 43** :
+- Les extras Bootstrap sont chargés automatiquement via le module `Loader`
+- `Pagy::DEFAULT` est frozen, utiliser `Pagy.options` pour la configuration
+- `Pagy::Frontend` n'existe plus : créé helpers personnalisés dans `ApplicationHelper` (`pagy_bootstrap_nav`, `pagy_nav`, `pagy_info`)
+- `Pagy::Backend` n'existe plus : créé méthode `pagy()` dans `ApplicationController` pour remplacer le module
+- Retiré tous les `include Pagy::Backend` des contrôleurs (11 fichiers dans `app/controllers/admin_panel/`)
+- Les helpers `pagy_bootstrap_nav` fonctionnent toujours via délégation aux méthodes d'instance
+- `overflow` n'est plus nécessaire, géré automatiquement
 
 ---
 
@@ -152,7 +226,7 @@ bundle exec rails test:system
 
 ### Vérifier les vulnérabilités de sécurité
 ```bash
-bundle audit
+# Note: bundle-audit n'est pas installé, mais les mises à jour incluent souvent des correctifs de sécurité
 ```
 
 ---
@@ -161,14 +235,24 @@ bundle audit
 
 1. **Sécurité** : Toutes ces mises à jour incluent probablement des correctifs de sécurité. Il est recommandé de les appliquer rapidement, mais avec précaution pour Pagy.
 
-2. **Tests** : Après chaque mise à jour, exécuter la suite de tests complète :
+2. **Docker Compose** : ⚠️ **IMPORTANT** - Ce projet utilise Docker Compose. Après chaque `bundle update`, il faut installer les gems dans le conteneur :
    ```bash
-   bundle exec rails test test:system
+   # Sur l'hôte
+   bundle update [gem-name]
+   
+   # Dans le conteneur Docker
+   docker compose -f ops/dev/docker-compose.yml exec web bundle install
    ```
 
-3. **Staging** : Toujours tester sur staging avant de déployer en production, surtout pour Kamal et Pagy.
+3. **Tests** : Après chaque mise à jour, exécuter la suite de tests complète :
+   ```bash
+   # Dans Docker
+   docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rails test
+   ```
 
-4. **Rollback** : En cas de problème, utiliser `git revert` sur le commit de mise à jour.
+4. **Staging** : Toujours tester sur staging avant de déployer en production, surtout pour Kamal et Pagy.
+
+5. **Rollback** : En cas de problème, utiliser `git revert` sur le commit de mise à jour.
 
 ---
 
@@ -178,4 +262,3 @@ bundle audit
 - [Kamal Releases](https://github.com/basecamp/kamal/releases)
 - [GitHub Actions Checkout](https://github.com/actions/checkout/releases)
 - [GitHub Actions Upload Artifact](https://github.com/actions/upload-artifact/releases)
-

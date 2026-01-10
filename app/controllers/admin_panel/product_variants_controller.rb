@@ -2,10 +2,10 @@
 
 module AdminPanel
   class ProductVariantsController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :set_product
-    before_action :set_variant, only: %i[edit update destroy toggle_status]
+    before_action :set_variant, only: %i[show edit update destroy toggle_status]
     before_action :authorize_product
 
     # GET /admin-panel/products/:product_id/product_variants
@@ -31,20 +31,48 @@ module AdminPanel
     # PATCH /admin-panel/products/:product_id/product_variants/bulk_update
     def bulk_update
       variant_ids = params[:variant_ids] || []
-      updates = params[:variants] || {}
 
+      if variant_ids.empty?
+        flash[:alert] = "Aucune variante sélectionnée"
+        redirect_to admin_panel_product_product_variants_path(@product)
+        return
+      end
+
+      # Récupérer les champs globaux à appliquer
+      updates = {}
+      # Convertir price_euros en price_cents si présent (bulk_edit utilise maintenant price_euros)
+      if params[:price_euros].present?
+        updates[:price_cents] = (params[:price_euros].to_f * 100).to_i
+      elsif params[:price_cents].present?
+        # Compatibilité avec l'ancien système (si price_cents est encore envoyé)
+        updates[:price_cents] = (params[:price_cents].to_f * 100).to_i
+      end
+      updates[:stock_qty] = params[:stock_qty].to_i if params[:stock_qty].present?
+      updates[:is_active] = params[:is_active] == "1" if params[:is_active].present? && params[:is_active] != ""
+
+      if updates.empty?
+        flash[:alert] = "Aucune modification à appliquer"
+        redirect_to bulk_edit_admin_panel_product_product_variants_path(@product, variant_ids: variant_ids)
+        return
+      end
+
+      # Appliquer les modifications à toutes les variantes sélectionnées
       updated_count = 0
       variant_ids.each do |id|
         variant = @product.product_variants.find_by(id: id)
         next unless variant
 
-        if updates[id.to_s].present?
-          variant.update(updates[id.to_s].permit(:price_cents, :stock_qty, :is_active))
+        if variant.update(updates)
           updated_count += 1
         end
       end
 
-      flash[:notice] = "#{updated_count} variante(s) mise(s) à jour"
+      if updated_count > 0
+        flash[:notice] = "#{updated_count} variante(s) mise(s) à jour avec succès"
+      else
+        flash[:alert] = "Aucune variante n'a pu être mise à jour"
+      end
+
       redirect_to admin_panel_product_product_variants_path(@product)
     end
 
@@ -63,6 +91,11 @@ module AdminPanel
       end
     end
 
+    # GET /admin-panel/products/:product_id/product_variants/:id
+    def show
+      redirect_to edit_admin_panel_product_product_variant_path(@product, @variant)
+    end
+
     # GET /admin-panel/products/:product_id/product_variants/new
     def new
       @variant = @product.product_variants.build
@@ -76,7 +109,12 @@ module AdminPanel
 
     # POST /admin-panel/products/:product_id/product_variants
     def create
-      @variant = @product.product_variants.build(variant_params)
+      params_hash = variant_params.to_h
+      # Convertir price_euros en price_cents si présent
+      if params[:price_euros].present?
+        params_hash[:price_cents] = (params[:price_euros].to_f * 100).to_i
+      end
+      @variant = @product.product_variants.build(params_hash)
       @option_types = OptionType.includes(:option_values).order(:name)
 
       # Associer les OptionValues si fournis
@@ -108,11 +146,40 @@ module AdminPanel
         @variant.option_values = option_values
       end
 
-      if @variant.update(variant_params)
-        flash[:notice] = "Variante mise à jour avec succès"
-        redirect_to admin_panel_product_path(@product)
+      params_hash = variant_params.to_h
+      # Convertir price_euros en price_cents si présent
+      if params[:price_euros].present?
+        params_hash[:price_cents] = (params[:price_euros].to_f * 100).to_i
+      end
+      if @variant.update(params_hash)
+        respond_to do |format|
+          format.html do
+            flash[:notice] = "Variante mise à jour avec succès"
+            redirect_to admin_panel_product_path(@product)
+          end
+          format.json do
+            render json: {
+              success: true,
+              message: "Variante mise à jour avec succès",
+              variant: {
+                id: @variant.id,
+                price_cents: @variant.price_cents
+              }
+            }
+          end
+        end
       else
-        render :edit, status: :unprocessable_entity
+        respond_to do |format|
+          format.html do
+            render :edit, status: :unprocessable_entity
+          end
+          format.json do
+            render json: {
+              success: false,
+              message: @variant.errors.full_messages.join(", ")
+            }, status: :unprocessable_entity
+          end
+        end
       end
     end
 

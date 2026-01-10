@@ -370,13 +370,17 @@ Ce document consolide toute la documentation relative aux adhésions pour Grenob
 **Comportement** :
 - ✅ Questionnaire OBLIGATOIRE (toutes les questions doivent être répondues)
 - ✅ Si toutes réponses "NON" → Génération attestation automatique (si renouvellement) ⚠️ **TODO**
-- ✅ Si au moins 1 "OUI" → Upload certificat OBLIGATOIRE
-- ✅ Si nouvelle licence FFRS → Upload certificat OBLIGATOIRE (même si toutes réponses NON)
+- ✅ Si au moins 1 "OUI" → Upload certificat RECOMMANDÉ (gestion au cas par cas)
+- ✅ Si nouvelle licence FFRS → Upload certificat RECOMMANDÉ (gestion au cas par cas, dépend du type : rando vs compét)
 
 **Validation** :
 - Toutes les questions doivent être répondues
-- Si réponse "OUI" → Certificat obligatoire (bloque la soumission)
-- Si nouvelle licence FFRS → Certificat obligatoire même si toutes réponses NON (bloque la soumission)
+- Si réponse "OUI" → Certificat recommandé (ne bloque pas la soumission, gestion au cas par cas par les bénévoles)
+- Si nouvelle licence FFRS → Certificat recommandé (ne bloque pas la soumission, gestion au cas par cas par les bénévoles)
+  - **Note** : Le certificat médical n'est pas obligatoire selon le type de licence FFRS :
+    - **Licence rando** → Pas de certificat nécessaire
+    - **Licence compét** → Certificat nécessaire
+  - La validation se fait manuellement au cas par cas par les bénévoles/admins
 - Si renouvellement FFRS avec toutes réponses NON → Attestation auto générée (TODO)
 
 ---

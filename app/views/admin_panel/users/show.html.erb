@@ -1,0 +1,204 @@
+<% 
+  breadcrumb_items = [
+    { label: "Utilisateurs", url: admin_panel_users_path },
+    { label: @user.to_s, url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%= @user.to_s %></h1>
+  <div class="d-flex gap-2">
+    <%= link_to "Modifier", edit_admin_panel_user_path(@user), class: "btn btn-outline-liquid-primary" %>
+    <%= link_to "Retour", admin_panel_users_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Informations personnelles -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations personnelles</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">ID</dt>
+          <dd class="col-sm-9">#<%= @user.id %></dd>
+
+          <dt class="col-sm-3">Email</dt>
+          <dd class="col-sm-9">
+            <%= @user.email %>
+            <% if @user.unconfirmed_email.present? %>
+              <br>
+              <small class="text-warning">Email en attente de confirmation: <%= @user.unconfirmed_email %></small>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Prénom</dt>
+          <dd class="col-sm-9"><%= @user.first_name || "-" %></dd>
+
+          <dt class="col-sm-3">Nom</dt>
+          <dd class="col-sm-9"><%= @user.last_name || "-" %></dd>
+
+          <dt class="col-sm-3">Date de naissance</dt>
+          <dd class="col-sm-9"><%= @user.date_of_birth&.strftime("%d/%m/%Y") || "-" %></dd>
+
+          <dt class="col-sm-3">Téléphone</dt>
+          <dd class="col-sm-9"><%= @user.phone || "-" %></dd>
+
+          <dt class="col-sm-3">Bio</dt>
+          <dd class="col-sm-9"><%= @user.bio || "-" %></dd>
+
+          <dt class="col-sm-3">Avatar</dt>
+          <dd class="col-sm-9">
+            <% if @user.avatar.attached? %>
+              <%= image_tag @user.avatar, height: 150, style: "border-radius: 8px;" %>
+            <% elsif @user.avatar_url.present? %>
+              <%= image_tag @user.avatar_url, height: 150, style: "border-radius: 8px;" %>
+            <% else %>
+              <span class="text-muted">Aucun avatar</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Niveau</dt>
+          <dd class="col-sm-9"><%= @user.skill_level || "-" %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Adresse -->
+    <% if @user.address.present? || @user.city.present? || @user.postal_code.present? %>
+      <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Adresse</h5>
+        </div>
+        <div class="card-body">
+          <dl class="row">
+            <dt class="col-sm-3">Adresse</dt>
+            <dd class="col-sm-9"><%= @user.address || "-" %></dd>
+
+            <dt class="col-sm-3">Ville</dt>
+            <dd class="col-sm-9"><%= @user.city || "-" %></dd>
+
+            <dt class="col-sm-3">Code postal</dt>
+            <dd class="col-sm-9"><%= @user.postal_code || "-" %></dd>
+          </dl>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Confirmation email -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Confirmation d'email</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">Statut</dt>
+          <dd class="col-sm-9">
+            <% if @user.confirmed? %>
+              <span class="badge bg-success">Confirmé</span>
+              <br>
+              <small class="text-muted">Le <%= @user.confirmed_at.strftime("%d/%m/%Y à %H:%M") %></small>
+            <% else %>
+              <span class="badge bg-warning">Non confirmé</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Email envoyé le</dt>
+          <dd class="col-sm-9"><%= @user.confirmation_sent_at ? @user.confirmation_sent_at.strftime("%d/%m/%Y à %H:%M") : "Jamais envoyé" %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Inscriptions -->
+    <% if @attendances.any? %>
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header">
+          <h5 class="mb-0">Inscriptions récentes</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Événement</th>
+                  <th>Statut</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @attendances.each do |attendance| %>
+                  <tr>
+                    <td><%= attendance.event&.title || "N/A" %></td>
+                    <td><span class="badge bg-secondary"><%= attendance.status %></span></td>
+                    <td><%= attendance.created_at.strftime("%d/%m/%Y") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Informations système -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations système</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Rôle</dt>
+          <dd>
+            <span class="badge bg-primary"><%= @user.role&.name || "N/A" %></span>
+            <br>
+            <small class="text-muted">Level: <%= @user.role&.level || "N/A" %></small>
+          </dd>
+
+          <dt>Bénévole</dt>
+          <dd>
+            <% if @user.can_be_volunteer %>
+              <span class="badge bg-success">Oui</span>
+            <% else %>
+              <span class="badge bg-secondary">Non</span>
+            <% end %>
+          </dd>
+
+          <dt>Préférences</dt>
+          <dd>
+            <small>
+              Email info: <%= @user.wants_email_info ? "✓" : "✗" %><br>
+              Events mail: <%= @user.wants_events_mail ? "✓" : "✗" %><br>
+              Initiation mail: <%= @user.wants_initiation_mail ? "✓" : "✗" %><br>
+              WhatsApp: <%= @user.wants_whatsapp ? "✓" : "✗" %>
+            </small>
+          </dd>
+
+          <dt>Créé le</dt>
+          <dd><%= @user.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+
+          <dt>Modifié le</dt>
+          <dd><%= @user.updated_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <%= link_to "Modifier", edit_admin_panel_user_path(@user), class: "btn btn-liquid-primary w-100 mb-2" %>
+        <%= button_to "Supprimer", admin_panel_user_path(@user), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?" } %>
+      </div>
+    </div>
+  </div>
+</div>

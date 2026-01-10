@@ -106,7 +106,9 @@ Ce dossier structure la **documentation vivante** du monolithe Ruby on Rails. El
 - ✅ `04-rails/routes.md` - Routes et flux principaux (incluant pages légales et cookies)
 - ✅ `04-rails/conventions/README.md` - Conventions Rails du projet
 - ✅ `04-rails/admin-panel-research.md` - Recherche et recommandations pour le panel admin (Phase 2)
-- ⚠️ **Déplacé** : `development/phase2/phase2-migrations-models.md` - Documentation Phase 2 (migrations et modèles)
+- ✅ `04-rails/admin-panel/` - Documentation complète du panel admin (100% implémenté, migré depuis ActiveAdmin)
+- ✅ `04-rails/background-jobs/` - Documentation complète des jobs récurrents (Solid Queue, migration terminée)
+- ✅ `02-shape-up/building/phase2-migrations-models.md` - Documentation Phase 2 (migrations et modèles) ✅ **TERMINÉ**
 - ✅ `04-rails/setup/README.md` - Index de la documentation setup Rails
 
 ### Événements & Initiations
@@ -114,12 +116,16 @@ Ce dossier structure la **documentation vivante** du monolithe Ruby on Rails. El
 - ✅ `06-events/logique-essai-gratuit.md` - Logique d'essai gratuit v3.0 (règles métier, validations, cas limites)
 
 ### Développement en Cours
-- ✅ `development/README.md` - Documentation des fonctionnalités en développement
-- ⚠️ `development/ux-improvements/` - Backlog UX et améliorations (119 items)
-- ⚠️ `development/admin-panel/` - Analyses stratégiques admin panel
-- ⚠️ `development/accessibility/` - Audits et plans d'action accessibilité
-- ⚠️ `development/phase2/` - Documentation Phase 2 (non implémentée)
-- ⚠️ `development/testing/` - Roadmaps et todolists tests
+- ✅ `development/README.md` - Documentation des fonctionnalités en développement (actuellement vide - toutes fonctionnalités terminées)
+- ✅ `09-product/ux-improvements-backlog.md` - Référence historique des améliorations UX (fonctionnalités essentielles terminées)
+- ✅ `09-product/quick-wins-helloasso.md` - Intégration HelloAsso (100% intégré)
+- ✅ `09-product/todo-restant.md` - Récapitulatif des fonctionnalités essentielles terminées
+- ✅ `02-shape-up/building/cycle-01-phase-2-plan.md` - Plan Phase 2 (Events & Admin) ✅ **COMPLETED**
+- ✅ `02-shape-up/building/phase2-migrations-models.md` - Migrations et modèles Phase 2 ✅ **TERMINÉ**
+- ✅ `04-rails/mailing/` - Documentation complète système de mailing (18 emails, jobs récurrents, configuration)
+
+### Admin Panel (Complété)
+- ✅ `04-rails/admin-panel/` - Documentation complète du panel admin (100% implémenté, migré depuis ActiveAdmin)
 
 ### Tests
 - ✅ `05-testing/strategy.md` - Stratégie de tests (RSpec configuré)

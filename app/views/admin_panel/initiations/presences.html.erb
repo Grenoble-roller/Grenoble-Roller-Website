@@ -10,7 +10,23 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1>Présences - <%= @initiation.title %></h1>
-  <%= link_to "Retour", admin_panel_initiation_path(@initiation), class: "btn btn-outline-secondary" %>
+  <div class="d-flex gap-2">
+    <% # Afficher le bouton "Matériel rendu" seulement si l'initiation est passée, qu'il y a du matériel prêté et qu'il n'a pas encore été rendu %>
+    <% if @initiation.start_at.present? && @initiation.start_at <= Time.current && @initiation.has_equipment_loaned? && @initiation.stock_returned_at.nil? %>
+      <%= form_with url: return_material_admin_panel_initiation_path(@initiation), method: :post, local: true, data: { turbo_confirm: "Confirmer le retour du matériel ? Les rollers seront remis en stock." } do |f| %>
+        <%= f.button type: :submit, class: "btn btn-success" do %>
+          <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
+          Matériel rendu
+        <% end %>
+      <% end %>
+    <% elsif @initiation.stock_returned_at.present? %>
+      <span class="badge bg-success d-flex align-items-center" style="height: 38px;">
+        <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
+        Matériel rendu le <%= l(@initiation.stock_returned_at, format: :short) %>
+      </span>
+    <% end %>
+    <%= link_to "Retour", admin_panel_initiation_path(@initiation), class: "btn btn-outline-secondary" %>
+  </div>
 </div>
 
 <!-- En-tête -->

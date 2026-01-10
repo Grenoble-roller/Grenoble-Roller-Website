@@ -163,18 +163,22 @@
           // Bootstrap ne gère pas automatiquement data-bs-dismiss sur les liens <a>
           // Utiliser capture phase pour intercepter AVANT Turbo
           handlers.clickHandler = function(e) {
-            const link = e.target.closest('a.nav-link');
+            // Chercher le lien le plus proche (admin-menu-link, admin-menu-sublink, ou nav-link)
+            const link = e.target.closest('a.admin-menu-link, a.admin-menu-sublink, a.nav-link');
             
-            if (!link) return;
+            if (!link) return; // Pas un lien du menu, laisser passer
             
-            // Ignorer si c'est un toggle collapse
+            // Ignorer si c'est un toggle collapse (on veut qu'il fonctionne normalement)
             if (link.hasAttribute('data-bs-toggle') && link.getAttribute('data-bs-toggle') === 'collapse') {
-              return;
+              return; // Laisser Bootstrap gérer le collapse
             }
             
             // Vérifier si le lien a data-bs-dismiss="offcanvas"
-            if (link.getAttribute('data-bs-dismiss') === 'offcanvas') {
-              // Empêcher Turbo de naviguer immédiatement
+            // En Rails, data-bs-dismiss devient data-bs-dismiss dans le HTML
+            const shouldDismiss = link.hasAttribute('data-bs-dismiss') && link.getAttribute('data-bs-dismiss') === 'offcanvas';
+            
+            if (shouldDismiss) {
+              // Empêcher la navigation immédiate pour fermer d'abord l'offcanvas
               e.preventDefault();
               e.stopPropagation();
               
@@ -187,15 +191,37 @@
                   
                   // Naviguer après fermeture de l'offcanvas (une seule fois)
                   const navigateAfterClose = function() {
+                    // Utiliser Turbo pour la navigation si disponible, sinon window.location
+                    if (typeof Turbo !== 'undefined' && Turbo.visit) {
+                      Turbo.visit(href);
+                    } else {
                     window.location.href = href;
+                    }
                     offcanvas.removeEventListener('hidden.bs.offcanvas', navigateAfterClose);
                   };
                   offcanvas.addEventListener('hidden.bs.offcanvas', navigateAfterClose, { once: true });
+                } else {
+                  // Si l'instance n'existe pas, naviguer directement
+                  if (typeof Turbo !== 'undefined' && Turbo.visit) {
+                    Turbo.visit(link.href);
+                  } else {
+                    window.location.href = link.href;
+                  }
+                }
+              } else {
+                // Si Bootstrap n'est pas disponible, naviguer directement
+                if (typeof Turbo !== 'undefined' && Turbo.visit) {
+                  Turbo.visit(link.href);
+                } else {
+                  window.location.href = link.href;
                 }
               }
             }
+            // Si le lien n'a pas data-bs-dismiss, ne rien faire - laisser le comportement par défaut (navigation normale)
+            // Le return implicite permet au clic de continuer normalement
           };
-          offcanvas.addEventListener('click', handlers.clickHandler, true); // Capture phase pour intercepter avant Turbo
+          // Utiliser la phase de capture pour intercepter AVANT Turbo, mais seulement pour les liens avec data-bs-dismiss
+          offcanvas.addEventListener('click', handlers.clickHandler, true);
 
           // Mettre à jour les chevrons quand collapse change (animation premium)
           handlers.collapseShownHandler = function(e) {

@@ -1,0 +1,123 @@
+<% 
+  breadcrumb_items = [
+    { label: "Utilisateurs", url: admin_panel_users_path },
+    { label: "Nouvel utilisateur", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Nouvel utilisateur</h1>
+  <%= link_to "Retour", admin_panel_users_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-body">
+        <%= form_with model: [:admin_panel, @user], local: true do |f| %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>Erreurs:</h5>
+              <ul class="mb-0">
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <h5>Informations personnelles</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :email, "Email *", class: "form-label" %>
+                <%= f.email_field :email, class: "form-control form-control-liquid", required: true %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :role_id, "Rôle *", class: "form-label" %>
+                <%= f.collection_select :role_id, Role.order(:level), :id, :name, 
+                    { prompt: "Sélectionnez un rôle" }, 
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :first_name, "Prénom", class: "form-label" %>
+                <%= f.text_field :first_name, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :last_name, "Nom", class: "form-label" %>
+                <%= f.text_field :last_name, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :date_of_birth, "Date de naissance", class: "form-label" %>
+                <%= f.date_field :date_of_birth, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :phone, "Téléphone", class: "form-label" %>
+                <%= f.text_field :phone, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-12 mb-3">
+                <%= f.label :bio, "Bio", class: "form-label" %>
+                <%= f.text_area :bio, class: "form-control form-control-liquid", rows: 3 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Authentification</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :password, "Mot de passe *", class: "form-label" %>
+                <%= f.password_field :password, class: "form-control form-control-liquid", required: true %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :password_confirmation, "Confirmation *", class: "form-label" %>
+                <%= f.password_field :password_confirmation, class: "form-control form-control-liquid", required: true %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Adresse</h5>
+            <div class="row">
+              <div class="col-12 mb-3">
+                <%= f.label :address, "Adresse", class: "form-label" %>
+                <%= f.text_field :address, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :city, "Ville", class: "form-label" %>
+                <%= f.text_field :city, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :postal_code, "Code postal", class: "form-label" %>
+                <%= f.text_field :postal_code, class: "form-control form-control-liquid" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Autres</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :skill_level, "Niveau", class: "form-label" %>
+                <%= f.text_field :skill_level, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :can_be_volunteer, class: "form-check-label" do %>
+                  <%= f.check_box :can_be_volunteer, class: "form-check-input" %>
+                  Peut être bénévole encadrant
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <%= f.submit "Créer", class: "btn btn-liquid-primary" %>
+            <%= link_to "Annuler", admin_panel_users_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

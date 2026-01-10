@@ -1,0 +1,135 @@
+<% 
+  breadcrumb_items = [
+    { label: "Routes", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Routes</h1>
+  <%= link_to "Nouvelle route", new_admin_panel_route_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_routes_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :name_cont, "Nom", class: "form-label" %>
+        <%= f.search_field :name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par nom..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :difficulty_eq, "Difficulté", class: "form-label" %>
+        <%= f.select :difficulty_eq, 
+            options_for_select([
+              ["Toutes", ""],
+              ["Facile", "easy"],
+              ["Intermédiaire", "medium"],
+              ["Difficile", "hard"]
+            ], params.dig(:q, :difficulty_eq)),
+            {},
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-2">
+        <%= f.label :distance_km_gteq, "Distance min (km)", class: "form-label" %>
+        <%= f.number_field :distance_km_gteq, class: "form-control form-control-liquid", step: 0.1 %>
+      </div>
+      <div class="col-md-3 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_routes_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Onglets de filtres -->
+<div class="mb-3">
+  <%= link_to "Toutes", admin_panel_routes_path, 
+      class: "btn btn-sm #{params[:scope].blank? ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+  <%= link_to "Faciles", admin_panel_routes_path(scope: "easy"), 
+      class: "btn btn-sm #{params[:scope] == 'easy' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+  <%= link_to "Intermédiaires", admin_panel_routes_path(scope: "medium"), 
+      class: "btn btn-sm #{params[:scope] == 'medium' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+  <%= link_to "Difficiles", admin_panel_routes_path(scope: "hard"), 
+      class: "btn btn-sm #{params[:scope] == 'hard' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+</div>
+
+<!-- Tableau des routes -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @routes.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom</th>
+              <th>Difficulté</th>
+              <th>Distance</th>
+              <th>Dénivelé</th>
+              <th>Événements</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @routes.each do |route| %>
+              <tr>
+                <td>#<%= route.id %></td>
+                <td>
+                  <%= link_to route.name, admin_panel_route_path(route), class: "text-decoration-none" %>
+                </td>
+                <td>
+                  <% if route.difficulty.present? %>
+                    <% badge_class = case route.difficulty
+                         when "easy" then "bg-success"
+                         when "medium" then "bg-warning"
+                         when "hard" then "bg-danger"
+                         else "bg-secondary"
+                       end %>
+                    <span class="badge <%= badge_class %>">
+                      <%= route.difficulty == "easy" ? "Facile" : route.difficulty == "medium" ? "Intermédiaire" : "Difficile" %>
+                    </span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if route.distance_km.present? %>
+                    <%= route.distance_km %> km
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if route.elevation_m.present? %>
+                    <%= route.elevation_m %> m
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= route.events.count %>
+                </td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <%= link_to "Voir", admin_panel_route_path(route), class: "btn btn-sm btn-outline-primary" %>
+                    <%= link_to "Modifier", edit_admin_panel_route_path(route), class: "btn btn-sm btn-outline-secondary" %>
+                    <%= button_to "Supprimer", admin_panel_route_path(route), method: :delete,
+                        class: "btn btn-sm btn-outline-danger",
+                        data: { confirm: "Êtes-vous sûr de vouloir supprimer cette route ?" } %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-3">
+        <%== pagy_bootstrap_nav(@pagy) if @pagy.pages > 1 %>
+      </div>
+    <% else %>
+      <p class="text-muted text-center py-4">Aucune route trouvée</p>
+    <% end %>
+  </div>
+</div>

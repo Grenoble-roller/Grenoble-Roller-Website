@@ -40,7 +40,7 @@
       </div>
       <div class="btn-group">
         <% if @product.persisted? %>
-          <%= link_to "Aperçu", admin_panel_product_path(@product), 
+          <%= link_to admin_panel_product_path(@product), 
               class: "btn btn-outline-secondary",
               target: "_blank" do %>
             <i class="bi bi-eye me-1"></i>Aperçu
@@ -261,26 +261,45 @@
         <div class="card-body">
           <div class="row">
             <div class="col-md-6 mb-4">
-              <%= f.label :price_cents, "Prix de base", class: "form-label fw-semibold" do %>
+              <%= f.label :price_euros, "Prix de base", class: "form-label fw-semibold" do %>
                 Prix de base <span class="text-danger">*</span>
               <% end %>
               <div class="input-group">
-                <%= f.number_field :price_cents, 
+                <%= number_field_tag :price_euros, 
+                    (@product.price_cents / 100.0 if @product.price_cents.present?),
                     class: "form-control form-control-liquid",
                     required: true,
                     min: 0,
-                    step: 1,
-                    placeholder: "4000",
+                    step: 0.01,
+                    placeholder: "40.00",
                     data: { 
                       product_form_target: "priceField",
                       action: "input->product-form#validateField blur->product-form#formatPrice"
                     } %>
-                <span class="input-group-text">centimes</span>
+                <span class="input-group-text">€</span>
               </div>
               <div class="form-text">
                 <i class="bi bi-info-circle me-1"></i>
-                Ex: 4000 = 40,00 €. Les variantes peuvent avoir un prix différent.
+                Ex: 40,00 = 40 euros. Les variantes peuvent avoir un prix différent.
               </div>
+              <%= f.hidden_field :price_cents, id: "product_price_cents" %>
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  const priceEurosInput = document.querySelector('input[name="price_euros"]');
+                  const priceCentsInput = document.getElementById('product_price_cents');
+                  
+                  if (priceEurosInput && priceCentsInput) {
+                    function updateCents() {
+                      const euros = parseFloat(priceEurosInput.value) || 0;
+                      priceCentsInput.value = Math.round(euros * 100);
+                    }
+                    
+                    priceEurosInput.addEventListener('input', updateCents);
+                    priceEurosInput.addEventListener('change', updateCents);
+                    updateCents(); // Initialiser au chargement
+                  }
+                });
+              </script>
               <div class="invalid-feedback" data-product-form-target="priceFeedback"></div>
             </div>
 

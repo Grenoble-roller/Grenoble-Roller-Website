@@ -1,0 +1,155 @@
+<% 
+  breadcrumb_items = [
+    { label: "Carrousel", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Carrousel Hero</h1>
+  <%= link_to "Nouveau slide", new_admin_panel_homepage_carousel_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Filtres -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_homepage_carousels_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :title_cont, "Titre", class: "form-label" %>
+        <%= f.search_field :title_cont, class: "form-control form-control-liquid", placeholder: "Rechercher..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :published_eq, "Statut", class: "form-label" %>
+        <%= f.select :published_eq,
+            options_for_select([["Publiés", true], ["Brouillons", false]], params.dig(:q, :published_eq)),
+            { include_blank: "Tous" },
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-5 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_homepage_carousels_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Grid des slides -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @carousels.any? %>
+      <div class="row g-4" id="carousel-grid">
+        <% @carousels.each do |carousel| %>
+          <div class="col-md-6 col-lg-4" data-carousel-id="<%= carousel.id %>">
+            <div class="card h-100">
+              <div class="position-relative">
+                <% if carousel.image.attached? %>
+                  <%= image_tag carousel.image.variant(resize_to_limit: [400, 200]), 
+                      class: "card-img-top", 
+                      style: "height: 200px; object-fit: cover;" %>
+                <% else %>
+                  <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="bi bi-image fs-1 text-muted"></i>
+                  </div>
+                <% end %>
+                <div class="position-absolute top-0 end-0 m-2">
+                  <span class="badge bg-<%= carousel.published? ? 'success' : 'secondary' %>">
+                    <%= carousel.published? ? 'Publié' : 'Brouillon' %>
+                  </span>
+                </div>
+                <div class="position-absolute top-0 start-0 m-2">
+                  <span class="badge bg-primary">
+                    Position #<%= carousel.position %>
+                  </span>
+                </div>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title"><%= carousel.title %></h5>
+                <% if carousel.subtitle.present? %>
+                  <p class="card-text text-muted small"><%= truncate(carousel.subtitle, length: 60) %></p>
+                <% end %>
+                <% if carousel.link_url.present? %>
+                  <p class="card-text">
+                    <small class="text-muted">
+                      <i class="bi bi-link-45deg me-1"></i>
+                      <%= truncate(carousel.link_url, length: 40) %>
+                    </small>
+                  </p>
+                <% end %>
+                <% if carousel.expires_at.present? %>
+                  <p class="card-text">
+                    <small class="text-<%= carousel.expired? ? 'danger' : 'muted' %>">
+                      <i class="bi bi-calendar-x me-1"></i>
+                      Expire le <%= carousel.expires_at.strftime("%d/%m/%Y") %>
+                    </small>
+                  </p>
+                <% end %>
+              </div>
+              <div class="card-footer bg-transparent">
+                <div class="btn-group w-100" role="group">
+                  <%= link_to admin_panel_homepage_carousel_path(carousel), 
+                      class: "btn btn-sm btn-outline-primary", 
+                      title: "Voir" do %>
+                    <i class="bi bi-eye"></i>
+                  <% end %>
+                  <%= link_to edit_admin_panel_homepage_carousel_path(carousel), 
+                      class: "btn btn-sm btn-outline-warning", 
+                      title: "Modifier" do %>
+                    <i class="bi bi-pencil"></i>
+                  <% end %>
+                  <% if carousel.published? %>
+                    <%= link_to unpublish_admin_panel_homepage_carousel_path(carousel), 
+                        data: { turbo_method: :post }, 
+                        class: "btn btn-sm btn-outline-secondary", 
+                        title: "Dépublier" do %>
+                      <i class="bi bi-eye-slash"></i>
+                    <% end %>
+                  <% else %>
+                    <%= link_to publish_admin_panel_homepage_carousel_path(carousel), 
+                        data: { turbo_method: :post }, 
+                        class: "btn btn-sm btn-outline-success", 
+                        title: "Publier" do %>
+                      <i class="bi bi-check-circle"></i>
+                    <% end %>
+                  <% end %>
+                  <%= link_to admin_panel_homepage_carousel_path(carousel), 
+                      data: { turbo_method: :delete, turbo_confirm: "Confirmer la suppression ?" }, 
+                      class: "btn btn-sm btn-outline-danger", 
+                      title: "Supprimer" do %>
+                    <i class="bi bi-trash"></i>
+                  <% end %>
+                </div>
+                <div class="btn-group w-100 mt-2" role="group">
+                  <%= link_to move_up_admin_panel_homepage_carousel_path(carousel), 
+                      data: { turbo_method: :patch }, 
+                      class: "btn btn-sm btn-outline-info", 
+                      title: "Monter" do %>
+                    <i class="bi bi-arrow-up"></i>
+                  <% end %>
+                  <%= link_to move_down_admin_panel_homepage_carousel_path(carousel), 
+                      data: { turbo_method: :patch }, 
+                      class: "btn btn-sm btn-outline-info", 
+                      title: "Descendre" do %>
+                    <i class="bi bi-arrow-down"></i>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Pagination -->
+      <% if @pagy.pages > 1 %>
+        <nav class="mt-4">
+          <%= render 'admin_panel/shared/pagination', pagy: @pagy %>
+        </nav>
+      <% end %>
+    <% else %>
+      <div class="alert alert-info mb-0">
+        <i class="bi bi-info-circle me-2"></i>
+        Aucun slide. <%= link_to 'Créer le premier', new_admin_panel_homepage_carousel_path, class: "alert-link" %>
+      </div>
+    <% end %>
+  </div>
+</div>

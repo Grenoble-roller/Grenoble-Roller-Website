@@ -179,6 +179,69 @@ class Event < ApplicationRecord
     start_at <= Time.current
   end
 
+  # Calcule la date de fin de l'événement (start_at + duration_min)
+  def end_at
+    return nil unless start_at && duration_min
+    start_at + duration_min.minutes
+  end
+
+  # Vérifie si l'événement est terminé (après sa date de fin)
+  def finished?
+    return false unless end_at
+    end_at <= Time.current
+  end
+
+  # Remet en stock tous les rollers prêtés pour cet événement
+  # Vérifie si l'événement a du matériel prêté
+  def has_equipment_loaned?
+    return false unless is_a?(Event::Initiation)
+
+    attendances
+      .where(needs_equipment: true)
+      .where.not(roller_size: nil)
+      .where.not(status: "canceled")
+      .exists?
+  end
+
+  # Cette méthode doit être appelée après qu'un événement soit terminé
+  # Retourne le nombre de rollers remis en stock, ou nil si déjà traité
+  def return_roller_stock
+    return unless is_a?(Event::Initiation) # Seulement pour les initiations
+
+    # Sécurité : éviter de remettre le stock plusieurs fois
+    if stock_returned_at.present?
+      Rails.logger.info("Stock déjà remis en place pour initiation ##{id} le #{stock_returned_at}")
+      return nil
+    end
+
+    attendances_to_process = attendances
+      .where(needs_equipment: true)
+      .where.not(roller_size: nil)
+      .where.not(status: "canceled") # Ne pas traiter les annulées (déjà remises en stock)
+
+    count = 0
+    attendances_to_process.find_each do |attendance|
+      next unless attendance.roller_size.present?
+
+      roller_stock = RollerStock.find_by(size: attendance.roller_size)
+      if roller_stock
+        roller_stock.increment!(:quantity)
+        count += 1
+        Rails.logger.info("Stock remis en place pour taille #{attendance.roller_size} (initiation ##{id}, attendance ##{attendance.id})")
+      else
+        Rails.logger.warn("Taille de roller #{attendance.roller_size} non trouvée dans le stock lors de la remise en stock pour initiation ##{id}")
+      end
+    end
+
+    # Marquer que le stock a été remis en place (même si count = 0, pour éviter de retraiter)
+    if count > 0 || attendances_to_process.exists?
+      update_column(:stock_returned_at, Time.current)
+      Rails.logger.info("Remise en stock terminée pour initiation ##{id}: #{count} roller(s) remis en stock")
+    end
+
+    count
+  end
+
   # Calculer la distance totale si plusieurs boucles
   def total_distance_km
     # Si on utilise le nouveau système avec event_loop_routes
@@ -275,6 +338,9 @@ class Event < ApplicationRecord
     end
   end
 
+  # Callback pour notifier tous les inscrits et bénévoles quand l'événement est annulé
+  after_commit :notify_attendees_on_cancellation, on: [ :update ], if: -> { saved_change_to_status? && canceled? }
+
   private
 
   def duration_multiple_of_five
@@ -285,5 +351,42 @@ class Event < ApplicationRecord
 
   def cover_image_must_be_present
     errors.add(:cover_image, "doit être présente") unless cover_image.attached?
+  end
+
+  # Notifie tous les inscrits et bénévoles quand l'événement est annulé
+  def notify_attendees_on_cancellation
+    # Ne notifier que si l'événement était publié avant (pas si c'était déjà annulé ou en draft)
+    previous_status = status_before_last_save
+    return unless previous_status == "published"
+
+    is_initiation = is_a?(Event::Initiation)
+
+    # Récupérer toutes les attendances actives (inscrits et bénévoles)
+    active_attendances = attendances.active.includes(:user, :child_membership)
+
+    # Grouper les attendances par utilisateur (parent)
+    # Un parent peut avoir plusieurs attendances pour le même événement (lui-même + enfants)
+    attendances_by_user = active_attendances.group_by(&:user_id)
+
+    attendances_by_user.each do |user_id, user_attendances|
+      user = user_attendances.first.user
+      next unless user&.email.present?
+
+      # Vérifier les préférences utilisateur
+      if is_initiation
+        next unless user.wants_initiation_mail?
+      else
+        next unless user.wants_events_mail?
+      end
+
+      # Envoyer UN SEUL email avec toutes les attendances de cet utilisateur pour cet événement
+      EventMailer.event_cancelled(user, self, user_attendances).deliver_later
+    end
+
+    Rails.logger.info("[Event] #{attendances_by_user.count} email(s) d'annulation envoyé(s) pour événement ##{id}")
+  rescue StandardError => e
+    Rails.logger.error("[Event] Erreur lors de l'envoi des emails d'annulation pour événement ##{id}: #{e.message}")
+    Rails.logger.error(e.backtrace.join("\n"))
+    Sentry.capture_exception(e, extra: { event_id: id, event_title: title }) if defined?(Sentry)
   end
 end

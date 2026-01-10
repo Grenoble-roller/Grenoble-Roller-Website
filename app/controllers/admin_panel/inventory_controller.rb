@@ -2,7 +2,7 @@
 
 module AdminPanel
   class InventoryController < BaseController
-    include Pagy::Backend
+    # Pagy 43 : La méthode pagy() est disponible directement, plus besoin d'inclure Pagy::Backend
 
     before_action :authorize_inventory
 

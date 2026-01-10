@@ -1,0 +1,119 @@
+<% 
+  breadcrumb_items = [
+    { label: "Participations", url: admin_panel_attendances_path },
+    { label: "Participation ##{@attendance.id}", url: admin_panel_attendance_path(@attendance) },
+    { label: "Modifier", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Modifier participation #<%= @attendance.id %></h1>
+  <%= link_to "Retour", admin_panel_attendance_path(@attendance), class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-body">
+        <%= form_with model: [:admin_panel, @attendance], local: true do |f| %>
+          <% if @attendance.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>Erreurs:</h5>
+              <ul class="mb-0">
+                <% @attendance.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <h5>Informations principales</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :user_id, "Utilisateur *", class: "form-label" %>
+                <%= f.collection_select :user_id, User.order(:last_name, :first_name), :id, :to_s, 
+                    { selected: @attendance.user_id }, 
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :event_id, "Événement *", class: "form-label" %>
+                <%= f.collection_select :event_id, Event.order(start_at: :desc), :id, :title, 
+                    { selected: @attendance.event_id }, 
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :status, "Statut *", class: "form-label" %>
+                <%= f.select :status, 
+                    options_for_select([
+                      ["En attente", "pending"],
+                      ["Inscrit", "registered"],
+                      ["Payé", "paid"],
+                      ["Annulé", "canceled"],
+                      ["Présent", "present"],
+                      ["Absent", "no_show"]
+                    ], @attendance.status),
+                    {},
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :is_volunteer, class: "form-check-label" do %>
+                  <%= f.check_box :is_volunteer, class: "form-check-input" %>
+                  Bénévole
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Matériel</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :needs_equipment, class: "form-check-label" do %>
+                  <%= f.check_box :needs_equipment, class: "form-check-input" %>
+                  Besoin de matériel
+                <% end %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :roller_size, "Taille rollers (EU)", class: "form-label" %>
+                <%= f.select :roller_size, 
+                    options_for_select(RollerStock::SIZES.map { |s| [s, s] }, @attendance.roller_size),
+                    { prompt: "Sélectionnez une taille" },
+                    { class: "form-select form-control-liquid" } %>
+              </div>
+              <div class="col-12 mb-3">
+                <%= f.label :equipment_note, "Note matériel", class: "form-label" %>
+                <%= f.text_area :equipment_note, class: "form-control form-control-liquid", rows: 2 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Autres</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :free_trial_used, class: "form-check-label" do %>
+                  <%= f.check_box :free_trial_used, class: "form-check-input" %>
+                  Essai gratuit utilisé
+                <% end %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :wants_reminder, class: "form-check-label" do %>
+                  <%= f.check_box :wants_reminder, class: "form-check-input" %>
+                  Souhaite un rappel
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <%= f.submit "Mettre à jour", class: "btn btn-liquid-primary" %>
+            <%= link_to "Annuler", admin_panel_attendance_path(@attendance), class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

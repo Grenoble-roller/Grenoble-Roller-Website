@@ -1,0 +1,226 @@
+<% 
+  breadcrumb_items = [
+    { label: "Événements", url: admin_panel_events_path },
+    { label: @event.title, url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%= @event.title %></h1>
+  <div class="btn-group">
+    <% if current_user&.role&.level.to_i >= 60 %>
+      <%= link_to "Modifier", edit_event_path(@event), class: "btn btn-outline-warning" %>
+      <%= button_to "Supprimer", admin_panel_event_path(@event), 
+          method: :delete, 
+          class: "btn btn-outline-danger",
+          data: { confirm: "Êtes-vous sûr de vouloir supprimer cet événement ?" } %>
+    <% end %>
+    <%= link_to "Retour", admin_panel_events_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<!-- Détails Événement -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header">
+    <h5 class="mb-0">Détails</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <p><strong>Date :</strong> <%= l(@event.start_at, format: :long) if @event.start_at %></p>
+        <p><strong>Durée :</strong> <%= @event.duration_min %> minutes</p>
+        <p><strong>Lieu :</strong> <%= @event.location_text %></p>
+        <% if @event.route.present? %>
+          <p><strong>Route :</strong> <%= @event.route.name %></p>
+        <% end %>
+        <% if @event.distance_km.present? %>
+          <p><strong>Distance :</strong> <%= @event.distance_km %> km</p>
+        <% end %>
+        <p><strong>Niveau :</strong> 
+          <% case @event.level %>
+          <% when 'beginner' %>
+            <span class="badge badge-liquid-info">Débutant</span>
+          <% when 'intermediate' %>
+            <span class="badge badge-liquid-warning">Intermédiaire</span>
+          <% when 'advanced' %>
+            <span class="badge badge-liquid-danger">Confirmé</span>
+          <% when 'all_levels' %>
+            <span class="badge badge-liquid-success">Tous niveaux</span>
+          <% end %>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <p><strong>Statut :</strong>
+          <% case @event.status %>
+          <% when 'published' %>
+            <span class="badge badge-liquid-success">Publié</span>
+          <% when 'draft' %>
+            <span class="badge badge-liquid-warning">En attente</span>
+          <% when 'rejected' %>
+            <span class="badge badge-liquid-danger">Refusé</span>
+          <% when 'canceled' %>
+            <span class="badge badge-liquid-danger">Annulé</span>
+          <% end %>
+        </p>
+        <p><strong>Places :</strong>
+          <% if @event.full? %>
+            <span class="badge badge-liquid-danger">COMPLET</span>
+          <% elsif @event.unlimited? %>
+            <span class="badge badge-liquid-info">Illimité</span>
+          <% else %>
+            <span class="badge badge-liquid-success">
+              <%= @event.attendances.where.not(status: ['canceled', 'pending']).where(is_volunteer: false).count %>/<%= @event.max_participants %>
+            </span>
+          <% end %>
+        </p>
+        <p><strong>Prix :</strong> 
+          <%= number_to_currency(@event.price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %>
+        </p>
+        <p><strong>Créateur :</strong> <%= @event.creator_user&.email || "-" %></p>
+        <% if @event.meeting_lat.present? && @event.meeting_lng.present? %>
+          <p><strong>Coordonnées GPS :</strong> <%= @event.meeting_lat %>, <%= @event.meeting_lng %></p>
+        <% end %>
+      </div>
+    </div>
+    <% if @event.description.present? %>
+      <hr>
+      <p><strong>Description :</strong></p>
+      <p><%= simple_format(@event.description) %></p>
+    <% end %>
+    <% if @event.cover_image.attached? %>
+      <hr>
+      <p><strong>Image de couverture :</strong></p>
+      <%= image_tag @event.cover_image_thumb, class: "img-fluid rounded", style: "max-width: 400px;" %>
+    <% end %>
+  </div>
+</div>
+
+<!-- Panel Inscriptions -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Inscriptions (<%= @attendances.count %>)</h5>
+  </div>
+  <div class="card-body">
+    <% if @attendances.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Type</th>
+              <th>Statut</th>
+              <th>Paiement</th>
+              <th>Date d'inscription</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @attendances.each do |attendance| %>
+              <tr>
+                <td><%= attendance.participant_name %></td>
+                <td><%= attendance.user.email %></td>
+                <td>
+                  <% if attendance.for_child? %>
+                    <span class="badge badge-liquid-info">Enfant</span>
+                  <% else %>
+                    <span class="badge badge-liquid-primary">Parent</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% case attendance.status %>
+                  <% when 'registered' %>
+                    <span class="badge badge-liquid-success">Inscrit</span>
+                  <% when 'paid' %>
+                    <span class="badge badge-liquid-success">Payé</span>
+                  <% when 'present' %>
+                    <span class="badge badge-liquid-success">Présent</span>
+                  <% when 'canceled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% when 'pending' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= attendance.status %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if attendance.payment.present? %>
+                    <span class="badge badge-liquid-success">Payé</span>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td><%= l(attendance.created_at, format: :short) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-muted">Aucune inscription pour le moment.</p>
+    <% end %>
+  </div>
+</div>
+
+<!-- Panel Liste d'attente -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Liste d'attente (<%= @waitlist_entries.count %>)</h5>
+  </div>
+  <div class="card-body">
+    <% if @waitlist_entries.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Position</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Statut</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @waitlist_entries.each do |entry| %>
+              <tr>
+                <td><strong>#<%= entry.position + 1 %></strong></td>
+                <td><%= entry.participant_name %></td>
+                <td><%= entry.user.email %></td>
+                <td>
+                  <% case entry.status %>
+                  <% when 'pending' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% when 'notified' %>
+                    <span class="badge badge-liquid-info">Notifié</span>
+                  <% when 'converted' %>
+                    <span class="badge badge-liquid-success">Converti</span>
+                  <% when 'cancelled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= entry.status %></span>
+                  <% end %>
+                </td>
+                <td><%= l(entry.created_at, format: :short) %></td>
+                <td>
+                  <div class="btn-group btn-group-sm">
+                    <% if entry.pending? && @event.has_available_spots? %>
+                      <%= button_to "Notifier", notify_waitlist_admin_panel_event_path(@event, waitlist_entry_id: entry.hashid),
+                          method: :post, class: "btn btn-outline-warning" %>
+                    <% elsif entry.notified? %>
+                      <%= button_to "Convertir", convert_waitlist_admin_panel_event_path(@event, waitlist_entry_id: entry.hashid),
+                          method: :post, class: "btn btn-outline-success" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-muted">Aucune personne en liste d'attente.</p>
+    <% end %>
+  </div>
+</div>

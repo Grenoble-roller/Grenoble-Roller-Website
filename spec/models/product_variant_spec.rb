@@ -2,7 +2,16 @@ require 'rails_helper'
 
 RSpec.describe ProductVariant, type: :model do
   let!(:category) { ProductCategory.create!(name: 'Accessoires', slug: "accessoires-#{SecureRandom.hex(3)}") }
-  let!(:product) { Product.create!(category: category, name: 'T-shirt', slug: "tshirt-#{SecureRandom.hex(3)}", price_cents: 1900, currency: 'EUR', stock_qty: 10, is_active: true, image_url: 'https://example.org/tshirt.jpg') }
+  let!(:product) do
+    # Créer le produit sans image d'abord, puis attacher l'image
+    p = Product.new(category: category, name: 'T-shirt', slug: "tshirt-#{SecureRandom.hex(3)}", price_cents: 1900, currency: 'EUR', stock_qty: 10, is_active: true)
+    image_path = Rails.root.join('spec', 'fixtures', 'files', 'test-image.jpg')
+    if File.exist?(image_path)
+      p.image.attach(io: File.open(image_path), filename: 'test-image.jpg')
+    end
+    p.save!
+    p
+  end
 
   def build_variant(attrs = {})
     defaults = {
@@ -11,14 +20,38 @@ RSpec.describe ProductVariant, type: :model do
       price_cents: 1900,
       currency: 'EUR',
       stock_qty: 5,
-      is_active: true,
-      image_url: 'https://example.org/variant.jpg'
+      is_active: false  # Inactif par défaut, nécessite une image pour activer
     }
-    ProductVariant.new(defaults.merge(attrs))
+    variant = ProductVariant.new(defaults.merge(attrs))
+    # Si actif, attacher une image
+    if variant.is_active?
+      image_path = Rails.root.join('spec', 'fixtures', 'files', 'test-image.jpg')
+      variant.images.attach(io: File.open(image_path), filename: 'test-image.jpg') if File.exist?(image_path)
+    end
+    variant
   end
 
-  it 'is valid with valid attributes' do
-    expect(build_variant).to be_valid
+  it 'is valid with valid attributes (inactive variant)' do
+    variant = build_variant
+    expect(variant).to be_valid
+    expect(variant.is_active).to be false
+  end
+
+  it 'requires image to be active (unless product has image)' do
+    # Créer un produit sans image pour ce test
+    product_no_image = Product.new(category: category, name: 'T-shirt 2', slug: "tshirt2-#{SecureRandom.hex(3)}", price_cents: 1900, currency: 'EUR', stock_qty: 10, is_active: false)
+    product_no_image.save!(validate: false)  # Sauvegarder sans validation pour éviter l'erreur d'image
+
+    variant = ProductVariant.new(product: product_no_image, sku: 'SKU-002', price_cents: 1900, currency: 'EUR', stock_qty: 5, is_active: true)
+    expect(variant).to be_invalid
+    expect(variant.errors[:base]).to include("Une image est requise pour activer la variante")
+  end
+
+  it 'is valid when active with image' do
+    variant = build_variant(is_active: true)
+    image_path = Rails.root.join('spec', 'fixtures', 'files', 'test-image.jpg')
+    variant.images.attach(io: File.open(image_path), filename: 'test-image.jpg') if File.exist?(image_path)
+    expect(variant).to be_valid
   end
 
   it 'requires sku and price_cents (currency defaults to EUR)' do

@@ -1,0 +1,155 @@
+<% 
+  breadcrumb_items = [
+    { label: "Adhésions", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Adhésions</h1>
+  <%= link_to "Nouvelle adhésion", new_admin_panel_membership_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Scopes -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <div class="d-flex flex-wrap gap-2">
+      <%= link_to "Toutes", admin_panel_memberships_path, 
+          class: "btn btn-sm #{params[:scope].blank? ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "Actives", admin_panel_memberships_path(scope: "active"), 
+          class: "btn btn-sm #{params[:scope] == 'active' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "En attente", admin_panel_memberships_path(scope: "pending"), 
+          class: "btn btn-sm #{params[:scope] == 'pending' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "Expirées", admin_panel_memberships_path(scope: "expired"), 
+          class: "btn btn-sm #{params[:scope] == 'expired' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "Personnelles", admin_panel_memberships_path(scope: "personal"), 
+          class: "btn btn-sm #{params[:scope] == 'personal' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "Enfants", admin_panel_memberships_path(scope: "children"), 
+          class: "btn btn-sm #{params[:scope] == 'children' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+      <%= link_to "Expirent bientôt", admin_panel_memberships_path(scope: "expiring_soon"), 
+          class: "btn btn-sm #{params[:scope] == 'expiring_soon' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
+    </div>
+  </div>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_memberships_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :user_email_cont, "Email utilisateur", class: "form-label" %>
+        <%= f.search_field :user_email_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par email..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :status_eq, "Statut", class: "form-label" %>
+        <%= f.select :status_eq,
+            options_for_select([
+              ["Tous", ""],
+              ["En attente", "pending"],
+              ["Active", "active"],
+              ["Expirée", "expired"],
+              ["Essai", "trial"]
+            ], params.dig(:q, :status_eq)),
+            {},
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :category_eq, "Catégorie", class: "form-label" %>
+        <%= f.select :category_eq,
+            options_for_select([
+              ["Toutes", ""],
+              ["Standard", "standard"],
+              ["FFRS", "with_ffrs"]
+            ], params.dig(:q, :category_eq)),
+            {},
+            { class: "form-select form-control-liquid" } %>
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_memberships_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Tableau des adhésions -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @memberships.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Utilisateur</th>
+              <th>Type</th>
+              <th>Catégorie</th>
+              <th>Statut</th>
+              <th>Saison</th>
+              <th>Montant</th>
+              <th>Dates</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @memberships.each do |membership| %>
+              <tr>
+                <td data-label="ID">#<%= membership.id %></td>
+                <td data-label="Utilisateur">
+                  <%= link_to membership.user&.to_s || "N/A", admin_panel_user_path(membership.user) if membership.user %>
+                </td>
+                <td data-label="Type">
+                  <% if membership.is_child_membership? %>
+                    <span class="badge bg-warning">Enfant</span>
+                    <br>
+                    <small><%= membership.child_full_name %></small>
+                  <% else %>
+                    <span class="badge bg-info">Personnelle</span>
+                  <% end %>
+                </td>
+                <td data-label="Catégorie">
+                  <%= membership.category == "standard" ? "Standard" : "FFRS" %>
+                </td>
+                <td data-label="Statut">
+                  <% case membership.status %>
+                  <% when "active" %>
+                    <span class="badge bg-success">Active</span>
+                  <% when "pending" %>
+                    <span class="badge bg-warning">En attente</span>
+                  <% when "expired" %>
+                    <span class="badge bg-danger">Expirée</span>
+                  <% when "trial" %>
+                    <span class="badge bg-secondary">Essai</span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= membership.status %></span>
+                  <% end %>
+                </td>
+                <td data-label="Saison"><%= membership.season || "-" %></td>
+                <td data-label="Montant">
+                  <%= number_to_currency(membership.total_amount_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %>
+                </td>
+                <td data-label="Dates">
+                  <% if membership.start_date && membership.end_date %>
+                    <%= membership.start_date.strftime("%d/%m/%Y") %> → <%= membership.end_date.strftime("%d/%m/%Y") %>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </td>
+                <td data-label="Actions">
+                  <%= link_to "Voir", admin_panel_membership_path(membership), class: "btn btn-sm btn-outline-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render 'admin_panel/shared/pagination' %>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucune adhésion trouvée</p>
+      </div>
+    <% end %>
+  </div>
+</div>

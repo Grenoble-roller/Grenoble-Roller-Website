@@ -1,0 +1,98 @@
+<% 
+  breadcrumb_items = [
+    { label: "Utilisateurs", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Utilisateurs</h1>
+  <%= link_to "Nouvel utilisateur", new_admin_panel_user_path, class: "btn btn-liquid-primary" %>
+</div>
+
+<!-- Filtres et recherche -->
+<div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+  <div class="card-body">
+    <%= search_form_for @q, url: admin_panel_users_path, method: :get, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :email_cont, "Email", class: "form-label" %>
+        <%= f.search_field :email_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par email..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :first_name_cont, "Prénom", class: "form-label" %>
+        <%= f.search_field :first_name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par prénom..." %>
+      </div>
+      <div class="col-md-3">
+        <%= f.label :last_name_cont, "Nom", class: "form-label" %>
+        <%= f.search_field :last_name_cont, class: "form-control form-control-liquid", placeholder: "Rechercher par nom..." %>
+      </div>
+      <div class="col-md-2 d-flex align-items-end gap-2">
+        <%= f.submit "Filtrer", class: "btn btn-outline-liquid-primary" %>
+        <%= link_to "Réinitialiser", admin_panel_users_path, class: "btn btn-outline-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Tableau des utilisateurs -->
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <% if @users.any? %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom complet</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Bénévole</th>
+              <th>Confirmé</th>
+              <th>Date création</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td data-label="ID">#<%= user.id %></td>
+                <td data-label="Nom complet">
+                  <%= user.to_s %>
+                </td>
+                <td data-label="Email"><%= user.email %></td>
+                <td data-label="Rôle">
+                  <span class="badge bg-secondary"><%= user.role&.name || "N/A" %></span>
+                </td>
+                <td data-label="Bénévole">
+                  <% if user.can_be_volunteer %>
+                    <span class="badge bg-success">Oui</span>
+                  <% else %>
+                    <span class="badge bg-secondary">Non</span>
+                  <% end %>
+                </td>
+                <td data-label="Confirmé">
+                  <% if user.confirmed? %>
+                    <span class="badge bg-success">Oui</span>
+                  <% else %>
+                    <span class="badge bg-warning">Non</span>
+                  <% end %>
+                </td>
+                <td data-label="Date création"><%= user.created_at.strftime('%d/%m/%Y %H:%M') %></td>
+                <td data-label="Actions">
+                  <%= link_to "Voir", admin_panel_user_path(user), class: "btn btn-sm btn-outline-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render 'admin_panel/shared/pagination' %>
+    <% else %>
+      <div class="text-center py-5">
+        <p class="text-muted">Aucun utilisateur trouvé</p>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+⚠️ ÉVÉNEMENT ANNULÉ
+
+Bonjour <%= @user.first_name %>,
+
+Nous vous informons que l'événement <%= @event.title %> auquel vous êtes inscrit(e) a été ANNULÉ.
+
+<% if @attendances.count > 1 %>
+─────────────────────────
+👥 PARTICIPANTS CONCERNÉS
+─────────────────────────
+<% @attendances.each do |attendance| %>
+- <%= attendance.participant_name %><% if attendance.is_volunteer? %> (Bénévole)<% end %>
+<% end %>
+─────────────────────────
+<% end %>
+
+📅 DÉTAILS DE L'ÉVÉNEMENT ANNULÉ
+─────────────────────────
+
+📍 Lieu : <%= @event.location_text %>
+🕐 Date prévue : <%= l @event.start_at, format: :event_long, locale: :fr %>
+⏱️ Durée : <%= @event.duration_min %> minutes
+<% if @event.price_cents > 0 %>
+💰 Prix : <%= number_to_currency(@event.price_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %>
+<% end %>
+
+─────────────────────────
+ℹ️ INFORMATIONS IMPORTANTES
+─────────────────────────
+
+<% if @event.price_cents > 0 %>
+💳 Remboursement : Si vous aviez payé pour cet événement, vous serez automatiquement remboursé(e) dans les prochains jours.
+
+<% end %>
+Nous nous excusons pour la gêne occasionnée. Nous espérons vous revoir bientôt sur une autre sortie !
+
+─────────────────────────
+
+Voir les autres événements : <%= @is_initiation ? initiations_url : events_url %>
+
+─────────────────────────
+
+Cordialement,
+L'équipe Grenoble Roller
+
+💡 Note : Si vous avez des questions concernant cette annulation, n'hésitez pas à nous contacter à <%= ENV.fetch('CONTACT_EMAIL', 'contact@grenoble-roller.org') %>.
+

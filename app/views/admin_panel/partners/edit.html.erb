@@ -1,0 +1,16 @@
+<% 
+  breadcrumb_items = [
+    { label: "Partenaires", url: admin_panel_partners_path },
+    { label: @partner.name, url: admin_panel_partner_path(@partner) },
+    { label: "Modifier", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Modifier <%= @partner.name %></h1>
+  <%= link_to "Retour", admin_panel_partner_path(@partner), class: "btn btn-outline-liquid-secondary" %>
+</div>
+
+<%= render 'form', partner: @partner %>

@@ -49,7 +49,7 @@
   <% end %>
 
   <!-- Liste des prochaines initiations -->
-  <div id="initiations-upcoming">
+  <div id="initiations-upcoming" class="mb-5">
     <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between mb-3">
       <div>
         <h2 class="h2 fw-bold mb-1">
@@ -68,15 +68,15 @@
           <% end %>
         <% end %>
         <span class="badge badge-liquid-primary fs-6">
-          <%= pluralize(@initiations.size, "séance", "séances") %>
+          <%= pluralize(@upcoming_initiations.size, "séance", "séances") %>
         </span>
       </div>
     </div>
 
-    <% if @initiations.any? %>
+    <% if @upcoming_initiations.any? %>
       <div class="event-grid">
         <div class="row g-4">
-          <% @initiations.each_with_index do |initiation, index| %>
+          <% @upcoming_initiations.each_with_index do |initiation, index| %>
             <%= render 'initiations/initiation_card_modern',
                        initiation: initiation,
                        is_first: (index == 0) %>
@@ -125,6 +125,119 @@
               <% end %>
               <%= link_to events_path, class: "btn btn-outline-primary" do %>
                 <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>Voir les événements
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Initiations passées -->
+  <div id="initiations-past">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between mb-3">
+      <div>
+        <h2 class="h2 fw-bold mb-1">
+          <i class="bi bi-archive me-2" aria-hidden="true"></i>
+          Séances passées
+        </h2>
+        <p class="text-body-secondary mb-0">
+          Un aperçu des dernières initiations organisées.
+        </p>
+      </div>
+      <% if @pagy_past.count > 0 %>
+        <span class="badge badge-liquid-secondary fs-6">
+          <%= pluralize(@pagy_past.count, "séance", "séances") %>
+        </span>
+      <% end %>
+    </div>
+
+    <% if @past_initiations.any? %>
+      <!-- Tableau des initiations passées -->
+      <div class="card card-liquid">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Titre</th>
+                  <th>Niveau</th>
+                  <th>Participants</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @past_initiations.each do |initiation| %>
+                  <tr>
+                    <td data-label="Date">
+                      <div class="d-flex flex-column">
+                        <span class="fw-semibold"><%= initiation.start_at.strftime("%d/%m/%Y") %></span>
+                        <small class="text-muted"><%= initiation.start_at.strftime("%H:%M") %></small>
+                      </div>
+                    </td>
+                    <td data-label="Titre">
+                      <div class="d-flex align-items-center">
+                        <% if initiation.cover_image.attached? %>
+                          <%= image_tag initiation.cover_image_card, class: "rounded me-2", style: "width: 40px; height: 20px; object-fit: cover;", alt: initiation.title %>
+                        <% end %>
+                        <span class="fw-semibold"><%= initiation.title %></span>
+                      </div>
+                    </td>
+                    <td data-label="Niveau">
+                      <% case initiation.level %>
+                      <% when "beginner" %>
+                        <span class="badge bg-info">Débutant</span>
+                      <% when "intermediate" %>
+                        <span class="badge bg-primary">Intermédiaire</span>
+                      <% when "advanced" %>
+                        <span class="badge bg-warning">Confirmé</span>
+                      <% when "all_levels" %>
+                        <span class="badge bg-secondary">Tous niveaux</span>
+                      <% end %>
+                    </td>
+                    <td data-label="Participants">
+                      <%= initiation.attendances_count %> / <%= initiation.max_participants %>
+                    </td>
+                    <td data-label="Statut">
+                      <% if initiation.canceled? %>
+                        <span class="badge bg-danger">Annulé</span>
+                      <% else %>
+                        <span class="badge bg-success">Terminé</span>
+                      <% end %>
+                    </td>
+                    <td data-label="Actions">
+                      <%= link_to initiation_path(initiation), class: "btn btn-sm btn-outline-primary" do %>
+                        <i class="bi bi-eye me-1" aria-hidden="true"></i>Voir
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pagination initiations passées -->
+      <% if @pagy_past.pages > 1 %>
+        <div class="mt-4 d-flex justify-content-center">
+          <%== pagy_bootstrap_nav(@pagy_past) %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="card card-liquid border-liquid shadow-sm">
+        <div class="card-body p-4 p-md-5 text-center">
+          <i class="bi bi-archive fs-1 text-muted mb-3 d-block" aria-hidden="true"></i>
+          <h3 class="h5 fw-bold mb-3">Aucune séance passée</h3>
+          <p class="text-body-secondary mb-4">
+            Les initiations passées apparaîtront ici une fois qu'elles auront eu lieu.
+          </p>
+          <% if user_signed_in? && policy(Event::Initiation.new).create? %>
+            <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+              <%= link_to new_initiation_path, class: "btn btn-outline-primary" do %>
+                <i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Créer une initiation
               <% end %>
             </div>
           <% end %>

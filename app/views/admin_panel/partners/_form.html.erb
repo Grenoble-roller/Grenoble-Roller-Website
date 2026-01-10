@@ -1,0 +1,67 @@
+<div class="card card-liquid rounded-liquid shadow-liquid">
+  <div class="card-body">
+    <%= form_with model: [:admin_panel, partner], local: true, class: "needs-validation", novalidate: true do |f| %>
+      <% if partner.errors.any? %>
+        <div class="alert alert-danger">
+          <h5>Erreurs à corriger :</h5>
+          <ul class="mb-0">
+            <% partner.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-3">
+            <%= f.label :name, "Nom *", class: "form-label" %>
+            <%= f.text_field :name, class: "form-control form-control-liquid", required: true, maxlength: 140 %>
+            <div class="invalid-feedback">
+              Veuillez saisir un nom.
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="mb-3">
+            <%= f.label :url, "URL", class: "form-label" %>
+            <%= f.url_field :url, class: "form-control form-control-liquid", placeholder: "https://..." %>
+            <div class="form-text">URL du site web du partenaire (optionnel)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :logo_url, "URL du logo", class: "form-label" %>
+        <%= f.url_field :logo_url, class: "form-control form-control-liquid", placeholder: "https://..." %>
+        <div class="form-text">URL de l'image du logo (optionnel)</div>
+        <% if partner.logo_url.present? %>
+          <div class="mt-2">
+            <%= image_tag partner.logo_url, height: 80, style: "border-radius: 8px;", alt: "Logo actuel" %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :description, "Description", class: "form-label" %>
+        <%= f.text_area :description, class: "form-control form-control-liquid", rows: 4 %>
+        <div class="form-text">Description du partenaire (optionnel)</div>
+      </div>
+
+      <div class="mb-3">
+        <div class="form-check form-switch">
+          <%= f.check_box :is_active, class: "form-check-input" %>
+          <%= f.label :is_active, "Partenaire actif", class: "form-check-label" %>
+          <div class="form-text">Un partenaire actif sera visible sur le site</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <%= f.submit partner.persisted? ? "Mettre à jour" : "Créer", class: "btn btn-liquid-primary" %>
+        <%= link_to "Annuler", partner.persisted? ? admin_panel_partner_path(partner) : admin_panel_partners_path, 
+            class: "btn btn-outline-liquid-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

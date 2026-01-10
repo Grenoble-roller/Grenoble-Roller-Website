@@ -1,0 +1,190 @@
+<% 
+  breadcrumb_items = [
+    { label: "Adhésions", url: admin_panel_memberships_path },
+    { label: "Nouvelle adhésion", url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Nouvelle adhésion</h1>
+  <%= link_to "Retour", admin_panel_memberships_path, class: "btn btn-outline-secondary" %>
+</div>
+
+<div class="row">
+  <div class="col-md-10">
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-body">
+        <%= form_with model: [:admin_panel, @membership], local: true do |f| %>
+          <% if @membership.errors.any? %>
+            <div class="alert alert-danger">
+              <h5>Erreurs:</h5>
+              <ul class="mb-0">
+                <% @membership.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-4">
+            <h5>Informations de base</h5>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= f.label :user_id, "Utilisateur *", class: "form-label" %>
+                <%= f.collection_select :user_id, User.order(:last_name, :first_name), :id, :to_s, 
+                    { prompt: "Sélectionnez un utilisateur" }, 
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :category, "Catégorie *", class: "form-label" %>
+                <%= f.select :category,
+                    options_for_select([
+                      ["Standard (10€)", "standard"],
+                      ["FFRS (56.55€)", "with_ffrs"]
+                    ]),
+                    { prompt: "Sélectionnez une catégorie" },
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :status, "Statut *", class: "form-label" %>
+                <%= f.select :status,
+                    options_for_select([
+                      ["En attente", "pending"],
+                      ["Active", "active"],
+                      ["Expirée", "expired"],
+                      ["Essai", "trial"]
+                    ]),
+                    { prompt: "Sélectionnez un statut" },
+                    { class: "form-select form-control-liquid", required: true } %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :season, "Saison", class: "form-label" %>
+                <%= f.text_field :season, class: "form-control form-control-liquid", placeholder: "Ex: 2024-2025" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :start_date, "Date de début", class: "form-label" %>
+                <%= f.date_field :start_date, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :end_date, "Date de fin", class: "form-label" %>
+                <%= f.date_field :end_date, class: "form-control form-control-liquid" %>
+              </div>
+              <div class="col-md-6 mb-3">
+                <%= f.label :amount_euros, "Montant (€)", class: "form-label" %>
+                <div class="input-group">
+                  <%= number_field_tag :amount_euros, 
+                      (@membership.amount_cents / 100.0 if @membership.amount_cents.present?),
+                      class: "form-control form-control-liquid", 
+                      step: 0.01, 
+                      min: 0,
+                      placeholder: "Ex: 25.00" %>
+                  <span class="input-group-text">€</span>
+                </div>
+                <div class="form-text">Ex: 25,00 = 25 euros</div>
+                <%= f.hidden_field :amount_cents, id: "membership_amount_cents" %>
+              </div>
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  const amountEurosInput = document.querySelector('input[name="amount_euros"]');
+                  const amountCentsInput = document.getElementById('membership_amount_cents');
+                  
+                  if (amountEurosInput && amountCentsInput) {
+                    function updateCents() {
+                      const euros = parseFloat(amountEurosInput.value) || 0;
+                      amountCentsInput.value = Math.round(euros * 100);
+                    }
+                    
+                    amountEurosInput.addEventListener('input', updateCents);
+                    amountEurosInput.addEventListener('change', updateCents);
+                    updateCents(); // Initialiser au chargement
+                  }
+                });
+              </script>
+              <div class="col-md-6 mb-3">
+                <%= f.label :currency, "Devise", class: "form-label" %>
+                <%= f.text_field :currency, class: "form-control form-control-liquid", value: @membership.currency || "EUR" %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <h5>Type d'adhésion</h5>
+            <div class="mb-3">
+              <%= f.label :is_child_membership, class: "form-check-label" do %>
+                <%= f.check_box :is_child_membership, class: "form-check-input", id: "membership_is_child_membership" %>
+                Adhésion enfant
+              <% end %>
+            </div>
+          </div>
+
+          <div id="child_fields" style="display: none;">
+            <div class="mb-4">
+              <h5>Informations enfant</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <%= f.label :child_first_name, "Prénom enfant *", class: "form-label" %>
+                  <%= f.text_field :child_first_name, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :child_last_name, "Nom enfant *", class: "form-label" %>
+                  <%= f.text_field :child_last_name, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :child_date_of_birth, "Date de naissance *", class: "form-label" %>
+                  <%= f.date_field :child_date_of_birth, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :parent_name, "Nom parent", class: "form-label" %>
+                  <%= f.text_field :parent_name, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :parent_email, "Email parent", class: "form-label" %>
+                  <%= f.email_field :parent_email, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :parent_phone, "Téléphone parent", class: "form-label" %>
+                  <%= f.text_field :parent_phone, class: "form-control form-control-liquid" %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :parent_authorization, class: "form-check-label" do %>
+                    <%= f.check_box :parent_authorization, class: "form-check-input" %>
+                    Autorisation parentale
+                  <% end %>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <%= f.label :parent_authorization_date, "Date autorisation", class: "form-label" %>
+                  <%= f.date_field :parent_authorization_date, class: "form-control form-control-liquid" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <%= f.submit "Créer", class: "btn btn-liquid-primary" %>
+            <%= link_to "Annuler", admin_panel_memberships_path, class: "btn btn-outline-secondary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('membership_is_child_membership');
+    const childFields = document.getElementById('child_fields');
+    
+    function toggleChildFields() {
+      if (checkbox.checked) {
+        childFields.style.display = 'block';
+      } else {
+        childFields.style.display = 'none';
+      }
+    }
+    
+    checkbox.addEventListener('change', toggleChildFields);
+    toggleChildFields(); // Initial state
+  });
+</script>

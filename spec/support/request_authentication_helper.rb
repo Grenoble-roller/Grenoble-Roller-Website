@@ -1,29 +1,30 @@
 # Helper pour l'authentification dans les tests request
-# Utilise post user_session_path au lieu de sign_in pour éviter les erreurs
-# "Could not find a valid mapping for #<User>"
+# ✅ Utiliser les helpers natifs de Devise pour les tests request
+# sign_in est fourni par Devise::Test::IntegrationHelpers (déjà inclus dans rails_helper.rb)
 module RequestAuthenticationHelper
-  # Authentifie un utilisateur dans les tests request
+  # Wrapper pour utiliser sign_in de Devise de manière cohérente
   # @param user [User] L'utilisateur à authentifier
-  # @param password [String] Le mot de passe (défaut: 'password123')
-  def login_user(user, password: nil)
-    # Utiliser sign_in de Devise::Test::IntegrationHelpers si disponible
-    if respond_to?(:sign_in)
-      sign_in(user)
-    else
-      # Fallback: utiliser POST pour la session
+  def login_user(user)
+    # ✅ Utiliser sign_in natif de Devise (fonctionne avec DatabaseCleaner + truncation)
+    # S'assurer que le mapping Devise est configuré
+    sign_in user
+  rescue RuntimeError => e
+    # Fallback: si sign_in échoue, utiliser POST (comme avant)
+    # Cela peut arriver si le mapping Devise n'est pas correctement configuré
+    if e.message.include?("Could not find a valid mapping")
       post user_session_path, params: {
         user: {
           email: user.email,
-          password: password || user.password || 'password123'
+          password: 'password12345'
         }
       }
-      # Vérifier que la connexion a réussi
-      expect(response).to redirect_to(root_path) if response.redirect?
+    else
+      raise
     end
   end
 
   def logout_user
-    delete destroy_user_session_path
+    sign_out :user
   end
 end
 

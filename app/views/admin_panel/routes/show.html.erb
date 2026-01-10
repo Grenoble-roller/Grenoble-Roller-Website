@@ -1,0 +1,186 @@
+<% 
+  breadcrumb_items = [
+    { label: "Routes", url: admin_panel_routes_path },
+    { label: @route.name, url: nil }
+  ]
+%>
+
+<%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%= @route.name %></h1>
+  <div class="d-flex gap-2">
+    <%= link_to "Modifier", edit_admin_panel_route_path(@route), class: "btn btn-outline-liquid-primary" %>
+    <%= link_to "Retour", admin_panel_routes_path, class: "btn btn-outline-secondary" %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Informations principales -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations principales</h5>
+      </div>
+      <div class="card-body">
+        <dl class="row">
+          <dt class="col-sm-3">ID</dt>
+          <dd class="col-sm-9">#<%= @route.id %></dd>
+
+          <dt class="col-sm-3">Nom</dt>
+          <dd class="col-sm-9"><%= @route.name %></dd>
+
+          <dt class="col-sm-3">Difficulté</dt>
+          <dd class="col-sm-9">
+            <% if @route.difficulty.present? %>
+              <% badge_class = case @route.difficulty
+                   when "easy" then "bg-success"
+                   when "medium" then "bg-warning"
+                   when "hard" then "bg-danger"
+                   else "bg-secondary"
+                 end %>
+              <span class="badge <%= badge_class %>">
+                <%= @route.difficulty == "easy" ? "Facile" : @route.difficulty == "medium" ? "Intermédiaire" : "Difficile" %>
+              </span>
+            <% else %>
+              <span class="text-muted">Non définie</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Distance</dt>
+          <dd class="col-sm-9">
+            <% if @route.distance_km.present? %>
+              <%= @route.distance_km %> km
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Dénivelé</dt>
+          <dd class="col-sm-9">
+            <% if @route.elevation_m.present? %>
+              <%= @route.elevation_m %> m
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">GPX URL</dt>
+          <dd class="col-sm-9">
+            <% if @route.gpx_url.present? %>
+              <% safe_url = safe_external_url(@route.gpx_url) %>
+              <% if safe_url %>
+                <%= link_to @route.gpx_url, safe_url, target: "_blank", class: "text-decoration-none" %>
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Carte</dt>
+          <dd class="col-sm-9">
+            <% if @route.map_image.attached? %>
+              <%= image_tag @route.map_image, height: 200, style: "border-radius: 8px;", class: "img-fluid" %>
+            <% elsif @route.map_image_url.present? %>
+              <%= image_tag @route.map_image_url, height: 200, style: "border-radius: 8px;", class: "img-fluid" %>
+            <% else %>
+              <span class="text-muted">Aucune carte</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Description</dt>
+          <dd class="col-sm-9">
+            <% if @route.description.present? %>
+              <div class="text-break"><%= simple_format(@route.description) %></div>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+
+          <dt class="col-sm-3">Notes de sécurité</dt>
+          <dd class="col-sm-9">
+            <% if @route.safety_notes.present? %>
+              <div class="text-break"><%= simple_format(@route.safety_notes) %></div>
+            <% else %>
+              <span class="text-muted">-</span>
+            <% end %>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Événements associés -->
+    <% if @events.any? %>
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-header">
+          <h5 class="mb-0">Événements associés (<%= @events.count %>)</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Statut</th>
+                  <th>Date</th>
+                  <th>Créateur</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @events.each do |event| %>
+                  <tr>
+                    <td>
+                      <%= link_to event.title, admin_panel_event_path(event), class: "text-decoration-none" %>
+                    </td>
+                    <td>
+                      <span class="badge bg-secondary"><%= event.status %></span>
+                    </td>
+                    <td>
+                      <%= event.start_at&.strftime("%d/%m/%Y à %H:%M") || "-" %>
+                    </td>
+                    <td>
+                      <%= event.creator_user&.to_s || "-" %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Informations système -->
+    <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Informations système</h5>
+      </div>
+      <div class="card-body">
+        <dl class="mb-0">
+          <dt>Créé le</dt>
+          <dd><%= @route.created_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+
+          <dt>Modifié le</dt>
+          <dd><%= @route.updated_at.strftime("%d/%m/%Y à %H:%M") %></dd>
+        </dl>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card card-liquid rounded-liquid shadow-liquid">
+      <div class="card-header">
+        <h5 class="mb-0">Actions</h5>
+      </div>
+      <div class="card-body">
+        <%= link_to "Modifier", edit_admin_panel_route_path(@route), class: "btn btn-liquid-primary w-100 mb-2" %>
+        <%= button_to "Supprimer", admin_panel_route_path(@route), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cette route ?" } %>
+      </div>
+    </div>
+  </div>
+</div>

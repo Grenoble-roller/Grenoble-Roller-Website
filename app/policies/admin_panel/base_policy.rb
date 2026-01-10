@@ -44,14 +44,18 @@ module AdminPanel
       private
 
       def admin_user?
-        user.present? && user.role&.level.to_i >= 60 # ADMIN (60) ou SUPERADMIN (70)
+        # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
+        # Level 60 = ADMIN, Level 70 = SUPERADMIN
+        user.present? && user.role&.level.to_i >= 60
       end
     end
 
     private
 
     def admin_user?
-      user.present? && user.role&.level.to_i >= 60 # ADMIN (60) ou SUPERADMIN (70)
+      # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
+      # Level 60 = ADMIN, Level 70 = SUPERADMIN
+      user.present? && user.role&.level.to_i >= 60
     end
   end
 end

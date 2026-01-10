@@ -1,9 +1,9 @@
 <% if product.new_record? && option_types.any? %>
   <!-- Mode création : Stratégie variantes -->
-  <div class="mb-4">
-    <h6 class="fw-semibold mb-3">Stratégie de création des variantes</h6>
+  <div class="mb-3">
+    <h6 class="fw-semibold mb-2" style="font-size: 0.95rem;">Stratégie de création des variantes</h6>
     
-    <div class="form-check mb-3">
+    <div class="form-check mb-2">
       <input type="radio" 
              class="form-check-input" 
              name="variant_mode" 
@@ -11,50 +11,66 @@
              value="auto" 
              checked
              data-action="change->product-form#toggleVariantMode">
-      <label class="form-check-label" for="mode_auto">
+      <label class="form-check-label" for="mode_auto" style="font-size: 0.9rem;">
         <strong>Générer automatiquement</strong> (recommandé)
       </label>
-      <div class="form-text ms-4">
+      <div class="form-text ms-4" style="font-size: 0.85rem; margin-top: 0.25rem;">
         Crée toutes les combinaisons d'options sélectionnées
       </div>
     </div>
 
-    <div class="form-check mb-3">
+    <div class="form-check mb-2">
       <input type="radio" 
              class="form-check-input" 
              name="variant_mode" 
              id="mode_manual" 
              value="manual"
              data-action="change->product-form#toggleVariantMode">
-      <label class="form-check-label" for="mode_manual">
+      <label class="form-check-label" for="mode_manual" style="font-size: 0.9rem;">
         <strong>Créer manuellement</strong> après création
       </label>
-      <div class="form-text ms-4">
+      <div class="form-text ms-4" style="font-size: 0.85rem; margin-top: 0.25rem;">
         Vous créerez les variantes une par une après la création du produit
       </div>
     </div>
   </div>
 
   <!-- MODE AUTO : Sélection options + preview -->
-  <div id="auto_section" class="mt-4" data-product-form-target="autoSection">
-    <div class="mb-4">
-      <label class="form-label fw-semibold">
+  <div id="auto_section" class="mt-3" data-product-form-target="autoSection">
+    <div class="mb-3">
+      <label class="form-label fw-semibold mb-2" style="font-size: 0.95rem;">
         <strong>Sélectionner les options à combiner</strong>
       </label>
-      <div class="border rounded p-3 bg-light">
+      <div class="card card-liquid rounded-liquid shadow-liquid p-2">
         <% option_types.each do |option_type| %>
-          <div class="form-check mb-2">
-            <input type="checkbox" 
-                   class="form-check-input" 
-                   name="option_ids[]" 
-                   value="<%= option_type.id %>"
-                   id="option_<%= option_type.id %>"
-                   data-option-name="<%= option_type.presentation || option_type.name %>"
-                   data-action="change->product-form#previewVariants">
-            <label class="form-check-label" for="option_<%= option_type.id %>">
-              <strong><%= option_type.presentation || option_type.name %></strong>
-              <span class="text-muted">(<%= option_type.option_values.count %> valeurs)</span>
-            </label>
+          <div class="mb-2 <%= 'border-bottom pb-2' unless option_type == option_types.last %>" style="border-color: var(--card-border-color);">
+            <!-- Titre de la section -->
+            <div class="d-flex align-items-center mb-1">
+              <i class="bi bi-tag-fill me-1" style="color: var(--gr-primary); font-size: 0.85rem;"></i>
+              <span class="fw-semibold" style="font-size: 0.9rem;"><%= option_type.presentation || option_type.name %></span>
+              <span class="badge bg-info ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; line-height: 1.2;"><%= option_type.option_values.count %> valeurs</span>
+            </div>
+            
+            <!-- Valeurs individuelles en grille compacte -->
+            <div class="d-flex flex-wrap gap-1 ms-0">
+              <% option_type.option_values.order(:value).each do |option_value| %>
+                <div class="form-check mb-0 me-2" style="min-width: fit-content;">
+                  <input type="checkbox" 
+                         class="form-check-input option-value-checkbox" 
+                         name="option_value_ids[]" 
+                         value="<%= option_value.id %>"
+                         id="option_value_<%= option_value.id %>"
+                         data-option-type-id="<%= option_type.id %>"
+                         data-option-type-name="<%= option_type.presentation || option_type.name %>"
+                         data-option-value-name="<%= option_value.presentation || option_value.value %>"
+                         data-action="change->product-form#previewVariants"
+                         style="margin-top: 0.2rem;">
+                  <label class="form-check-label" for="option_value_<%= option_value.id %>" style="font-size: 0.875rem; padding-left: 0.3rem; margin-bottom: 0;">
+                    <%= option_value.presentation || option_value.value %>
+                  </label>
+                </div>
+              <% end %>
+            </div>
           </div>
         <% end %>
       </div>
@@ -62,23 +78,23 @@
 
     <!-- PREVIEW VARIANTES -->
     <div id="preview_box" 
-         class="alert alert-info" 
+         class="alert alert-info py-2 px-3 mb-2" 
          style="display: none;"
          data-product-form-target="previewBox">
-      <p class="mb-2">
+      <p class="mb-1" style="font-size: 0.9rem;">
         <strong>Aperçu :</strong> 
         <span id="variant_count" data-product-form-target="variantCount">0</span> variantes seront créées
       </p>
-      <p id="preview_skus" class="small mb-2" data-product-form-target="previewSkus"></p>
+      <p id="preview_skus" class="small mb-1" style="font-size: 0.8rem;" data-product-form-target="previewSkus"></p>
       <p id="preview_warning" 
          class="small text-warning mb-0" 
-         style="display: none;"
+         style="display: none; font-size: 0.8rem;"
          data-product-form-target="previewWarning">
         ⚠️ Beaucoup de variantes ! Vérifiez avant de confirmer.
       </p>
     </div>
 
-    <div class="mb-3">
+    <div class="mb-2 mt-2">
       <input type="hidden" name="generate_variants" value="false">
       <div class="form-check">
         <input type="checkbox" 
@@ -87,11 +103,11 @@
                id="generate_check" 
                value="true" 
                checked>
-        <label class="form-check-label" for="generate_check">
+        <label class="form-check-label" for="generate_check" style="font-size: 0.9rem;">
           Générer automatiquement à la création
         </label>
       </div>
-      <small class="text-muted d-block mt-2">
+      <small class="text-muted d-block ms-4" style="font-size: 0.8rem; margin-top: 0.25rem;">
         Les variantes hériteront le prix du produit (modifiable ensuite)
       </small>
     </div>
@@ -124,34 +140,58 @@
   </div>
 
   <!-- Ajouter options manquantes -->
-  <div class="alert alert-info">
+  <div class="alert alert-info mb-3">
     <strong>Ajouter options manquantes ?</strong>
     <p class="small mb-2">Si vous avez ajouté de nouveaux types d'options après création du produit :</p>
     <button type="button" 
-            class="btn btn-sm btn-outline-info" 
+            class="btn btn-sm btn-outline-info mt-2" 
             data-bs-toggle="collapse" 
-            data-bs-target="#generate_missing">
+            data-bs-target="#generate_missing"
+            aria-expanded="false"
+            aria-controls="generate_missing">
       Générer variantes manquantes
     </button>
   </div>
 
-  <div class="collapse" id="generate_missing">
-    <div class="card card-body bg-light">
-      <label class="form-label fw-semibold mb-3">Sélectionner les options manquantes :</label>
-      <% option_types.each do |option_type| %>
-        <div class="form-check">
-          <input type="checkbox" 
-                 class="form-check-input" 
-                 name="option_ids[]" 
-                 value="<%= option_type.id %>"
-                 id="option_missing_<%= option_type.id %>">
-          <label class="form-check-label" for="option_missing_<%= option_type.id %>">
-            <%= option_type.presentation || option_type.name %>
-          </label>
-        </div>
-      <% end %>
-      <input type="hidden" name="generate_missing" value="true">
+  <div class="collapse mb-3" id="generate_missing">
+    <div class="mb-3">
+      <label class="form-label fw-semibold mb-2" style="font-size: 0.95rem;">
+        <strong>Sélectionner les valeurs d'options à combiner</strong>
+      </label>
+      <div class="card card-liquid rounded-liquid shadow-liquid p-2">
+        <% option_types.each do |option_type| %>
+          <div class="mb-2 <%= 'border-bottom pb-2' unless option_type == option_types.last %>" style="border-color: var(--card-border-color);">
+            <!-- Titre de la section -->
+            <div class="d-flex align-items-center mb-1">
+              <i class="bi bi-tag-fill me-1" style="color: var(--gr-primary); font-size: 0.85rem;"></i>
+              <span class="fw-semibold" style="font-size: 0.9rem;"><%= option_type.presentation || option_type.name %></span>
+              <span class="badge bg-info ms-2" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; line-height: 1.2;"><%= option_type.option_values.count %> valeurs</span>
+            </div>
+            
+            <!-- Valeurs individuelles en grille compacte -->
+            <div class="d-flex flex-wrap gap-1 ms-0">
+              <% option_type.option_values.order(:value).each do |option_value| %>
+                <div class="form-check mb-0 me-2" style="min-width: fit-content;">
+                  <input type="checkbox" 
+                         class="form-check-input option-value-checkbox" 
+                         name="option_value_ids[]" 
+                         value="<%= option_value.id %>"
+                         id="option_missing_value_<%= option_value.id %>"
+                         data-option-type-id="<%= option_type.id %>"
+                         data-option-type-name="<%= option_type.presentation || option_type.name %>"
+                         data-option-value-name="<%= option_value.presentation || option_value.value %>"
+                         style="margin-top: 0.2rem;">
+                  <label class="form-check-label" for="option_missing_value_<%= option_value.id %>" style="font-size: 0.875rem; padding-left: 0.3rem; margin-bottom: 0;">
+                    <%= option_value.presentation || option_value.value %>
+                  </label>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
+    <input type="hidden" name="generate_missing" value="true">
   </div>
 <% end %>
 
