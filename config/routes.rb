@@ -48,10 +48,10 @@ Rails.application.routes.draw do
     end
 
     # Paiements
-    resources :payments, only: [:index, :show, :destroy]
+    resources :payments, only: [ :index, :show, :destroy ]
 
     # Communication
-    resources :contact_messages, path: "contact-messages", only: [:index, :show, :destroy]
+    resources :contact_messages, path: "contact-messages", only: [ :index, :show, :destroy ]
     resources :partners
 
     # Initiations
@@ -68,7 +68,7 @@ Rails.application.routes.draw do
 
     # Événements (Randonnées)
     # Note: new/create/edit/update sont gérés par le controller public EventsController
-    resources :events, only: [:index, :show, :destroy] do
+    resources :events, only: [ :index, :show, :destroy ] do
       member do
         post :convert_waitlist
         post :notify_waitlist
@@ -83,7 +83,7 @@ Rails.application.routes.draw do
 
     # Candidatures Organisateur
     # Note: new/create/edit/update ne sont pas nécessaires (candidatures créées par les utilisateurs)
-    resources :organizer_applications, only: [:index, :show, :destroy] do
+    resources :organizer_applications, only: [ :index, :show, :destroy ] do
       member do
         patch :approve
         patch :reject
@@ -147,7 +147,7 @@ Rails.application.routes.draw do
     passwords: "passwords",
     confirmations: "confirmations"
   }
-  
+
   # Route AJAX pour vérifier si un email existe déjà (validation en temps réel)
   get "/users/check_email", to: "registrations#check_email", as: "check_email_users"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

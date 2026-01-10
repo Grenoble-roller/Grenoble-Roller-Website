@@ -32,12 +32,12 @@ class CartsController < ApplicationController
     else
       product_name = variant.product.name
       added_qty = capped_qty - current_qty
-      
+
       # Afficher un message d'alerte si la quantité demandée dépasse le stock disponible
       if requested_total > available_stock
         flash[:alert] = "Stock insuffisant. Seulement #{added_qty} unité#{added_qty > 1 ? 's' : ''} ajoutée#{added_qty > 1 ? 's' : ''} au panier."
       end
-      
+
       message = if added_qty == 1
         "#{product_name} ajouté au panier"
       else

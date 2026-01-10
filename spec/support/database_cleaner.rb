@@ -25,7 +25,7 @@ RSpec.configure do |config|
   # ✅ CRITIQUE: Les tests request ne peuvent pas utiliser les transactions
   # car Devise a besoin d'accéder à la BD depuis la session
   # Transactional tests SEULEMENT pour model/controller (pas request!)
-  
+
   config.before(:suite) do
     DatabaseCleaner.clean_with(:truncation)
   end

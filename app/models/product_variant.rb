@@ -93,7 +93,7 @@ class ProductVariant < ApplicationRecord
       old_inv_stock = inventory.stock_qty
       new_inv_stock = stock_qty
       difference = new_inv_stock - old_inv_stock
-      
+
       if difference != 0
         # Mettre à jour le stock de l'inventaire pour qu'il corresponde à celui de la variante
         inventory.update_column(:stock_qty, new_inv_stock)

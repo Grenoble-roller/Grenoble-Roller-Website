@@ -6,8 +6,8 @@ module AdminPanel
 
     before_action :set_membership, only: %i[show edit update destroy activate check_payment]
     before_action :authorize_membership, only: %i[show edit update destroy]
-    before_action :authorize_activate, only: [:activate]
-    before_action :authorize_check_payment, only: [:check_payment]
+    before_action :authorize_activate, only: [ :activate ]
+    before_action :authorize_check_payment, only: [ :check_payment ]
 
     # GET /admin-panel/memberships
     def index

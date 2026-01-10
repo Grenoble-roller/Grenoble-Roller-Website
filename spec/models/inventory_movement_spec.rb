@@ -69,7 +69,7 @@ RSpec.describe InventoryMovement, type: :model do
     it 'filters by reason' do
       adjustment = create(:inventory_movement, inventory: inventory, reason: 'adjustment')
       purchase = create(:inventory_movement, inventory: inventory, reason: 'purchase')
-      
+
       adjustments = InventoryMovement.by_reason('adjustment')
       expect(adjustments).to include(adjustment)
       expect(adjustments).not_to include(purchase)

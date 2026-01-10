@@ -33,7 +33,7 @@ class Order < ApplicationRecord
   # NOUVEAU : Réserver le stock à la création de la commande
   # Le stock est réservé (reserved_qty) mais pas encore déduit (stock_qty)
   def reserve_stock
-    return unless status == 'pending'
+    return unless status == "pending"
 
     order_items.includes(variant: :inventory).each do |item|
       variant = item.variant
@@ -55,23 +55,23 @@ class Order < ApplicationRecord
     items = order_items.includes(variant: :inventory).to_a
 
     case current_status
-    when 'paid', 'preparation'
+    when "paid", "preparation"
       # Stock déjà réservé, rien à faire
       # Le stock reste réservé jusqu'à l'expédition
 
-    when 'shipped'
+    when "shipped"
       # Déduire définitivement du stock et libérer la réservation
       items.each do |item|
         variant = item.variant
         next unless variant&.inventory
 
         # Déduire du stock réel (stock_qty)
-        variant.inventory.move_stock(-item.quantity, 'order_fulfilled', id.to_s, user)
+        variant.inventory.move_stock(-item.quantity, "order_fulfilled", id.to_s, user)
         # Libérer la réservation (reserved_qty)
         variant.inventory.release_stock(item.quantity, id, user)
       end
 
-    when 'cancelled', 'refunded'
+    when "cancelled", "refunded"
       # Libérer le stock réservé (sans déduire du stock réel car pas encore expédié)
       items.each do |item|
         variant = item.variant

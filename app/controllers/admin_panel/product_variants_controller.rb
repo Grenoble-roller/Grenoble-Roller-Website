@@ -31,7 +31,7 @@ module AdminPanel
     # PATCH /admin-panel/products/:product_id/product_variants/bulk_update
     def bulk_update
       variant_ids = params[:variant_ids] || []
-      
+
       if variant_ids.empty?
         flash[:alert] = "Aucune variante sélectionnée"
         redirect_to admin_panel_product_product_variants_path(@product)
@@ -158,8 +158,8 @@ module AdminPanel
             redirect_to admin_panel_product_path(@product)
           end
           format.json do
-            render json: { 
-              success: true, 
+            render json: {
+              success: true,
               message: "Variante mise à jour avec succès",
               variant: {
                 id: @variant.id,
@@ -174,9 +174,9 @@ module AdminPanel
             render :edit, status: :unprocessable_entity
           end
           format.json do
-            render json: { 
-              success: false, 
-              message: @variant.errors.full_messages.join(', ')
+            render json: {
+              success: false,
+              message: @variant.errors.full_messages.join(", ")
             }, status: :unprocessable_entity
           end
         end

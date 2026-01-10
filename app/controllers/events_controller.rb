@@ -19,7 +19,7 @@ class EventsController < ApplicationController
       # Admins/moderateurs voient les événements non publiés (draft) mais pas les rejetés
       # Événements à venir : 6 minicards (sans pagination)
       @upcoming_events = scoped_events.upcoming.order(:start_at).limit(6)
-      
+
       # Événements passés : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
       past_scope = scoped_events.past.order(start_at: :desc)
       @pagy_past, @past_events = pagy(past_scope, page_param: :page_past, items: 10)
@@ -27,7 +27,7 @@ class EventsController < ApplicationController
       # Utilisateurs normaux voient seulement les événements visibles (publiés/annulés)
       # Événements à venir : 6 minicards (sans pagination)
       @upcoming_events = scoped_events.visible.upcoming.order(:start_at).limit(6)
-      
+
       # Événements passés : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
       past_scope = scoped_events.visible.past.order(start_at: :desc)
       @pagy_past, @past_events = pagy(past_scope, page_param: :page_past, items: 10)
@@ -36,10 +36,10 @@ class EventsController < ApplicationController
     # Charger les données pour les filtres
     @routes = Route.order(:name)
     @levels = [
-      ["Débutant", "beginner"],
-      ["Intermédiaire", "intermediate"],
-      ["Confirmé", "advanced"],
-      ["Tous niveaux", "all_levels"]
+      [ "Débutant", "beginner" ],
+      [ "Intermédiaire", "intermediate" ],
+      [ "Confirmé", "advanced" ],
+      [ "Tous niveaux", "all_levels" ]
     ]
   end
 

@@ -10,7 +10,7 @@ class OrdersController < ApplicationController
     # Utiliser current_user.id directement pour éviter les problèmes de cache
     user_id = current_user.id
     user = User.find(user_id)
-    
+
     # Vérifier confirmed_at directement (pas confirmed? qui peut être mis en cache)
     unless user.confirmed_at.present?
       confirmation_link = view_context.link_to(
@@ -42,7 +42,7 @@ class OrdersController < ApplicationController
     # Utiliser current_user.id directement pour éviter les problèmes de cache
     user_id = current_user.id
     user = User.find(user_id)
-    
+
     # Vérifier confirmed_at directement (pas confirmed? qui peut être mis en cache)
     unless user.confirmed_at.present?
       confirmation_link = view_context.link_to(
@@ -67,9 +67,9 @@ class OrdersController < ApplicationController
       # Utiliser inventory.available_qty si disponible, sinon fallback sur stock_qty
       available_stock = if variant.inventory
                           variant.inventory.available_qty
-                        else
+      else
                           variant.stock_qty.to_i
-                        end
+      end
 
       if !variant.is_active || !variant.product&.is_active
         stock_errors << "#{variant.product.name} (#{variant.sku}) n'est plus disponible"

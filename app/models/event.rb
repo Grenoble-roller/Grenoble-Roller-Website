@@ -195,7 +195,7 @@ class Event < ApplicationRecord
   # Vérifie si l'événement a du matériel prêté
   def has_equipment_loaned?
     return false unless is_a?(Event::Initiation)
-    
+
     attendances
       .where(needs_equipment: true)
       .where.not(roller_size: nil)
@@ -207,7 +207,7 @@ class Event < ApplicationRecord
   # Retourne le nombre de rollers remis en stock, ou nil si déjà traité
   def return_roller_stock
     return unless is_a?(Event::Initiation) # Seulement pour les initiations
-    
+
     # Sécurité : éviter de remettre le stock plusieurs fois
     if stock_returned_at.present?
       Rails.logger.info("Stock déjà remis en place pour initiation ##{id} le #{stock_returned_at}")

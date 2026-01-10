@@ -20,7 +20,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
       it 'assigns @low_stock' do
         variant = create(:product_variant)
         inventory = create(:inventory, product_variant: variant, stock_qty: 5, reserved_qty: 0)
-        
+
         get admin_panel_inventory_path
         expect(assigns(:low_stock)).to be_present
       end
@@ -28,7 +28,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
       it 'assigns @out_of_stock' do
         variant = create(:product_variant)
         inventory = create(:inventory, product_variant: variant, stock_qty: 0, reserved_qty: 0)
-        
+
         get admin_panel_inventory_path
         expect(assigns(:out_of_stock)).to be_present
       end
@@ -37,7 +37,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
         variant = create(:product_variant)
         inventory = create(:inventory, product_variant: variant)
         create(:inventory_movement, inventory: inventory)
-        
+
         get admin_panel_inventory_path
         expect(assigns(:movements)).to be_present
       end
@@ -73,7 +73,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
         variant = create(:product_variant)
         inventory = create(:inventory, product_variant: variant)
         create_list(:inventory_movement, 5, inventory: inventory)
-        
+
         get admin_panel_inventory_transfers_path
         expect(assigns(:movements)).to be_present
         expect(assigns(:pagy)).to be_present
@@ -84,7 +84,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
         inventory = create(:inventory, product_variant: variant)
         create(:inventory_movement, inventory: inventory, reason: 'adjustment')
         create(:inventory_movement, inventory: inventory, reason: 'purchase')
-        
+
         get admin_panel_inventory_transfers_path, params: { q: { reason_cont: 'adjustment' } }
         movements = assigns(:movements)
         expect(movements.all? { |m| m.reason == 'adjustment' }).to be(true)
@@ -141,7 +141,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
           quantity: 0,
           reason: 'adjustment'
         }
-        
+
         expect(response).to redirect_to(admin_panel_inventory_path)
         expect(flash[:alert]).to be_present
       end

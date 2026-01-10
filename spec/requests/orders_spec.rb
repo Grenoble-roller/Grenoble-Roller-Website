@@ -108,10 +108,10 @@ RSpec.describe 'Orders', type: :request do
       # Vérifier que confirmed? retourne false
       expect(unconfirmed_user.confirmed?).to be false
       expect(unconfirmed_user.confirmed_at).to be_nil
-      
+
       # Se connecter SANS confirmer l'utilisateur (confirm_user: false)
       login_user(unconfirmed_user, confirm_user: false)
-      
+
       # Vérifier que l'utilisateur dans la DB a toujours confirmed_at à nil
       db_user = User.find(unconfirmed_user.id)
       expect(db_user.confirmed_at).to be_nil

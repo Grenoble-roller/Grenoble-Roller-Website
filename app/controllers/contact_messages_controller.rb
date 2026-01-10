@@ -2,7 +2,7 @@
 
 class ContactMessagesController < ApplicationController
   # Pas besoin d'authentification pour le formulaire de contact
-  
+
   # GET /contact
   def new
     @contact_message = ContactMessage.new

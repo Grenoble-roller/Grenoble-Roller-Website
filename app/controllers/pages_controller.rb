@@ -56,7 +56,7 @@ class PagesController < ApplicationController
           title: "Rejoindre l'association",
           description: "Adhérez à Grenoble Roller pour participer à tous nos événements et bénéficier de tarifs préférentiels. Une communauté passionnée depuis plus de 20 ans !",
           action: "Voir les tarifs",
-          action_path: new_membership_path(type: 'adult'),
+          action_path: new_membership_path(type: "adult"),
           completed: @user.has_active_membership?
         }
       ]

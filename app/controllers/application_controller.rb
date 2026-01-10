@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include TurnstileVerifiable
   include ApiResponder
-  
+
   # Pagy 43 : La méthode pagy() est disponible directement
   # Plus besoin d'inclure Pagy::Backend (qui n'existe plus dans Pagy 43)
   # La méthode pagy() est définie comme helper dans Pagy 43
@@ -45,12 +45,12 @@ class ApplicationController < ActionController::Base
     else
       collection.to_a.size
     end
-    
+
     # Paramètres de pagination
     page_param = vars[:page_param] || :page
     page = (params[page_param] || vars[:page] || 1).to_i
     items = vars[:items] || Pagy.options[:items] || 25
-    
+
     # Créer l'instance Pagy::Offset avec les paramètres corrects
     # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
     # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
@@ -60,9 +60,9 @@ class ApplicationController < ActionController::Base
       limit: items,
       request: request
     }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
-    
+
     pagy_instance = Pagy::Offset.new(**pagy_vars)
-    
+
     # Paginer la collection
     if collection.respond_to?(:limit) && collection.respond_to?(:offset)
       # ActiveRecord::Relation
@@ -75,8 +75,8 @@ class ApplicationController < ActionController::Base
       array = collection.to_a
       paginated_collection = array[pagy_instance.offset, pagy_instance.limit] || []
     end
-    
-    [pagy_instance, paginated_collection]
+
+    [ pagy_instance, paginated_collection ]
   end
 
   # Helper pour paginer un array (utile quand on a déjà filtré avec select)
@@ -85,7 +85,7 @@ class ApplicationController < ActionController::Base
     page_param = vars[:page_param] || :page
     page = (params[page_param] || vars[:page] || 1).to_i
     items = vars[:items] || Pagy.options[:items] || 25
-    
+
     # Créer l'instance Pagy::Offset avec les paramètres corrects
     # Pagy 43 utilise Pagy::Offset.new avec des keyword arguments
     # IMPORTANT: Passer le contexte de la requête pour que Pagy puisse accéder à params
@@ -95,12 +95,12 @@ class ApplicationController < ActionController::Base
       limit: items,
       request: request
     }.merge(vars.except(:items, :page, :page_param).transform_keys { |k| k == :items ? :limit : k })
-    
+
     pagy_instance = Pagy::Offset.new(**pagy_vars)
-    
+
     paginated_array = array[pagy_instance.offset, pagy_instance.limit] || []
-    
-    [pagy_instance, paginated_array]
+
+    [ pagy_instance, paginated_array ]
   end
 
   protected

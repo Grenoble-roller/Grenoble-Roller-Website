@@ -34,7 +34,7 @@ RSpec.describe 'Carts', type: :request do
       post add_item_cart_path, params: { variant_id: variant.id, quantity: 2 }
       # Vérifier que le panier n'est pas vide
       expect(session[:cart]).to be_present
-      
+
       get cart_path
 
       expect(response).to have_http_status(:success)
@@ -50,7 +50,7 @@ RSpec.describe 'Carts', type: :request do
       # S'assurer que les variants ont des inventaires
       variant.inventory || Inventory.create!(product_variant: variant, stock_qty: 10, reserved_qty: 0)
       variant2.inventory || Inventory.create!(product_variant: variant2, stock_qty: 10, reserved_qty: 0)
-      
+
       post add_item_cart_path, params: { variant_id: variant.id, quantity: 2 }
       post add_item_cart_path, params: { variant_id: variant2.id, quantity: 1 }
 
@@ -67,7 +67,7 @@ RSpec.describe 'Carts', type: :request do
       post add_item_cart_path, params: { variant_id: variant.id, quantity: 3 }
       # Vérifier que le panier n'est pas vide
       expect(session[:cart]).to be_present
-      
+
       get cart_path
 
       expect(response).to have_http_status(:success)

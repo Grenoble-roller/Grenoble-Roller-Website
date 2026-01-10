@@ -98,7 +98,7 @@ RSpec.describe 'AdminPanel::Orders', type: :request do
     let!(:order) do
       inventory # S'assurer que l'inventaire existe
       inventory.update!(stock_qty: 10, reserved_qty: 0)
-      
+
       order = Order.new(user: admin_user, status: 'pending', total_cents: 1000, currency: 'EUR')
       order_item = OrderItem.new(variant: variant, quantity: 3, unit_price_cents: 1000)
       order.order_items << order_item

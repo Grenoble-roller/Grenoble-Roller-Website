@@ -30,9 +30,9 @@ RSpec.describe 'AdminPanel::Partners', type: :request do
       it 'filters by active scope' do
         partner1 = create(:partner, is_active: true)
         partner2 = create(:partner, is_active: false)
-        
+
         get admin_panel_partners_path, params: { scope: 'active' }
-        
+
         expect(response).to have_http_status(:success)
         expect(@controller.instance_variable_get(:@partners)).to include(partner1)
         expect(@controller.instance_variable_get(:@partners)).not_to include(partner2)

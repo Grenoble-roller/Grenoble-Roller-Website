@@ -8,7 +8,7 @@ class InitiationParticipantsReportJob < ApplicationJob
   # @param initiation_id [Integer] ID de l'initiation
   def perform(initiation_id)
     initiation = Event::Initiation.find_by(id: initiation_id)
-    
+
     # Si l'initiation n'existe plus, ne rien faire
     unless initiation
       Rails.logger.warn("[InitiationParticipantsReportJob] Initiation ##{initiation_id} introuvable")
@@ -24,7 +24,7 @@ class InitiationParticipantsReportJob < ApplicationJob
     # Vérifier que l'initiation a bien lieu aujourd'hui (sécurité supplémentaire)
     today_start = Time.zone.now.beginning_of_day
     today_end = today_start.end_of_day
-    
+
     unless initiation.start_at.between?(today_start, today_end)
       Rails.logger.warn("[InitiationParticipantsReportJob] Initiation ##{initiation_id} n'a pas lieu aujourd'hui (start_at: #{initiation.start_at}), email non envoyé")
       return

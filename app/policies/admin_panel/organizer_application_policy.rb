@@ -6,7 +6,7 @@ module AdminPanel
     # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
     # - Toutes les actions : level >= 60 (ADMIN, SUPERADMIN)
     # - Les méthodes index?, show?, create?, update?, destroy? héritent de BasePolicy
-    
+
     # Actions spéciales
     def approve?
       admin_user? # level >= 60

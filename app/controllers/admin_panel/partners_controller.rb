@@ -16,8 +16,8 @@ module AdminPanel
       @partners = @q.result
 
       # Scope par statut
-      @partners = @partners.active if params[:scope] == 'active'
-      @partners = @partners.inactive if params[:scope] == 'inactive'
+      @partners = @partners.active if params[:scope] == "active"
+      @partners = @partners.inactive if params[:scope] == "inactive"
 
       # Pagination
       @pagy, @partners = pagy(@partners.order(created_at: :desc), items: params[:per_page] || 25)

@@ -30,9 +30,9 @@ RSpec.describe 'AdminPanel::Payments', type: :request do
       it 'filters by provider' do
         payment1 = create(:payment, provider: 'helloasso')
         payment2 = create(:payment, provider: 'stripe')
-        
+
         get admin_panel_payments_path, params: { q: { provider_eq: 'helloasso' } }
-        
+
         expect(response).to have_http_status(:success)
         # Vérifier que le filtre est appliqué (les IDs peuvent ne pas être dans le body si pagination)
         expect(@controller.instance_variable_get(:@payments)).to include(payment1)
@@ -42,9 +42,9 @@ RSpec.describe 'AdminPanel::Payments', type: :request do
       it 'filters by status' do
         payment1 = create(:payment, status: 'completed')
         payment2 = create(:payment, status: 'pending')
-        
+
         get admin_panel_payments_path, params: { q: { status_eq: 'completed' } }
-        
+
         expect(response).to have_http_status(:success)
         # Vérifier que le filtre est appliqué
         expect(@controller.instance_variable_get(:@payments)).to include(payment1)

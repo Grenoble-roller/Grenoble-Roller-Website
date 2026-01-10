@@ -8,4 +8,3 @@ FactoryBot.define do
     sequence(:message) { |n| "Message de contact numéro #{n}. Ceci est un message de test avec suffisamment de caractères pour valider." }
   end
 end
-

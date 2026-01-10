@@ -30,9 +30,9 @@ RSpec.describe 'AdminPanel::ContactMessages', type: :request do
       it 'filters by name' do
         message1 = create(:contact_message, name: 'John Doe')
         message2 = create(:contact_message, name: 'Jane Smith')
-        
+
         get admin_panel_contact_messages_path, params: { q: { name_cont: 'John' } }
-        
+
         expect(response).to have_http_status(:success)
         expect(@controller.instance_variable_get(:@contact_messages)).to include(message1)
         expect(@controller.instance_variable_get(:@contact_messages)).not_to include(message2)

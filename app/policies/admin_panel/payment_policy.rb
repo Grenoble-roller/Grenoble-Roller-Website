@@ -6,7 +6,7 @@ module AdminPanel
     # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
     # - index?, show? : level >= 60 (ADMIN, SUPERADMIN)
     # - destroy? : level >= 70 (SUPERADMIN uniquement) - Action critique
-    
+
     def destroy?
       # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
       # Level 70 = SUPERADMIN uniquement pour la suppression

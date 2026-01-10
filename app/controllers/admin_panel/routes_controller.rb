@@ -13,7 +13,7 @@ module AdminPanel
 
       # Filtres par difficulté
       base_scope = base_scope.where(difficulty: params[:difficulty]) if params[:difficulty].present?
-      
+
       # Scopes
       base_scope = base_scope.where(difficulty: "easy") if params[:scope] == "easy"
       base_scope = base_scope.where(difficulty: "medium") if params[:scope] == "medium"

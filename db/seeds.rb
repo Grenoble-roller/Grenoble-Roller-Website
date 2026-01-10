@@ -131,13 +131,13 @@ def create_variant_with_image(product:, sku:, price_cents:, stock_qty:, currency
     **attrs
   )
   variant.save!(validate: false) # Sauvegarder sans validation pour pouvoir attacher l'image
-  
+
   # Attacher l'image
   attach_test_image_to_variant(variant, "#{sku.downcase.gsub(/[^a-z0-9]/, '_')}.png")
-  
+
   # Activer le variant maintenant que l'image est attachée
   variant.update!(is_active: is_active) if is_active
-  
+
   variant
 end
 

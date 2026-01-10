@@ -132,7 +132,7 @@ RSpec.describe EventMailer, type: :mailer do
     let!(:user_membership) { create(:membership, user: user, status: :active, season: '2025-2026') }
     let(:event) { create_event(status: 'published', title: 'Sortie Roller', location_text: 'Parc Paul Mistral', creator_user: organizer, start_at: 3.days.from_now) }
     let(:attendance) { create_attendance(user: user, event: event) }
-    let(:attendances) { [attendance] }
+    let(:attendances) { [ attendance ] }
     let(:mail) { EventMailer.event_reminder(user, event, attendances) }
 
     it 'sends to user email' do
@@ -159,7 +159,7 @@ RSpec.describe EventMailer, type: :mailer do
       let(:attendance_parent) { create_attendance(user: user, event: event) }
       let(:attendance_child1) { create_attendance(user: user, event: event, child_membership: child_membership1) }
       let(:attendance_child2) { create_attendance(user: user, event: event, child_membership: child_membership2) }
-      let(:attendances) { [attendance_parent, attendance_child1, attendance_child2] }
+      let(:attendances) { [ attendance_parent, attendance_child1, attendance_child2 ] }
       let(:mail) { EventMailer.event_reminder(user, event, attendances) }
 
       it 'sends one email with multiple participants' do
@@ -185,7 +185,7 @@ RSpec.describe EventMailer, type: :mailer do
       let(:child_membership1) { create(:membership, :child, user: user, status: :active, season: '2025-2026', child_first_name: 'Enfant1') }
       let(:attendance_parent) { create_attendance(user: user, event: initiation) }
       let(:attendance_child1) { create_attendance(user: user, event: initiation, child_membership: child_membership1) }
-      let(:attendances) { [attendance_parent, attendance_child1] }
+      let(:attendances) { [ attendance_parent, attendance_child1 ] }
       let(:mail) { EventMailer.event_reminder(user, initiation, attendances) }
 
       it 'includes participant count in subject for initiation' do
@@ -201,7 +201,7 @@ RSpec.describe EventMailer, type: :mailer do
     let!(:user_membership) { create(:membership, user: user, status: :active, season: '2025-2026') }
     let(:event) { create_event(status: 'published', title: 'Sortie Roller', location_text: 'Parc Paul Mistral', creator_user: organizer, start_at: 3.days.from_now) }
     let(:attendance) { create_attendance(user: user, event: event) }
-    let(:attendances) { [attendance] }
+    let(:attendances) { [ attendance ] }
     let(:mail) { EventMailer.event_cancelled(user, event, attendances) }
 
     it 'sends to user email' do
@@ -237,7 +237,7 @@ RSpec.describe EventMailer, type: :mailer do
       let(:attendance_parent) { create_attendance(user: user, event: event) }
       let(:attendance_child1) { create_attendance(user: user, event: event, child_membership: child_membership1) }
       let(:attendance_child2) { create_attendance(user: user, event: event, child_membership: child_membership2) }
-      let(:attendances) { [attendance_parent, attendance_child1, attendance_child2] }
+      let(:attendances) { [ attendance_parent, attendance_child1, attendance_child2 ] }
       let(:mail) { EventMailer.event_cancelled(user, event, attendances) }
 
       it 'sends one email with multiple participants' do
@@ -261,7 +261,7 @@ RSpec.describe EventMailer, type: :mailer do
     context 'when event is an initiation' do
       let(:initiation) { create_event(type: 'Event::Initiation', status: 'published', title: 'Initiation Roller', location_text: 'Parc Paul Mistral', creator_user: organizer, start_at: 3.days.from_now, max_participants: 20) }
       let(:attendance) { create_attendance(user: user, event: initiation) }
-      let(:attendances) { [attendance] }
+      let(:attendances) { [ attendance ] }
       let(:mail) { EventMailer.event_cancelled(user, initiation, attendances) }
 
       it 'includes initiation-specific subject' do
@@ -273,7 +273,7 @@ RSpec.describe EventMailer, type: :mailer do
         let(:child_membership1) { create(:membership, :child, user: user, status: :active, season: '2025-2026', child_first_name: 'Enfant1') }
         let(:attendance_parent) { create_attendance(user: user, event: initiation) }
         let(:attendance_child1) { create_attendance(user: user, event: initiation, child_membership: child_membership1) }
-        let(:attendances) { [attendance_parent, attendance_child1] }
+        let(:attendances) { [ attendance_parent, attendance_child1 ] }
         let(:mail) { EventMailer.event_cancelled(user, initiation, attendances) }
 
         it 'includes participant count in subject for initiation' do

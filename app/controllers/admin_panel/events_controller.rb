@@ -126,6 +126,5 @@ module AdminPanel
     def authorize_event
       authorize ::Event, policy_class: AdminPanel::EventPolicy
     end
-
   end
 end

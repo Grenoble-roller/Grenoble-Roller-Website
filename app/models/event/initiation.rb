@@ -175,7 +175,7 @@ class Event::Initiation < Event
 
     # Planifier le job avec perform_at
     InitiationParticipantsReportJob.set(wait_until: report_time).perform_later(id)
-    
+
     Rails.logger.info("[Event::Initiation] Rapport participants planifié pour initiation ##{id} le #{report_time}")
   rescue StandardError => e
     Rails.logger.error("[Event::Initiation] Erreur lors de la planification du rapport pour initiation ##{id}: #{e.message}")

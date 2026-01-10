@@ -101,7 +101,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
       it 'creates a new user' do
         # ✅ Utiliser find_or_create_by! pour les rôles standards (codes fixes)
         user_role = Role.find_or_create_by!(code: 'USER') { |r| r.name = 'Utilisateur'; r.level = 10 }
-        
+
         params = {
           user: {
             email: "newuser_#{SecureRandom.hex(4)}@example.com",
@@ -114,7 +114,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
             role_id: user_role.id
           }
         }
-        
+
         expect {
           post admin_panel_users_path, params: params
         }.to change(User, :count).by(1)
@@ -123,7 +123,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
       it 'redirects to the user show page' do
         # ✅ Utiliser find_or_create_by! pour les rôles standards (codes fixes)
         user_role = Role.find_or_create_by!(code: 'USER') { |r| r.name = 'Utilisateur'; r.level = 10 }
-        
+
         params = {
           user: {
             email: "newuser_#{SecureRandom.hex(4)}@example.com",
@@ -136,7 +136,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
             role_id: user_role.id
           }
         }
-        
+
         post admin_panel_users_path, params: params
         expect(response).to redirect_to(admin_panel_user_path(User.last))
       end
@@ -146,7 +146,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
       it 'does not create a user' do
         # ✅ Utiliser find_or_create_by! pour les rôles standards (codes fixes)
         user_role = Role.find_or_create_by!(code: 'USER') { |r| r.name = 'Utilisateur'; r.level = 10 }
-        
+
         params = {
           user: {
             email: '',
@@ -155,7 +155,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
             role_id: user_role.id
           }
         }
-        
+
         expect {
           post admin_panel_users_path, params: params
         }.not_to change(User, :count)
@@ -164,7 +164,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
       it 'renders new template' do
         # ✅ Utiliser find_or_create_by! pour les rôles standards (codes fixes)
         user_role = Role.find_or_create_by!(code: 'USER') { |r| r.name = 'Utilisateur'; r.level = 10 }
-        
+
         params = {
           user: {
             email: '',
@@ -173,7 +173,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
             role_id: user_role.id
           }
         }
-        
+
         post admin_panel_users_path, params: params
         expect(response).to have_http_status(:unprocessable_entity)
       end

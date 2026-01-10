@@ -89,19 +89,19 @@ class ProductVariantGenerator
     # Grouper par option_type
     grouped_by_type = option_values.group_by(&:option_type)
     option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
-    
+
     return { count: 0, preview_skus: [], estimated_time: 0, warning: nil } if option_values_array.empty?
 
     # Vérifier qu'on a au moins 2 groupes pour faire un produit cartésien
     if option_values_array.length < 2
       # Si un seul type d'option, chaque valeur devient une variante
-      combinations = option_values_array.first.map { |ov| [ov] }
+      combinations = option_values_array.first.map { |ov| [ ov ] }
     else
       # Produit cartésien de tous les groupes
       # Exemple: [BLACK, VIOLET].product([L, M, S]) = 6 combinaisons
       combinations = option_values_array.first.product(*option_values_array[1..-1])
     end
-    
+
     count = combinations&.length || 0
 
     {
@@ -122,18 +122,18 @@ class ProductVariantGenerator
     # Grouper par option_type
     grouped_by_type = option_values.group_by(&:option_type)
     option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
-    
+
     return 0 if option_values_array.empty?
 
     # Vérifier qu'on a au moins 2 groupes pour faire un produit cartésien
     if option_values_array.length < 2
       # Si un seul type d'option, chaque valeur devient une variante
-      combinations = option_values_array.first.map { |ov| [ov] }
+      combinations = option_values_array.first.map { |ov| [ ov ] }
     else
       # Produit cartésien de tous les groupes
       combinations = option_values_array.first.product(*option_values_array[1..-1])
     end
-    
+
     return 0 if combinations.nil? || combinations.empty?
 
     ActiveRecord::Base.transaction do
@@ -221,16 +221,16 @@ class ProductVariantGenerator
     # Grouper par option_type
     grouped_by_type = option_values.group_by(&:option_type)
     option_values_array = grouped_by_type.values.map { |values| values.sort_by(&:value) }
-    
+
     return 0 if option_values_array.empty?
 
     # Générer toutes les combinaisons possibles
     if option_values_array.length < 2
-      combinations = option_values_array.first.map { |ov| [ov] }
+      combinations = option_values_array.first.map { |ov| [ ov ] }
     else
       combinations = option_values_array.first.product(*option_values_array[1..-1])
     end
-    
+
     return 0 if combinations.nil? || combinations.empty?
 
     # Récupérer les combinaisons existantes pour éviter les doublons
@@ -412,7 +412,7 @@ class ProductVariantGenerator
       stock_qty: base_stock_qty,
       is_active: false  # Créer inactif par défaut, nécessite une image pour activer
     )
-    
+
     # Ignorer la validation d'image lors de la génération automatique
     variant.instance_variable_set(:@skip_image_validation, true)
 

@@ -12,14 +12,14 @@ class AttendancesController < ApplicationController
     # Séparer événements à venir et passés
     upcoming_scope = all_attendances.select { |a| a.event.start_at > Time.current }
                                     .sort_by { |a| a.event.start_at }
-    
+
     past_scope = all_attendances.select { |a| a.event.start_at <= Time.current }
                                  .sort_by { |a| a.event.start_at }
                                  .reverse
 
     # Pagination pour les événements à venir
     @pagy_upcoming, @upcoming_attendances = pagy_array(upcoming_scope, page_param: :page_upcoming, items: 12)
-    
+
     # Pagination pour les événements passés
     @pagy_past, @past_attendances = pagy_array(past_scope, page_param: :page_past, items: 12)
   end
@@ -30,7 +30,7 @@ class AttendancesController < ApplicationController
   def apply_filters(attendances)
     # Filtre par date (à venir / passés)
     # Note: Ce filtre est déjà géré par la séparation upcoming/past, mais on peut ajouter d'autres filtres ici
-    
+
     # Filtre par statut rappel (wants_reminder)
     if params[:reminder].present?
       case params[:reminder]
@@ -43,5 +43,4 @@ class AttendancesController < ApplicationController
 
     attendances
   end
-
 end

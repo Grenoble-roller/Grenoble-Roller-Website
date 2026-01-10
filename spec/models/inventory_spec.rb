@@ -103,7 +103,7 @@ RSpec.describe Inventory, type: :model do
       expect {
         inventory.reserve_stock(5, 123, user)
       }.to change(InventoryMovement, :count).by(1)
-      
+
       movement = inventory.movements.last
       expect(movement.reason).to eq('reserved')
       expect(movement.reference).to eq('123')
@@ -127,7 +127,7 @@ RSpec.describe Inventory, type: :model do
       expect {
         inventory.release_stock(5, 123, user)
       }.to change(InventoryMovement, :count).by(1)
-      
+
       movement = inventory.movements.last
       expect(movement.reason).to eq('released')
       expect(movement.reference).to eq('123')

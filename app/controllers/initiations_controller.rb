@@ -17,7 +17,7 @@ class InitiationsController < ApplicationController
       # Admins/moderateurs voient les initiations non publiées (draft) mais pas les rejetées
       # Initiations à venir : 6 minicards (sans pagination)
       @upcoming_initiations = scoped_initiations.upcoming.order(:start_at).limit(6)
-      
+
       # Initiations passées : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
       past_scope = scoped_initiations.past.order(start_at: :desc)
       @pagy_past, @past_initiations = pagy(past_scope, page_param: :page_past, items: 10)
@@ -25,7 +25,7 @@ class InitiationsController < ApplicationController
       # Utilisateurs normaux voient seulement les initiations visibles (publiées/annulées)
       # Initiations à venir : 6 minicards (sans pagination)
       @upcoming_initiations = scoped_initiations.visible.upcoming.order(:start_at).limit(6)
-      
+
       # Initiations passées : tableau avec pagination (limité à 10 par page pour une meilleure lisibilité)
       past_scope = scoped_initiations.visible.past.order(start_at: :desc)
       @pagy_past, @past_initiations = pagy(past_scope, page_param: :page_past, items: 10)

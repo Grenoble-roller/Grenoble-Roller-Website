@@ -51,6 +51,20 @@ module ApplicationHelper
 
   # Helper supprimé : plus d'image par défaut, l'image est obligatoire
 
+  # Sécurise une URL externe en validant qu'elle commence par http:// ou https://
+  # Retourne nil si l'URL n'est pas valide, ce qui empêche les attaques XSS
+  def safe_external_url(url)
+    return nil if url.blank?
+
+    url = url.to_s.strip
+    # Valider que l'URL commence par http:// ou https://
+    if url.match?(/\Ahttps?:\/\//i)
+      url
+    else
+      nil
+    end
+  end
+
   # Surcharge de pluralize pour gérer correctement le français
   # Gère les expressions composées comme "place disponible" → "places disponibles"
   # Règle : 0 et 1 = singulier, 2+ = pluriel

@@ -43,7 +43,7 @@ RSpec.describe Order, type: :model do
       it 'reserves stock when order is created with pending status' do
         inventory # Créer l'inventaire et mettre à jour stock_qty
         inventory.update!(stock_qty: 10, reserved_qty: 0)
-        
+
         order = Order.new(user: user, status: 'pending', total_cents: 1000, currency: 'EUR')
         order_item = OrderItem.new(variant: variant, quantity: 3, unit_price_cents: 1000)
         order.order_items << order_item
@@ -81,7 +81,7 @@ RSpec.describe Order, type: :model do
       let!(:order) do
         inventory # Créer l'inventaire et mettre à jour stock_qty
         inventory.update!(stock_qty: 10, reserved_qty: 0)
-        
+
         order = Order.new(user: user, status: 'pending', total_cents: 1000, currency: 'EUR')
         order_item = OrderItem.new(variant: variant, quantity: 3, unit_price_cents: 1000)
         order.order_items << order_item

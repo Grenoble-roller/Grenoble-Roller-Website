@@ -401,7 +401,7 @@ class MembershipsController < ApplicationController
       redirect_to edit_membership_path(@membership), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions."
       return
     end
-    
+
     # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
     @membership.health_questionnaire_status = has_health_issue ? "medical_required" : "ok"
 
@@ -655,7 +655,7 @@ class MembershipsController < ApplicationController
       redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions."
       return
     end
-    
+
     # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
     membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
 
@@ -1367,7 +1367,7 @@ class MembershipsController < ApplicationController
       redirect_to new_membership_path(type: "adult"), alert: "Le questionnaire de santé est obligatoire. Veuillez répondre à toutes les questions avant de continuer."
       return
     end
-    
+
     # Même logique pour Standard et FFRS : juste mettre le statut selon les réponses
     membership_params[:health_questionnaire_status] = has_health_issue ? "medical_required" : "ok"
 

@@ -7,7 +7,7 @@ FactoryBot.define do
     phone { '0612345678' }
     skill_level { 'intermediate' }
     confirmed_at { Time.current } # Par défaut, utilisateur confirmé
-    
+
     # ✅ Utiliser association pour éviter find_or_create_by! (état partagé)
     # Utiliser find_or_create_by! uniquement pour les rôles standards avec codes fixes
     after(:build) do |user|

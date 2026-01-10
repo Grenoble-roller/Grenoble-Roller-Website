@@ -31,9 +31,9 @@ RSpec.describe 'AdminPanel::Events', type: :request do
       it 'excludes initiations' do
         event = create(:event, :published, start_at: 1.week.from_now, max_participants: 0)
         initiation = create(:event_initiation, :published, start_at: 1.week.from_now)
-        
+
         get admin_panel_events_path
-        
+
         expect(@controller.instance_variable_get(:@upcoming_events).map(&:id)).to include(event.id)
         expect(@controller.instance_variable_get(:@upcoming_events).map(&:id)).not_to include(initiation.id)
       end
@@ -41,9 +41,9 @@ RSpec.describe 'AdminPanel::Events', type: :request do
       it 'filters by status' do
         published_event = create(:event, :published, start_at: 1.week.from_now)
         draft_event = create(:event, status: 'draft', start_at: 1.week.from_now)
-        
+
         get admin_panel_events_path, params: { status: 'published' }
-        
+
         expect(@controller.instance_variable_get(:@upcoming_events)).to include(published_event)
         expect(@controller.instance_variable_get(:@upcoming_events)).not_to include(draft_event)
       end
@@ -101,7 +101,7 @@ RSpec.describe 'AdminPanel::Events', type: :request do
         full_event = create(:event, :published, start_at: 1.week.from_now, max_participants: 2)
         fill_event_to_capacity(full_event, 2)
         waitlist_entry = create(:waitlist_entry, event: full_event, status: 'pending')
-        
+
         get admin_panel_event_path(full_event)
         expect(@controller.instance_variable_get(:@waitlist_entries).map(&:id)).to include(waitlist_entry.id)
       end
@@ -200,7 +200,7 @@ RSpec.describe 'AdminPanel::Events', type: :request do
 
       it 'converts waitlist entry to attendance' do
         post convert_waitlist_admin_panel_event_path(event), params: { waitlist_entry_id: @waitlist_entry.hashid }
-        
+
         expect(@pending_attendance.reload.status).to eq('registered')
         expect(@waitlist_entry.reload.status).to eq('converted')
       end

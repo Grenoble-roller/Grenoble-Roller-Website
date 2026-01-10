@@ -114,12 +114,12 @@ module AdminPanel
         end
         return
       end
-      
+
       # Si génération de variantes manquantes, ignorer la validation des variantes
       if params[:generate_missing] == "true"
         @product.instance_variable_set(:@generate_missing, true)
       end
-      
+
       params_hash = product_params.to_h
       # Convertir price_euros en price_cents si présent
       if params[:price_euros].present?
@@ -136,7 +136,7 @@ module AdminPanel
               redirect_to edit_admin_panel_product_path(@product)
               return
             end
-            
+
             count = ProductVariantGenerator.generate_missing_combinations_from_values(@product, option_value_ids)
             if count > 0
               flash[:notice] = "Produit mis à jour avec #{count} nouvelle(s) variante(s) générée(s)"
@@ -152,7 +152,7 @@ module AdminPanel
               redirect_to edit_admin_panel_product_path(@product)
               return
             end
-            
+
             count = ProductVariantGenerator.generate_missing_combinations(@product, option_ids)
             if count > 0
               flash[:notice] = "Produit mis à jour avec #{count} nouvelle(s) variante(s) générée(s)"
@@ -265,7 +265,7 @@ module AdminPanel
       # Accepter soit option_value_ids (nouveau) soit option_ids (ancien pour compatibilité)
       option_value_ids = Array(params[:option_value_ids] || []).map(&:to_i).reject(&:zero?)
       option_ids = Array(params[:option_ids] || []).map(&:to_i).reject(&:zero?)
-      
+
       if option_value_ids.present?
         # Nouveau mode : valeurs individuelles sélectionnées
         preview = ProductVariantGenerator.preview_from_values(nil, option_value_ids)
@@ -275,7 +275,7 @@ module AdminPanel
       else
         preview = { count: 0, preview_skus: [], estimated_time: 0, warning: nil }
       end
-      
+
       render json: preview
     end
 

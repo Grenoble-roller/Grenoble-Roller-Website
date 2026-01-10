@@ -41,7 +41,7 @@ RSpec.describe ProductVariant, type: :model do
     # Créer un produit sans image pour ce test
     product_no_image = Product.new(category: category, name: 'T-shirt 2', slug: "tshirt2-#{SecureRandom.hex(3)}", price_cents: 1900, currency: 'EUR', stock_qty: 10, is_active: false)
     product_no_image.save!(validate: false)  # Sauvegarder sans validation pour éviter l'erreur d'image
-    
+
     variant = ProductVariant.new(product: product_no_image, sku: 'SKU-002', price_cents: 1900, currency: 'EUR', stock_qty: 5, is_active: true)
     expect(variant).to be_invalid
     expect(variant.errors[:base]).to include("Une image est requise pour activer la variante")

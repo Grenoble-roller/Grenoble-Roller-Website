@@ -9,9 +9,9 @@ class AdminDashboardService
       products: Product.count,
       active_products: Product.where(is_active: true).count,
       orders: Order.count,
-      pending_orders: Order.where(status: 'pending').count,
-      paid_orders: Order.where(status: 'paid').count,
-      shipped_orders: Order.where(status: 'shipped').count,
+      pending_orders: Order.where(status: "pending").count,
+      paid_orders: Order.where(status: "paid").count,
+      shipped_orders: Order.where(status: "shipped").count,
       revenue: calculate_revenue,
       low_stock: calculate_low_stock,
       out_of_stock: calculate_out_of_stock
@@ -36,11 +36,11 @@ class AdminDashboardService
   # Retourne les ventes par jour pour les N derniers jours
   def self.sales_by_day(days = 7)
     orders = Order
-             .where(status: ['paid', 'shipped'])
-             .where('created_at >= ?', days.days.ago)
-             .select('DATE(created_at) as sale_date, SUM(total_cents) as total_cents')
-             .group('DATE(created_at)')
-             .order('sale_date ASC')
+             .where(status: [ "paid", "shipped" ])
+             .where("created_at >= ?", days.days.ago)
+             .select("DATE(created_at) as sale_date, SUM(total_cents) as total_cents")
+             .group("DATE(created_at)")
+             .order("sale_date ASC")
 
     # Transformer en hash { date => montant }
     sales_hash = {}
@@ -61,7 +61,7 @@ class AdminDashboardService
 
   # Calcule le CA total (commandes payées ou expédiées)
   def self.calculate_revenue
-    Order.where(status: ['paid', 'shipped']).sum(:total_cents) / 100.0
+    Order.where(status: [ "paid", "shipped" ]).sum(:total_cents) / 100.0
   end
 
   # Calcule le nombre de produits en stock faible (<= 10 unités disponibles)
@@ -70,9 +70,9 @@ class AdminDashboardService
 
     ProductVariant
       .joins(:inventory)
-      .where('inventories.available_qty <= ?', 10)
+      .where("inventories.available_qty <= ?", 10)
       .where(is_active: true)
-      .where('inventories.available_qty > 0')
+      .where("inventories.available_qty > 0")
       .count
   rescue StandardError => e
     Rails.logger.error("Erreur lors du calcul du stock faible : #{e.message}")
@@ -85,7 +85,7 @@ class AdminDashboardService
 
     ProductVariant
       .joins(:inventory)
-      .where('inventories.available_qty <= 0')
+      .where("inventories.available_qty <= 0")
       .where(is_active: true)
       .count
   rescue StandardError => e

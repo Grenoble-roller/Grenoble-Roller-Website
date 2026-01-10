@@ -2,7 +2,7 @@
 
 module AdminPanel
   class MaintenanceController < BaseController
-    before_action :authorize_maintenance, only: [:toggle]
+    before_action :authorize_maintenance, only: [ :toggle ]
 
     # PATCH /admin-panel/maintenance/toggle
     def toggle
