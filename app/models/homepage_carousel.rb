@@ -10,17 +10,18 @@ class HomepageCarousel < ApplicationRecord
 
   # Scopes
   scope :published, -> { where(published: true) }
-  # Visible sur la page d'accueil : publié + date de publication passée (ou non renseignée) + non expiré
+  # Visible sur la page d'accueil :
+  # - Publié coché : visible tout de suite jusqu'à expires_at (publication forcée)
+  # - Publié non coché : visible uniquement entre published_at et expires_at (dates seules)
   scope :active, -> {
-    published.where(
-      "(published_at IS NULL OR published_at <= ?) AND (expires_at IS NULL OR expires_at > ?)",
-      Time.current,
-      Time.current
+    now = Time.current
+    where(
+      "(published = true AND (expires_at IS NULL OR expires_at > ?)) OR " \
+      "(published = false AND published_at IS NOT NULL AND published_at <= ? AND (expires_at IS NULL OR expires_at > ?))",
+      now, now, now
     )
   }
   scope :ordered, -> { order(position: :asc, created_at: :desc) }
-  # Slides programmés : non publiés mais avec une date de publication à venir (pour le job de publication auto)
-  scope :scheduled_to_publish, -> { where(published: false).where("published_at IS NOT NULL AND published_at <= ?", Time.current) }
 
   # Ransack pour recherche/filtres
   def self.ransackable_attributes(_auth_object = nil)
@@ -36,9 +37,12 @@ class HomepageCarousel < ApplicationRecord
   before_create :set_default_position
 
   def active?
-    published? &&
-      (published_at.nil? || published_at <= Time.current) &&
-      (expires_at.nil? || expires_at > Time.current)
+    now = Time.current
+    if published?
+      expires_at.nil? || expires_at > now
+    else
+      published_at.present? && published_at <= now && (expires_at.nil? || expires_at > now)
+    end
   end
 
   def expired?

@@ -35,8 +35,3 @@ end
 every 1.day, at: "2:00 am" do
   runner "ReturnRollerStockJob.perform_now"
 end
-
-# Publier automatiquement les slides du carrousel dont la date de publication est atteinte (toutes les heures)
-every 1.hour do
-  runner "PublishScheduledHomepageCarouselsJob.perform_now"
-end
