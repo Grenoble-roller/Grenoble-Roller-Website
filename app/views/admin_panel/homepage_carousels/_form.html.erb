@@ -93,6 +93,7 @@
               <%= f.datetime_local_field :published_at, 
                   class: "form-control form-control-liquid",
                   value: @carousel.published_at&.strftime("%Y-%m-%dT%H:%M") %>
+              <div class="form-text">Optionnel. Si renseignée : le slide n'apparaît qu'à partir de cette date (même si « Publié » est coché). Sans date, publication immédiate.</div>
             </div>
             <div class="col-md-6">
               <%= f.label :expires_at, "Date d'expiration", class: "form-label fw-semibold" %>
@@ -109,7 +110,7 @@
               <%= f.check_box :published, class: "form-check-input" %>
               <%= f.label :published, "Publié", class: "form-check-label" %>
             </div>
-            <div class="form-text">Cocher pour publier immédiatement le slide</div>
+            <div class="form-text">Cocher pour publier tout de suite (ou à la date indiquée ci-dessus si elle est dans le futur). Si non coché mais qu'une date de publication est renseignée, le slide sera publié automatiquement à cette date.</div>
           </div>
         </div>
       </div>
