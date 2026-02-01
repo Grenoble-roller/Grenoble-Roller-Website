@@ -38,15 +38,15 @@
     <div class="d-flex flex-column align-items-end gap-2">
       <span class="badge <%= status_class == 'active' ? 'bg-success' : (status_class == 'pending' ? 'bg-warning text-dark' : 'bg-secondary') %>">
         <% if status_class == 'active' %>
-          ✓ Active
+          ✓ <%= t("statuses.membership.active") %>
         <% elsif status_class == 'pending' %>
           <% if membership.trial? %>
-            🎁 Essai gratuit
+            🎁 <%= t("statuses.membership.trial") %>
           <% else %>
-            ⏳ Pending
+            ⏳ <%= t("statuses.membership.pending") %>
           <% end %>
         <% else %>
-          ✗ Expirée
+          ✗ <%= t("statuses.membership.expired") %>
         <% end %>
       </span>
       

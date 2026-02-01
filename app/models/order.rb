@@ -80,6 +80,8 @@ class Order < ApplicationRecord
         variant.inventory.move_stock(-item.quantity, "order_fulfilled", id.to_s, user)
         # Libérer la réservation (reserved_qty)
         variant.inventory.release_stock(item.quantity, id, user)
+        # Synchroniser variant.stock_qty avec l'inventaire pour cohérence admin / boutique
+        variant.update_column(:stock_qty, variant.inventory.reload.stock_qty)
       end
 
     when "cancelled", "refunded"

@@ -49,6 +49,12 @@ module ApplicationHelper
     end
   end
 
+  # Libellé de statut traduit (order, payment, membership, attendance, etc.)
+  def human_status(scope, value)
+    return "" if value.blank?
+    I18n.t("statuses.#{scope}.#{value}", default: value.to_s.humanize)
+  end
+
   # Helper supprimé : plus d'image par défaut, l'image est obligatoire
 
   # Sécurise une URL externe en validant qu'elle commence par http:// ou https://
