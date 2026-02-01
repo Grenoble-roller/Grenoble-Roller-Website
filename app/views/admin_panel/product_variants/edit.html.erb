@@ -47,7 +47,7 @@
               <%= f.label :price_euros, "Prix (€) *", class: "form-label" %>
               <div class="input-group">
                 <%= number_field_tag :price_euros, 
-                    (f.object.price_cents / 100.0 if f.object.price_cents.present?),
+                    (f.object.price_cents.present? ? (f.object.price_cents.to_f / 100.0) : nil),
                     class: "form-control", 
                     required: true, 
                     min: 0, 
