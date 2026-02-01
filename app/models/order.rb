@@ -37,7 +37,18 @@ class Order < ApplicationRecord
 
     order_items.includes(variant: :inventory).each do |item|
       variant = item.variant
-      next unless variant&.inventory
+      next unless variant
+
+      # Créer l'inventaire si absent (variantes anciennes ou migration)
+      unless variant.inventory
+        Inventory.create!(
+          product_variant_id: variant.id,
+          stock_qty: variant.stock_qty.to_i,
+          reserved_qty: 0
+        )
+        variant.reload
+      end
+      next unless variant.inventory
 
       variant.inventory.reserve_stock(item.quantity, id, user)
     end
