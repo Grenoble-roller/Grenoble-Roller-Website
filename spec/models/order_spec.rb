@@ -122,6 +122,13 @@ RSpec.describe Order, type: :model do
           .and change { inventory.reserved_qty }.by(-3)
       end
 
+      it 'syncs variant.stock_qty with inventory when status changes to shipped' do
+        order.update!(status: 'shipped')
+        variant.reload
+        inventory.reload
+        expect(variant.stock_qty).to eq(inventory.stock_qty)
+      end
+
       it 'does not change stock when status changes to paid' do
         expect {
           order.update!(status: 'paid')
