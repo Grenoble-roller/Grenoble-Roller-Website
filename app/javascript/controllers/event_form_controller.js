@@ -33,11 +33,17 @@ export default class extends Controller {
     // Gérer la création de parcours depuis la modal
     this.setupRouteCreation()
     
-    // Charger les parcours existants si on est en mode édition
-    // IMPORTANT: Charger d'abord les données, puis initialiser les champs
+    // En édition : afficher tout de suite la zone boucles si loops_count > 1
+    const loopsCountInput = this.hasLoopsCountInputTarget ? this.loopsCountInputTarget : null
+    const container = document.getElementById('loop-routes-container')
+    if (loopsCountInput && container) {
+      const n = parseInt(loopsCountInput.value) || 1
+      if (n > 1) container.style.display = 'block'
+    }
+    
+    // Charger les parcours existants si on est en mode édition, puis initialiser les champs
     this.loadExistingLoopRoutes().then(() => {
       this.loopRoutesLoaded = true
-      // Initialiser les champs de parcours par boucle (après chargement des données)
       this.updateLoopRoutesFields()
     })
   }
@@ -200,8 +206,7 @@ export default class extends Controller {
 
   // Récupérer les parcours existants depuis les données du formulaire ou depuis les données chargées
   getExistingLoopRoute(loopNumber) {
-    // Chercher dans les champs déjà générés
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return null
     
     const existingSelect = form.querySelector(`select[name="event_loop_routes[${loopNumber}][route_id]"]`)
@@ -217,9 +222,17 @@ export default class extends Controller {
     return null
   }
 
+  // Récupérer l'élément formulaire (le contrôleur peut être sur le form ou sur un wrapper)
+  getForm() {
+    if (this.element.tagName && this.element.tagName.toUpperCase() === 'FORM') {
+      return this.element
+    }
+    return this.element.querySelector('form')
+  }
+
   // Récupérer l'ID de l'événement depuis le formulaire
   getEventId() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return null
     
     // Chercher un input caché avec l'ID
@@ -228,8 +241,8 @@ export default class extends Controller {
       return parseInt(idInput.value)
     }
     
-    // Ou chercher dans l'action du formulaire
-    const formAction = form.action
+    // Ou chercher dans l'action du formulaire (ex: /events/123 ou http://.../events/123)
+    const formAction = form.getAttribute('action') || form.action || ''
     const match = formAction.match(/\/events\/(\d+)/)
     if (match) {
       return parseInt(match[1])
@@ -431,7 +444,7 @@ export default class extends Controller {
 
   // Collecter toutes les données du formulaire
   collectFormData() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return {}
 
     const formData = {}
@@ -502,7 +515,7 @@ export default class extends Controller {
 
   // Vérifier si le formulaire est vide
   isFormEmpty() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return true
 
     const inputs = form.querySelectorAll('input[type="text"], input[type="number"], input[type="datetime-local"], textarea, select')
@@ -516,7 +529,7 @@ export default class extends Controller {
 
   // Remplir le formulaire avec les données sauvegardées
   fillFormData(data) {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return
 
     Object.keys(data).forEach(name => {
@@ -535,7 +548,7 @@ export default class extends Controller {
 
   // Configurer la sauvegarde automatique
   setupAutoSave() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return
 
     // Sauvegarder lors des modifications (debounce pour éviter trop de sauvegardes)
@@ -557,7 +570,7 @@ export default class extends Controller {
 
   // Configurer le nettoyage après soumission
   setupCleanup() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return
 
     form.addEventListener('submit', () => {
@@ -617,7 +630,7 @@ export default class extends Controller {
 
   // Afficher un message de restauration
   showRestoreMessage() {
-    const form = this.element.querySelector('form')
+    const form = this.getForm()
     if (!form) return
 
     // Créer un message informatif en haut du formulaire

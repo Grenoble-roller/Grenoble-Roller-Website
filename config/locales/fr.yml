@@ -54,7 +54,10 @@ fr:
     models:
       user: "Utilisateur"
       membership: "Adhésion"
+      homepage_carousel: "Slide du carrousel"
     attributes:
+      homepage_carousel:
+        position: "Position"
       user:
         role: "Rôle"
         role_id: "Rôle"
@@ -81,6 +84,10 @@ fr:
               required: "doit être renseigné"
             role_id:
               required: "doit être renseigné"
+        homepage_carousel:
+          attributes:
+            position:
+              taken: "est déjà utilisée par un autre slide"
         membership:
           attributes:
             start_date:
@@ -113,6 +120,7 @@ fr:
       messages:
         record_invalid: "La validation a échoué : %{errors}"
         blank: "doit être renseigné"
+        taken: "est déjà utilisé"
         too_short: "doit contenir au moins %{count} caractères"
         too_long: "ne peut pas dépasser %{count} caractères"
   
