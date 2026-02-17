@@ -42,9 +42,22 @@ module Initiations
         end
       end
 
+      # Priorité liste d'attente (même logique que events) : convertir si notifié, sinon annuler après inscription
+      waitlist_entry = @initiation.waitlist_entries.active.find_by(
+        user: current_user,
+        child_membership_id: child_membership_id
+      )
+
       # Log de la tentative d'inscription
       Rails.logger.info("Tentative d'inscription - User: #{current_user.id}, Initiation: #{@initiation.id}, Child: #{child_membership_id}, Volunteer: #{is_volunteer}")
       Rails.logger.info("Params use_free_trial: #{params[:use_free_trial].inspect}, tous les params: #{params.inspect}")
+
+      # #region agent log
+      personal_active_now_count = current_user.memberships.personal.active_now.count
+      free_trial_used_parent = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+      _log_payload = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_is_member", message: "create params", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, child_membership_id: child_membership_id, personal_active_now_count: personal_active_now_count, free_trial_used_parent: free_trial_used_parent, params_use_free_trial: params[:use_free_trial].inspect } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload.to_json) }
+      # #endregion
 
       # Construction de l'attendance (hors transaction pour permettre les redirections)
       attendance = @initiation.attendances.build(user: current_user)
@@ -72,6 +85,22 @@ module Initiations
           redirect_to initiation_path(@initiation), alert: attendance.errors.full_messages.to_sentence
         end
         return
+      end
+
+      # Si en liste d'attente notifiée : convertir la place pending en inscrit (comme le lien du mail)
+      if waitlist_entry&.notified?
+        pending_attendance = @initiation.attendances.find_by(
+          user: current_user,
+          child_membership_id: child_membership_id,
+          status: "pending"
+        )
+        if pending_attendance && waitlist_entry.convert_to_attendance!
+          pending_attendance.reload
+          EventMailer.attendance_confirmed(pending_attendance).deliver_later if current_user.wants_initiation_mail?
+          participant_name = pending_attendance.for_child? ? pending_attendance.participant_name : "Vous"
+          redirect_to initiation_path(@initiation), notice: "Inscription confirmée (depuis la liste d'attente) pour #{participant_name} le #{l(@initiation.start_at, format: :long)}."
+          return
+        end
       end
 
       # IMPORTANT : Définir child_membership AVANT son utilisation (cohérent avec la documentation 14-flux-inscription.md:55)
@@ -169,8 +198,15 @@ module Initiations
         end
       end
 
+      # #region agent log
+      _log_payload2 = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_save", message: "attendance built", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, is_member: is_member, parent_is_member: parent_is_member, child_membership_id: child_membership_id, attendance_free_trial_used: attendance.free_trial_used } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload2.to_json) }
+      # #endregion
+
       # Protection contre race condition : transaction avec lock pessimiste lors du save
       if attendance.save
+        # Annuler l'entrée en liste d'attente si inscription directe (évite doublon inscrit + file)
+        waitlist_entry&.cancel! if waitlist_entry&.pending?
         Rails.logger.info("Inscription réussie - Attendance: #{attendance.id}, User: #{current_user.id}, Initiation: #{@initiation.id}, Type: #{attendance.for_child? ? 'Enfant' : (attendance.is_volunteer ? 'Bénévole' : 'Participant')}")
         # Email de confirmation : vérifier wants_initiation_mail pour les initiations
         if current_user.wants_initiation_mail?

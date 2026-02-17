@@ -33,7 +33,11 @@ namespace :admin_panel, path: 'admin-panel' do
   end
 
   # Roller Stock
-  resources :roller_stocks, path: 'roller-stocks'
+  resources :roller_stocks, path: 'roller-stocks' do
+    collection do
+      post :return_all
+    end
+  end
 end
 ```
 
@@ -59,6 +63,7 @@ end
 | Méthode | Route | Action | Description |
 |---------|-------|--------|-------------|
 | GET | `/admin-panel/roller-stocks` | `index` | Liste stock rollers |
+| POST | `/admin-panel/roller-stocks/return_all` | `return_all` | Tout remettre en stock (initiations terminées non encore marquées « Matériel rendu ») |
 | GET | `/admin-panel/roller-stocks/:id` | `show` | Détails stock |
 | GET | `/admin-panel/roller-stocks/new` | `new` | Nouveau stock |
 | POST | `/admin-panel/roller-stocks` | `create` | Créer stock |
@@ -84,6 +89,7 @@ Les helpers suivants seront disponibles :
 
 **Roller Stocks** :
 - `admin_panel_roller_stocks_path` → `/admin-panel/roller-stocks`
+- `return_all_admin_panel_roller_stocks_path` → `/admin-panel/roller-stocks/return_all` (POST)
 - `admin_panel_roller_stock_path(@roller_stock)` → `/admin-panel/roller-stocks/:id`
 - `new_admin_panel_roller_stock_path` → `/admin-panel/roller-stocks/new`
 - `edit_admin_panel_roller_stock_path(@roller_stock)` → `/admin-panel/roller-stocks/:id/edit`

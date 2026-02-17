@@ -34,12 +34,12 @@
         <%= f.select :status_eq, 
             options_for_select([
               ["Tous", ""],
-              ["En attente", "pending"],
-              ["Inscrit", "registered"],
-              ["Payé", "paid"],
-              ["Annulé", "canceled"],
-              ["Présent", "present"],
-              ["Absent", "no_show"]
+              [t("statuses.attendance.pending"), "pending"],
+              [t("statuses.attendance.registered"), "registered"],
+              [t("statuses.attendance.paid"), "paid"],
+              [t("statuses.attendance.canceled"), "canceled"],
+              [t("statuses.attendance.present"), "present"],
+              [t("statuses.attendance.no_show"), "no_show"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>
@@ -112,7 +112,7 @@
                        when "no_show" then "bg-danger"
                        else "bg-secondary"
                      end %>
-                  <span class="badge <%= badge_class %>"><%= attendance.status %></span>
+                  <span class="badge <%= badge_class %>"><%= human_status(:attendance, attendance.status) %></span>
                 </td>
                 <td>
                   <% if attendance.is_volunteer? %>

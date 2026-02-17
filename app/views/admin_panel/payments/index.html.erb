@@ -31,10 +31,10 @@
         <%= f.select :status_eq,
             options_for_select([
               ["Tous", ""],
-              ["Complété", "completed"],
-              ["En attente", "pending"],
-              ["Échoué", "failed"],
-              ["Annulé", "cancelled"]
+              [t("statuses.payment.completed"), "completed"],
+              [t("statuses.payment.pending"), "pending"],
+              [t("statuses.payment.failed"), "failed"],
+              [t("statuses.payment.cancelled"), "cancelled"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-select-liquid" } %>
@@ -87,18 +87,14 @@
                   <span class="badge bg-liquid-secondary"><%= payment.provider %></span>
                 </td>
                 <td>
-                  <% case payment.status %>
-                  <% when 'completed' %>
-                    <span class="badge bg-success">Complété</span>
-                  <% when 'pending' %>
-                    <span class="badge bg-warning">En attente</span>
-                  <% when 'failed' %>
-                    <span class="badge bg-danger">Échoué</span>
-                  <% when 'cancelled' %>
-                    <span class="badge bg-danger">Annulé</span>
-                  <% else %>
-                    <span class="badge bg-secondary"><%= payment.status.humanize %></span>
-                  <% end %>
+                  <span class="badge bg-<%= case payment.status
+                    when 'completed' then 'success'
+                    when 'pending' then 'warning'
+                    when 'failed', 'cancelled' then 'danger'
+                    else 'secondary'
+                  end %>">
+                    <%= human_status(:payment, payment.status) %>
+                  </span>
                 </td>
                 <td>
                   <strong><%= number_to_currency(payment.amount_cents / 100.0, unit: '€', separator: ',', delimiter: ' ') %></strong>

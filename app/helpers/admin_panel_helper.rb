@@ -44,42 +44,14 @@ module AdminPanelHelper
     end
   end
 
-  # Traduit les statuts d'attendance en français
+  # Traduit les statuts d'attendance en français (délègue à I18n)
   def attendance_status_fr(status)
-    case status.to_s
-    when "pending"
-      "En attente"
-    when "registered"
-      "Inscrit"
-    when "paid"
-      "Payé"
-    when "present"
-      "Présent"
-    when "absent"
-      "Absent"
-    when "no_show"
-      "No-show"
-    when "canceled"
-      "Annulé"
-    else
-      status.to_s.humanize
-    end
+    human_status(:attendance, status)
   end
 
-  # Traduit les statuts de waitlist en français
+  # Traduit les statuts de waitlist en français (délègue à I18n)
   def waitlist_status_fr(status)
-    case status.to_s
-    when "pending"
-      "En attente"
-    when "notified"
-      "Notifié"
-    when "converted"
-      "Converti"
-    when "cancelled"
-      "Annulé"
-    else
-      status.to_s.humanize
-    end
+    human_status(:waitlist_entry, status)
   end
 
   # Parse les arguments JSON d'un job ActionMailer pour extraire mailer et méthode

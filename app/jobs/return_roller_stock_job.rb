@@ -4,24 +4,17 @@ class ReturnRollerStockJob < ApplicationJob
   queue_as :default
 
   # Remet en stock les rollers pour toutes les initiations terminées
-  # qui n'ont pas encore eu leur stock remis en place
+  # qui n'ont pas encore eu leur stock remis en place.
+  # Une initiation est "terminée" quand start_at + duration_min <= now.
   def perform
-    # Trouver toutes les initiations terminées dans les dernières 24 heures
-    # pour éviter de traiter plusieurs fois les mêmes initiations
-    # et pour gérer les initiations qui viennent de se terminer
-    one_day_ago = 1.day.ago
     now = Time.current
 
-    # Trouver les initiations terminées dans les dernières 24 heures
-    # qui n'ont pas encore eu leur stock remis en place (sécurité anti-doublon)
-    # On utilise une requête SQL pour calculer end_at = start_at + duration_min minutes
-    # On charge aussi les attendances pour éviter les requêtes N+1
+    # Toutes les initiations déjà terminées (end_at <= now) et pas encore remises en stock.
+    # Pas de fenêtre 24h : on traite tout le passé pour rattraper les oublis et les initiations anciennes.
     finished_initiations = Event::Initiation
       .published
-      .where("start_at >= ?", one_day_ago)
       .where("start_at + INTERVAL '1 minute' * duration_min <= ?", now)
-      .where("start_at + INTERVAL '1 minute' * duration_min >= ?", one_day_ago) # Seulement celles terminées dans les dernières 24h
-      .where(stock_returned_at: nil) # Sécurité : ne pas retraiter celles déjà traitées
+      .where(stock_returned_at: nil)
       .includes(:attendances)
 
     count_processed = 0
@@ -39,6 +32,7 @@ class ReturnRollerStockJob < ApplicationJob
 
       # Remettre le stock en place
       rollers_returned = initiation.return_roller_stock
+      rollers_returned = 0 if rollers_returned.nil?
       if rollers_returned > 0
         count_processed += 1
         total_rollers_returned += rollers_returned

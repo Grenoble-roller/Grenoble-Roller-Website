@@ -6,9 +6,16 @@
 
 <%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Stock Rollers</h1>
-  <%= link_to "Nouveau stock", new_admin_panel_roller_stock_path, class: "btn btn-primary" %>
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+  <h1 class="mb-0">Stock Rollers</h1>
+  <div class="d-flex gap-2">
+    <%= button_to "Tout remettre en stock",
+          return_all_admin_panel_roller_stocks_path,
+          method: :post,
+          form: { data: { turbo_confirm: "Remettre en stock tous les rollers des initiations déjà terminées et non encore marquées « Matériel rendu » ? Chaque initiation concernée sera marquée comme si vous aviez cliqué « Matériel rendu » sur sa page Présences." } },
+          class: "btn btn-outline-warning" %>
+    <%= link_to "Nouveau stock", new_admin_panel_roller_stock_path, class: "btn btn-primary" %>
+  </div>
 </div>
 
 <!-- Filtres -->

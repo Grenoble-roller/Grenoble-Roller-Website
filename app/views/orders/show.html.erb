@@ -106,61 +106,26 @@
             
             <!-- Status badge (séparé, avec icône + texte) -->
             <% 
-              status_config = case @order.status.downcase
+              s = @order.status.to_s.downcase
+              canonical = s
+              canonical = 'shipped' if %w[sent envoyé finished terminé].include?(s)
+              canonical = 'cancelled' if %w[canceled annulé].include?(s)
+              canonical = 'paid' if s == 'payé'
+              status_label = human_status(:order, canonical)
+              status_config = case s
                 when 'pending', 'en attente'
-                  { 
-                    badge_class: 'bg-warning text-dark', 
-                    icon: 'bi-hourglass-split', 
-                    label: 'En attente',
-                    aria_label: 'Statut: En attente de paiement'
-                  }
+                  { badge_class: 'bg-warning text-dark', icon: 'bi-hourglass-split' }
                 when 'preparation', 'en préparation', 'preparing'
-                  { 
-                    badge_class: 'bg-info text-white', 
-                    icon: 'bi-gear', 
-                    label: 'En préparation',
-                    aria_label: 'Statut: Commande en préparation'
-                  }
+                  { badge_class: 'bg-info text-white', icon: 'bi-gear' }
                 when 'paid', 'payé'
-                  { 
-                    badge_class: 'bg-success text-white', 
-                    icon: 'bi-check-circle', 
-                    label: 'Payée',
-                    aria_label: 'Statut: Commande payée'
-                  }
+                  { badge_class: 'bg-success text-white', icon: 'bi-check-circle' }
                 when 'sent', 'envoyé', 'shipped', 'finished', 'terminé'
-                  { 
-                    badge_class: 'bg-success text-white', 
-                    icon: 'bi-truck', 
-                    label: 'Expédiée',
-                    aria_label: 'Statut: Commande expédiée'
-                  }
+                  { badge_class: 'bg-success text-white', icon: 'bi-truck' }
                 when 'cancelled', 'annulé', 'canceled'
-                  { 
-                    badge_class: 'bg-danger text-white', 
-                    icon: 'bi-x-circle', 
-                    label: 'Annulée',
-                    aria_label: 'Statut: Commande annulée'
-                  }
+                  { badge_class: 'bg-danger text-white', icon: 'bi-x-circle' }
                 else
-                  # Fallback : traduire le statut en français si possible
-                  fallback_label = case @order.status.downcase
-                    when 'failed', 'échoué'
-                      'Échouée'
-                    when 'refunded', 'remboursé'
-                      'Remboursée'
-                    when 'refund_requested', 'remboursement_demandé'
-                      'Remboursement demandé'
-                    else
-                      @order.status.capitalize
-                  end
-                  { 
-                    badge_class: 'bg-secondary text-white', 
-                    icon: 'bi-question-circle', 
-                    label: fallback_label,
-                    aria_label: "Statut: #{fallback_label}"
-                  }
-              end
+                  { badge_class: 'bg-secondary text-white', icon: 'bi-question-circle' }
+              end.merge(label: status_label, aria_label: "Statut: #{status_label}")
             %>
             <div class="d-flex align-items-center gap-2">
               <span class="badge <%= status_config[:badge_class] %> px-3 py-2" 

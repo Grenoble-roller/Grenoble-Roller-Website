@@ -26,9 +26,9 @@
         <%= f.select :status_eq, 
             options_for_select([
               ["Tous", ""],
-              ["En attente", "pending"],
-              ["Approuvée", "approved"],
-              ["Refusée", "rejected"]
+              [t("statuses.organizer_application.pending"), "pending"],
+              [t("statuses.organizer_application.approved"), "approved"],
+              [t("statuses.organizer_application.rejected"), "rejected"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>
@@ -52,11 +52,11 @@
 <div class="mb-3">
   <%= link_to "Toutes", admin_panel_organizer_applications_path, 
       class: "btn btn-sm #{params[:scope].blank? ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
-  <%= link_to "En attente", admin_panel_organizer_applications_path(scope: "pending"), 
+  <%= link_to t("statuses.organizer_application.pending"), admin_panel_organizer_applications_path(scope: "pending"), 
       class: "btn btn-sm #{params[:scope] == 'pending' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
-  <%= link_to "Approuvées", admin_panel_organizer_applications_path(scope: "approved"), 
+  <%= link_to t("statuses.organizer_application.approved_plural"), admin_panel_organizer_applications_path(scope: "approved"), 
       class: "btn btn-sm #{params[:scope] == 'approved' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
-  <%= link_to "Refusées", admin_panel_organizer_applications_path(scope: "rejected"), 
+  <%= link_to t("statuses.organizer_application.rejected_plural"), admin_panel_organizer_applications_path(scope: "rejected"), 
       class: "btn btn-sm #{params[:scope] == 'rejected' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
 </div>
 
@@ -92,7 +92,7 @@
                        else "bg-secondary"
                      end %>
                   <span class="badge <%= badge_class %>">
-                    <%= application.status == "pending" ? "En attente" : application.status == "approved" ? "Approuvée" : "Refusée" %>
+                    <%= human_status(:organizer_application, application.status) %>
                   </span>
                 </td>
                 <td>

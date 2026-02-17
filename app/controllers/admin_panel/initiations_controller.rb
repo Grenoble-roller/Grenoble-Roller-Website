@@ -59,7 +59,7 @@ module AdminPanel
       @participants = @initiation.attendances
         .includes(:user, :child_membership)
         .where(is_volunteer: false)
-        .order(:created_at)
+        .order(Arel.sql("CASE WHEN needs_equipment THEN 0 ELSE 1 END"), :created_at)
 
       @waitlist_entries = @initiation.waitlist_entries
         .includes(:user, :child_membership)

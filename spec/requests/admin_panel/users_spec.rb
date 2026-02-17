@@ -83,11 +83,62 @@ RSpec.describe 'AdminPanel::Users', type: :request do
     context 'when user is admin (level 60)' do
       let(:admin_user) { create(:user, :admin) }
 
-      before { login_user(admin_user) }
+      before do
+        create(:role_user)
+        create(:role_admin)
+        create(:role_superadmin)
+        login_user(admin_user)
+      end
 
       it 'returns success' do
         get new_admin_panel_user_path
         expect(response).to have_http_status(:success)
+      end
+
+      it 'shows only assignable roles (no Super_Admin in select)' do
+        get new_admin_panel_user_path
+        expect(response.body).not_to include('Super Administrateur')
+      end
+    end
+  end
+
+  describe 'GET /admin-panel/users/:id/edit' do
+    context 'when admin edits another user' do
+      let(:admin_user) { create(:user, :admin) }
+      let(:target_user) { create(:user) }
+
+      before do
+        create(:role_user)
+        create(:role_admin)
+        create(:role_superadmin)
+        login_user(admin_user)
+      end
+
+      it 'returns success' do
+        get edit_admin_panel_user_path(target_user)
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'shows only assignable roles (no Super_Admin)' do
+        get edit_admin_panel_user_path(target_user)
+        expect(response.body).not_to include('Super Administrateur')
+      end
+    end
+
+    context 'when superadmin edits a user' do
+      let(:superadmin_user) { create(:user, :superadmin) }
+      let(:target_user) { create(:user) }
+
+      before do
+        create(:role_user)
+        create(:role_admin)
+        create(:role_superadmin)
+        login_user(superadmin_user)
+      end
+
+      it 'shows Super_Admin in role options' do
+        get edit_admin_panel_user_path(target_user)
+        expect(response.body).to include('Super Administrateur')
       end
     end
   end
@@ -183,6 +234,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
   describe 'PATCH /admin-panel/users/:id' do
     let(:admin_user) { create(:user, :admin) }
     let(:target_user) { create(:user) }
+    let(:superadmin_role) { create(:role_superadmin) }
 
     before { login_user(admin_user) }
 
@@ -200,6 +252,42 @@ RSpec.describe 'AdminPanel::Users', type: :request do
           user: { first_name: 'Updated Name' }
         }
         expect(response).to redirect_to(admin_panel_user_path(target_user))
+      end
+    end
+
+    context 'when admin tries to assign Super_Admin to another user' do
+      it 'rejects and returns unprocessable_entity' do
+        patch admin_panel_user_path(target_user), params: {
+          user: { role_id: superadmin_role.id }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'adds error on role_id' do
+        patch admin_panel_user_path(target_user), params: {
+          user: { role_id: superadmin_role.id }
+        }
+        target_user.reload
+        expect(target_user.role_id).not_to eq(superadmin_role.id)
+      end
+    end
+
+    context 'when admin edits their own profile and tries to set role to Super_Admin' do
+      it 'rejects self-elevation with unprocessable_entity' do
+        patch admin_panel_user_path(admin_user), params: {
+          user: { role_id: superadmin_role.id }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it 'keeps current role and displays error message' do
+        previous_role_id = admin_user.role_id
+        patch admin_panel_user_path(admin_user), params: {
+          user: { role_id: superadmin_role.id }
+        }
+        admin_user.reload
+        expect(admin_user.role_id).to eq(previous_role_id)
+        expect(response.body).to include('Vous ne pouvez pas vous attribuer')
       end
     end
   end
