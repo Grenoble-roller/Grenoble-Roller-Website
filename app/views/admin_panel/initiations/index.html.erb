@@ -99,8 +99,12 @@
                     <span class="badge badge-liquid-success">Publié</span>
                   <% when 'draft' %>
                     <span class="badge badge-liquid-secondary">Brouillon</span>
+                  <% when 'rejected' %>
+                    <span class="badge badge-liquid-danger">Rejetée</span>
                   <% when 'canceled' %>
                     <span class="badge badge-liquid-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= initiation.status %></span>
                   <% end %>
                 </td>
                 <td data-label="Places">
@@ -176,8 +180,12 @@
                     <span class="badge badge-liquid-success">Publié</span>
                   <% when 'draft' %>
                     <span class="badge badge-liquid-secondary">Brouillon</span>
+                  <% when 'rejected' %>
+                    <span class="badge badge-liquid-danger">Rejetée</span>
                   <% when 'canceled' %>
                     <span class="badge badge-liquid-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= initiation.status %></span>
                   <% end %>
                 </td>
                 <td data-label="Places">
