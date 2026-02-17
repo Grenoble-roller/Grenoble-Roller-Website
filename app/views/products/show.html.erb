@@ -62,7 +62,7 @@
            }
          end
        }.to_json.html_safe %>'
-       data-product-show-default-image-url-value="<%= (@product.image.attached? ? url_for(@product.image) : asset_path(@product.image_url)).to_json.html_safe %>">
+       data-product-show-default-image-url-value="<%= (@product.image.attached? ? url_for(@product.image) : (@product.image_url.present? ? asset_path(@product.image_url) : '')).to_json.html_safe %>">
     <div class="row g-4 align-items-stretch flex-column flex-lg-row">
       <!-- Image principale -->
       <div class="col-12 col-lg-5">

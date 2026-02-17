@@ -91,7 +91,11 @@ Rails.application.routes.draw do
     end
 
     # Roller Stock
-    resources :roller_stocks, path: "roller-stocks"
+    resources :roller_stocks, path: "roller-stocks" do
+      collection do
+        post :return_all
+      end
+    end
 
     # Utilisateurs
     resources :users

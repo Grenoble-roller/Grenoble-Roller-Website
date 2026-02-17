@@ -44,9 +44,9 @@
               ["Tous", ""],
               ["À venir uniquement", "upcoming"],
               ["Publiés uniquement", "published"],
-              ["En attente de validation", "pending_validation"],
-              ["Refusés", "rejected"],
-              ["Annulés", "canceled"]
+              [t("statuses.event.pending_validation"), "pending_validation"],
+              [t("statuses.event.rejected"), "rejected"],
+              [t("statuses.event.canceled"), "canceled"]
             ], params[:scope]),
             { class: "form-select form-control-liquid" } %>
       </div>
@@ -95,16 +95,14 @@
                   <% end %>
                 </td>
                 <td data-label="Statut">
-                  <% case event.status %>
-                  <% when 'published' %>
-                    <span class="badge badge-liquid-success">Publié</span>
-                  <% when 'draft' %>
-                    <span class="badge badge-liquid-warning">En attente</span>
-                  <% when 'rejected' %>
-                    <span class="badge badge-liquid-danger">Refusé</span>
-                  <% when 'canceled' %>
-                    <span class="badge badge-liquid-danger">Annulé</span>
-                  <% end %>
+                  <span class="badge badge-liquid-<%= case event.status
+                    when 'published' then 'success'
+                    when 'draft' then 'warning'
+                    when 'rejected', 'canceled' then 'danger'
+                    else 'secondary'
+                  end %>">
+                    <%= human_status(:event, event.status) %>
+                  </span>
                 </td>
                 <td data-label="Places">
                   <% if event.full? %>
@@ -188,16 +186,14 @@
                   <% end %>
                 </td>
                 <td data-label="Statut">
-                  <% case event.status %>
-                  <% when 'published' %>
-                    <span class="badge badge-liquid-success">Publié</span>
-                  <% when 'draft' %>
-                    <span class="badge badge-liquid-warning">En attente</span>
-                  <% when 'rejected' %>
-                    <span class="badge badge-liquid-danger">Refusé</span>
-                  <% when 'canceled' %>
-                    <span class="badge badge-liquid-danger">Annulé</span>
-                  <% end %>
+                  <span class="badge badge-liquid-<%= case event.status
+                    when 'published' then 'success'
+                    when 'draft' then 'warning'
+                    when 'rejected', 'canceled' then 'danger'
+                    else 'secondary'
+                  end %>">
+                    <%= human_status(:event, event.status) %>
+                  </span>
                 </td>
                 <td data-label="Places">
                   <% if event.full? %>

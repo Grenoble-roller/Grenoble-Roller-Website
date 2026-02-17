@@ -43,6 +43,8 @@ This will:
 - Expose the app on http://localhost:3000
 - Expose the database on localhost:5434
 
+**Équivalence avec `bin/dev`** : En dev Docker, tu as exactement la même stack qu’avec `bin/dev` en local : un processus **Rails server** (port 3000) + un processus **CSS watcher** (`npm run watch:css`). La seule différence est que Postgres et MinIO tournent dans des conteneurs au lieu de ta machine. Si tu préfères tout en local (Ruby, Node, Postgres installés), tu peux utiliser `bin/dev` à la place.
+
 ### 4. Install Dependencies and Initialize Database
 
 ```bash

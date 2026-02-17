@@ -177,18 +177,7 @@
                   'btn-secondary'
               end
               
-              status_text = case @membership.status
-                when 'pending'
-                  'En attente de paiement'
-                when 'active'
-                  'Active'
-                when 'expired'
-                  'Expirée'
-                when 'trial'
-                  '🎁 Essai gratuit actif'
-                else
-                  @membership.status.humanize
-              end
+              status_text = @membership.status == 'trial' ? '🎁 Essai gratuit actif' : human_status(:membership, @membership.status)
             %>
             <span class="badge <%= status_btn %> fs-6 px-3 py-2"><%= status_text %></span>
           </div>

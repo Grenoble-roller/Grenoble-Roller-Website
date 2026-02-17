@@ -67,9 +67,9 @@
           <%= f.select :status,
               options_for_select([
                 ["Tous les statuts", ""],
-                ["En attente", "pending"],
-                ["Terminés", "finished"],
-                ["Échecs", "failed"]
+                [t("statuses.mail_log.pending"), "pending"],
+                [t("statuses.mail_log.finished"), "finished"],
+                [t("statuses.mail_log.failed"), "failed"]
               ], params[:status]),
               {},
               { class: "form-select" } %>

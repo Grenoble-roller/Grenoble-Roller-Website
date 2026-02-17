@@ -68,12 +68,18 @@ module AdminPanel
       if @product.save
         # NOUVEAU : Génération auto si options sélectionnées
         if params[:generate_variants] == "true"
+          # Stock initial à appliquer aux variantes (product.stock_qty ou param)
+          initial_stock = (@product.stock_qty || params[:stock_qty] || 0).to_i
           # Accepter soit option_value_ids (nouveau) soit option_ids (ancien pour compatibilité)
           if params[:option_value_ids].present?
-            count = ProductVariantGenerator.generate_combinations_from_values(@product, params[:option_value_ids])
+            count = ProductVariantGenerator.generate_combinations_from_values(
+              @product, params[:option_value_ids], base_stock_qty: initial_stock
+            )
             flash[:notice] = "Produit créé avec #{count} variante(s) générée(s)"
           elsif params[:option_ids].present?
-            count = ProductVariantGenerator.generate_combinations(@product, params[:option_ids])
+            count = ProductVariantGenerator.generate_combinations(
+              @product, params[:option_ids], base_stock_qty: initial_stock
+            )
             flash[:notice] = "Produit créé avec #{count} variante(s) générée(s)"
           end
         elsif params[:option_type_ids].present?

@@ -89,6 +89,12 @@ module AdminPanel
       # Vérifier que le rôle assigné n'est pas supérieur au rôle de l'utilisateur actuel
       if user_params_to_update[:role_id].present?
         new_role = Role.find_by(id: user_params_to_update[:role_id])
+        # Empêcher un admin de se mettre Super_Admin (ou tout auto-élévation)
+        if @user.id == current_user.id && new_role && current_user.role&.level && new_role.level.to_i > current_user.role.level.to_i
+          @user.errors.add(:role_id, "Vous ne pouvez pas vous attribuer un rôle supérieur au vôtre")
+          render :edit, status: :unprocessable_entity
+          return
+        end
         unless RoleAssignmentService.can_assign_role_to_user?(
           assigner: current_user,
           target_user: @user,

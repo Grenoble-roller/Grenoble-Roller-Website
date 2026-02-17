@@ -292,8 +292,8 @@ class EventsController < ApplicationController
       events = events.where(route_id: params[:route_id])
     end
 
-    # Filtre par niveau
-    if params[:level].present? && Event.level.values.include?(params[:level])
+    # Filtre par niveau (enum avec prefix: true → méthode de classe .levels au pluriel)
+    if params[:level].present? && Event.levels.value?(params[:level])
       events = events.where(level: params[:level])
     end
 

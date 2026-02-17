@@ -24,11 +24,11 @@
         <%= f.select :status_eq,
             options_for_select([
               ["Tous", ""],
-              ["En attente", "pending"],
-              ["Payée", "paid"],
-              ["En préparation", "preparation"],
-              ["Expédiée", "shipped"],
-              ["Annulée", "cancelled"]
+              [t("statuses.order.pending"), "pending"],
+              [t("statuses.order.paid"), "paid"],
+              [t("statuses.order.preparation"), "preparation"],
+              [t("statuses.order.shipped"), "shipped"],
+              [t("statuses.order.cancelled"), "cancelled"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>

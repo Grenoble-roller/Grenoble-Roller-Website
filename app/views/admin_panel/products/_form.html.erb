@@ -196,6 +196,17 @@
           </div>
 
           <div class="mb-4">
+            <div class="form-check">
+              <%= f.check_box :is_active, class: "form-check-input", id: "product_is_active" %>
+              <%= f.label :is_active, "Produit actif (visible en boutique)", class: "form-check-label fw-semibold" %>
+            </div>
+            <div class="form-text">
+              <i class="bi bi-info-circle me-1"></i>
+              Décocher pour masquer le produit en boutique sans le supprimer.
+            </div>
+          </div>
+
+          <div class="mb-4">
             <%= f.label :category_id, "Catégorie", class: "form-label fw-semibold" do %>
               Catégorie <span class="text-danger">*</span>
             <% end %>

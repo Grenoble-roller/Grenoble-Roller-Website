@@ -58,10 +58,10 @@
                 <td><code><%= variant.sku %></code></td>
                 <td>
                   <span class="badge badge-liquid-warning">
-                    <%= variant.inventory&.available_qty || 0 %>
+                    <%= variant.inventory ? variant.inventory.available_qty : variant.stock_qty.to_i %>
                   </span>
                 </td>
-                <td><%= variant.inventory&.stock_qty || 0 %></td>
+                <td><%= variant.inventory ? variant.inventory.stock_qty : variant.stock_qty %></td>
                 <td><%= variant.inventory&.reserved_qty || 0 %></td>
               </tr>
             <% end %>
@@ -70,6 +70,54 @@
               <td colspan="5" class="text-center text-muted py-4">
                 <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
                 Aucun stock faible
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card card-liquid mb-4">
+  <div class="card-header card-liquid-primary">
+    <h5 class="mb-0">
+      <i class="bi bi-x-circle me-2" aria-hidden="true"></i>
+      Rupture de stock
+    </h5>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Produit</th>
+            <th>SKU</th>
+            <th>Disponible</th>
+            <th>Total</th>
+            <th>Réservé</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @out_of_stock.any? %>
+            <% @out_of_stock.each do |variant| %>
+              <tr>
+                <td><%= variant.product.name %></td>
+                <td><code><%= variant.sku %></code></td>
+                <td>
+                  <span class="badge bg-danger">
+                    <%= variant.inventory ? variant.inventory.available_qty : variant.stock_qty.to_i %>
+                  </span>
+                </td>
+                <td><%= variant.inventory ? variant.inventory.stock_qty : variant.stock_qty %></td>
+                <td><%= variant.inventory&.reserved_qty || 0 %></td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">
+                <i class="bi bi-check-circle me-2" aria-hidden="true"></i>
+                Aucune rupture
               </td>
             </tr>
           <% end %>

@@ -46,6 +46,13 @@ module Initiations
       Rails.logger.info("Tentative d'inscription - User: #{current_user.id}, Initiation: #{@initiation.id}, Child: #{child_membership_id}, Volunteer: #{is_volunteer}")
       Rails.logger.info("Params use_free_trial: #{params[:use_free_trial].inspect}, tous les params: #{params.inspect}")
 
+      # #region agent log
+      personal_active_now_count = current_user.memberships.personal.active_now.count
+      free_trial_used_parent = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+      _log_payload = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_is_member", message: "create params", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, child_membership_id: child_membership_id, personal_active_now_count: personal_active_now_count, free_trial_used_parent: free_trial_used_parent, params_use_free_trial: params[:use_free_trial].inspect } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload.to_json) }
+      # #endregion
+
       # Construction de l'attendance (hors transaction pour permettre les redirections)
       attendance = @initiation.attendances.build(user: current_user)
       attendance.status = "registered"
@@ -168,6 +175,11 @@ module Initiations
           end
         end
       end
+
+      # #region agent log
+      _log_payload2 = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_save", message: "attendance built", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, is_member: is_member, parent_is_member: parent_is_member, child_membership_id: child_membership_id, attendance_free_trial_used: attendance.free_trial_used } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload2.to_json) }
+      # #endregion
 
       # Protection contre race condition : transaction avec lock pessimiste lors du save
       if attendance.save
