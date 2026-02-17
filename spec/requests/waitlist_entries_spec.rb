@@ -360,7 +360,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
       expect {
         post refuse_waitlist_entry_path(@waitlist_entry)
-      }.to change { @waitlist_entry.reload.status }.from('notified').to('pending')
+      }.to change { @waitlist_entry.reload.status }.from('notified').to('cancelled')
 
       expect(response).to redirect_to(event_path(event))
       expect(flash[:notice]).to be_present
@@ -424,7 +424,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
       expect {
         get decline_waitlist_entry_path(@waitlist_entry)
-      }.to change { @waitlist_entry.reload.status }.from('notified').to('pending')
+      }.to change { @waitlist_entry.reload.status }.from('notified').to('cancelled')
         .and change { event.attendances.where(user: user, status: 'pending').count }.from(initial_count).to(initial_count - 1)
 
       expect(response).to redirect_to(event_path(event))

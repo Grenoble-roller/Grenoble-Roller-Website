@@ -91,6 +91,9 @@ class Event < ApplicationRecord
     is_a?(Event::Initiation)
   end
 
+  # Quand la capacité augmente, notifier en priorité la file d'attente (avant toute autre inscription)
+  after_save :notify_waitlist_if_capacity_increased, if: :saved_change_to_max_participants?
+
   scope :upcoming, -> { where("start_at > ?", Time.current) }
   scope :past, -> { where("start_at <= ?", Time.current) }
   scope :published, -> { where(status: "published") }
@@ -172,6 +175,17 @@ class Event < ApplicationRecord
   # Notifier la prochaine personne en liste d'attente
   def notify_next_waitlist_entry
     WaitlistEntry.notify_next_in_queue(self, count: 1)
+  end
+
+  # Appelé après sauvegarde : si max_participants a augmenté, notifier la file d'attente en priorité
+  def notify_waitlist_if_capacity_increased
+    return if max_participants.zero?
+    old_max = max_participants_before_last_save
+    return unless old_max && max_participants > old_max
+    extra_places = max_participants - old_max
+    waitlist_count = waitlist_entries.pending_notification.count
+    count = [ extra_places, waitlist_count ].min
+    WaitlistEntry.notify_next_in_queue(self, count: count) if count > 0
   end
 
   # Vérifie si l'événement est passé

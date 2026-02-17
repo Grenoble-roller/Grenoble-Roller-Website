@@ -12,11 +12,12 @@ module Events
 
       child_membership_id = params[:child_membership_id].presence
 
-      # Si c'est pour un enfant, vérifier qu'il n'est pas déjà inscrit
+      # Si c'est pour un enfant, vérifier qu'il n'est pas déjà inscrit (registered uniquement ; pending = place réservée, convertie plus bas)
       if child_membership_id.present?
         existing_attendance = @event.attendances.find_by(
           user: current_user,
-          child_membership_id: child_membership_id
+          child_membership_id: child_membership_id,
+          status: "registered"
         )
         if existing_attendance
           child_name = Membership.find_by(id: child_membership_id)&.child_full_name || "cet enfant"
@@ -27,10 +28,32 @@ module Events
         # Si c'est pour le parent, vérifier qu'il n'est pas déjà inscrit
         existing_attendance = @event.attendances.find_by(
           user: current_user,
-          child_membership_id: nil
+          child_membership_id: nil,
+          status: "registered"
         )
         if existing_attendance
           redirect_to @event, notice: "Vous êtes déjà inscrit(e) à cet événement."
+          return
+        end
+      end
+
+      # Priorité liste d'attente : si l'utilisateur est déjà en file (notifié ou en attente), convertir ou éviter le doublon
+      waitlist_entry = @event.waitlist_entries.active.find_by(
+        user: current_user,
+        child_membership_id: child_membership_id
+      )
+      if waitlist_entry&.notified?
+        # Il a reçu le mail "place disponible" : convertir la place pending en inscrit (comme s'il avait cliqué sur le lien)
+        pending_attendance = @event.attendances.find_by(
+          user: current_user,
+          child_membership_id: child_membership_id,
+          status: "pending"
+        )
+        if pending_attendance && waitlist_entry.convert_to_attendance!
+          pending_attendance.reload
+          EventMailer.attendance_confirmed(pending_attendance).deliver_later if current_user.wants_events_mail?
+          participant_name = pending_attendance.for_child? ? pending_attendance.participant_name : "Vous"
+          redirect_to @event, notice: "Inscription confirmée pour #{participant_name} ! (depuis la liste d'attente.) À bientôt le #{l(@event.start_at, format: :event_long, locale: :fr)}."
           return
         end
       end
@@ -53,6 +76,8 @@ module Events
       # Pour le parent : aucune restriction, ouvert à tous
 
       if attendance.save
+        # Annuler l'entrée en liste d'attente si la personne s'inscrit directement (évite doublon inscrit + file)
+        waitlist_entry&.cancel! if waitlist_entry&.pending?
         EventMailer.attendance_confirmed(attendance).deliver_later
         participant_name = attendance.for_child? ? attendance.participant_name : "Vous"
         event_date = l(@event.start_at, format: :event_long, locale: :fr)
