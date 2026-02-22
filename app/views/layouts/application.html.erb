@@ -15,6 +15,10 @@
     <link rel="apple-touch-icon" href="<%= asset_path('favicon-512.png') %>" sizes="512x512">
     <link rel="shortcut icon" href="<%= asset_path('favicon-512.png') %>" type="image/png">
 
+    <!-- PWA -->
+    <link rel="manifest" href="<%= pwa_manifest_path %>">
+    <meta name="theme-color" content="#007bff">
+
     <%= stylesheet_link_tag "application.bootstrap", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
     <%= yield :head %>
@@ -37,6 +41,9 @@
 
     <!-- Cookie Consent Banner -->
     <%= render 'layouts/cookie_banner' %>
+
+    <!-- PWA Install Banner (mobile : propose d'installer l'app) -->
+    <%= render 'layouts/pwa_install_banner' %>
 
     <!-- Theme toggle script -->
     <script>

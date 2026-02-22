@@ -8,20 +8,20 @@ class PagesController < ApplicationController
                               .order(:start_at)
                               .first
 
-    # Statistiques synthétiques pour la homepage (exclure les initiations)
+    # Statistiques synthétiques pour la homepage (événements + initiations)
     @users_count = User.count
-    @events_count = Event.not_initiations.published.count
-    @upcoming_events_count = Event.not_initiations.published.upcoming.count
+    @events_count = Event.published.count
+    @upcoming_events_count = Event.published.upcoming.count
     @attendances_count = Attendance.count
   end
 
   def association; end
 
   def about
-    # Statistiques pour la page "À propos" (exclure les initiations)
+    # Statistiques pour la page "À propos" (événements + initiations)
     @users_count = User.count
-    @events_count = Event.not_initiations.published.count
-    @upcoming_events_count = Event.not_initiations.published.upcoming.count
+    @events_count = Event.published.count
+    @upcoming_events_count = Event.published.upcoming.count
     @attendances_count = Attendance.count
 
     # Partenaires commerciaux actifs

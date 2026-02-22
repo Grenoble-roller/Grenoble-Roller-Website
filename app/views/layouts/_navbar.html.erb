@@ -133,6 +133,14 @@
                   <% end %>
                 </li>
               <% end %>
+              <li data-controller="pwa-install-menu" style="display: none;">
+                <button type="button"
+                        class="dropdown-item border-0 bg-transparent w-100 text-start p-2"
+                        data-action="click->pwa-install-menu#install"
+                        aria-label="Installer l'application">
+                  <i class="bi bi-download me-2" aria-hidden="true"></i>Installer l'application
+                </button>
+              </li>
               <li><hr class="dropdown-divider"></li>
               <li>
                 <%= form_tag destroy_user_session_path, method: :delete, local: true, class: "d-inline", data: { turbo: false } do %>
