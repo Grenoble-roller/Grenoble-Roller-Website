@@ -65,3 +65,29 @@ display:         standalone  (ou minimal-ui / browser)
 ```
 
 Dès que tu as rempli ce récap (même en validant les suggestions), on met à jour `manifest.json.erb` et `application.html.erb` en conséquence.
+
+---
+
+## 7. État final
+
+| Élément | Statut |
+|--------|--------|
+| Nom, short_name, description | ✅ Validés et appliqués |
+| theme_color, background_color | ✅ Validés et appliqués |
+| display (standalone) | ✅ Validé et appliqué |
+| Icônes 192 / 512 | ✅ En place et référencées dans le manifest |
+| Lien manifest + meta theme-color | ✅ Ajoutés dans le layout |
+| **Test d’installation (Chrome)** | ✅ Logo installé, PWA fonctionnelle |
+| Service worker | ✅ Enregistré dans application.js ; SW install/activate (skipWaiting + claim) |
+| Mises à jour PWA | ✅ Vérification toutes les 60 s ; rechargement auto quand un nouveau SW est actif |
+
+---
+
+## 8. Mises à jour de l’app (mobile, desktop)
+
+**Ce n’est pas une mise à jour « en direct »** (pas de push vers tous les appareils). Comportement actuel :
+
+- **À la prochaine visite** : dès qu’un utilisateur ouvre la PWA ou rafraîchit la page, le navigateur récupère le nouveau service worker (si tu as redéployé). Avec `skipWaiting()` dans le SW, la nouvelle version prend la main tout de suite.
+- **Si l’app est déjà ouverte** : le script appelle `reg.update()` toutes les 60 secondes. Si une nouvelle version du SW est en ligne, elle s’installe et s’active ; l’événement `controllerchange` déclenche un **rechargement automatique** de la page, donc l’utilisateur voit la nouvelle version sans quitter l’app.
+
+En résumé : après un déploiement, les mobiles et autres appareils ont la nouvelle version **au prochain lancement ou rafraîchissement**, ou **sous ~60 s** si la PWA est ouverte.

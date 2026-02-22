@@ -10,3 +10,15 @@ window.validateHealthQuestions = validateHealthQuestions
 window.markHealthQuestionInvalid = markHealthQuestionInvalid
 window.markHealthQuestionValid = markHealthQuestionValid
 window.validateField = validateField
+
+// PWA: enregistrement du service worker et mise à jour automatique
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker").then((reg) => {
+      // Vérifier les mises à jour périodiquement (toutes les 60 s) quand l'app est ouverte
+      setInterval(() => reg.update(), 60_000)
+    }).catch((err) => console.warn("SW registration failed:", err))
+    // Quand un nouveau SW a pris le relais (après un déploiement), recharger pour utiliser la nouvelle version
+    navigator.serviceWorker.addEventListener("controllerchange", () => window.location.reload())
+  })
+}
