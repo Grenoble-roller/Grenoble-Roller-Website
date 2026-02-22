@@ -11,6 +11,12 @@ window.markHealthQuestionInvalid = markHealthQuestionInvalid
 window.markHealthQuestionValid = markHealthQuestionValid
 window.validateField = validateField
 
+// PWA: capturer beforeinstallprompt pour le menu "Installer l'app" (disponible même sur desktop)
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault()
+  window.__pwaInstallPrompt = e
+})
+
 // PWA: enregistrement du service worker et mise à jour automatique
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
