@@ -7,6 +7,8 @@ Ce dossier documente l’étude et la mise en conformité PWA de l’application
 | Fichier | Contenu |
 |--------|---------|
 | [conformite-2026.md](conformite-2026.md) | Critères PWA 2026, état actuel, écarts, modifications à prévoir, impact déploiement |
+| [actions-pwa.md](actions-pwa.md) | Comparaison projet / doc (Rails, MDN, web.dev) et checklist d’actions pour rendre le site PWA |
+| [questions-manifest-layout.md](questions-manifest-layout.md) | Questions à trancher pour le manifest et le layout (nom, couleurs, display) |
 
 ## Résumé
 
