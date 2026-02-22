@@ -1,5 +1,7 @@
 # PWA – Questions pour le manifest et le layout
 
+**PWA validée** (installabilité Chrome testée ; SW + mise à jour auto en place).
+
 Document des questions à trancher pour finaliser le **manifest** (`app/views/pwa/manifest.json.erb`) et le **layout** (lien manifest + `theme-color`). Réponds à ces points et on pourra appliquer les réponses dans le code.
 
 ---

@@ -55,26 +55,26 @@ Comparaison entre l’état actuel du projet Grenoble Roller, les exigences PWA 
 
 ### Obligatoire pour “installable”
 
-- [ ] **Routes** : décommenter dans `config/routes.rb` :
+- [x] **Routes** : décommenter dans `config/routes.rb` — ✅ fait :
   - `get "manifest" => "rails/pwa#manifest", as: :pwa_manifest`
   - `get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker`
-- [ ] **Manifest** : modifier `app/views/pwa/manifest.json.erb` :
+- [x] **Manifest** : modifier `app/views/pwa/manifest.json.erb` — ✅ fait :
   - `name` : "Grenoble Roller"
   - `short_name` : "GR Roller" (ou court)
   - `description` : phrase type “Communauté roller Grenoble…”
   - `theme_color` / `background_color` : couleurs du site (pas "red")
   - `icons` : au moins deux entrées avec `src` pointant vers des URLs réelles (192×192 et 512×512), type `image/png`, `sizes` et si possible `purpose: "any"` et `"maskable"`
-- [ ] **Icônes** : avoir au moins un fichier 512×512 et un 192×192 (ex. `public/icons/icon-192.png`, `public/icons/icon-512.png`) et les référencer dans le manifest. **Recommandation** : icônes avec **fond opaque** (voir § 5).
-- [ ] **Layout** : dans `app/views/layouts/application.html.erb` (dans le `<head>`) :
+- [x] **Icônes** : avoir au moins un fichier 512×512 et un 192×192 (ex. `public/icons/icon-192.png`, `public/icons/icon-512.png`) et les référencer dans le manifest. **Recommandation** : icônes avec **fond opaque** (voir § 5).
+- [x] **Layout** : dans `app/views/layouts/application.html.erb` — ✅ fait (dans le `<head>`) :
   - `<link rel="manifest" href="<%= pwa_manifest_path %>" />` (ou `url_for` équivalent)
   - `<meta name="theme-color" content="#XXXXXX" />` (même couleur que `theme_color` du manifest)
 
 ### Recommandé (fiabilité / UX)
 
-- [ ] **Service worker** : dans `app/javascript/application.js` (après chargement du DOM ou au top-level), enregistrer le SW :
+- [x] **Service worker** : dans `app/javascript/application.js` — ✅ fait (après chargement du DOM ou au top-level), enregistrer le SW :
   - `if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker').catch(console.error); }`
   - Vérifier que l’URL correspond à la route (ex. `/service-worker` sans `.js` si la route est ainsi).
-- [ ] **Tester** : en HTTPS (ou localhost), Chrome DevTools > Application > Manifest + onglet “Install” / Lighthouse > PWA.
+- [x] **Tester** : installabilité Chrome validée — ✅ fait, Chrome DevTools > Application > Manifest + onglet “Install” / Lighthouse > PWA.
 
 ### Optionnel
 
@@ -86,12 +86,12 @@ Comparaison entre l’état actuel du projet Grenoble Roller, les exigences PWA 
 
 ## 4. Résumé
 
-| Bloc | À faire |
+| Bloc | Statut |
 |------|--------|
-| **Routes** | Décommenter manifest + service-worker. |
-| **Manifest** | Nom, description, couleurs, icônes 192+512 (fichiers + entrées dans le JSON). |
-| **Layout** | Lien manifest + meta theme-color. |
-| **SW** | Enregistrement dans application.js ; optionnellement contenu de cache. |
+| **Routes** | ✅ Actives |
+| **Manifest** | ✅ Grenoble Roller, G.Roller, couleurs, icônes |
+| **Layout** | ✅ Lien manifest + theme-color |
+| **SW** | ✅ Enregistrement + mise à jour auto |
 
 Une fois ces points faits, le site sera éligible à l’installation PWA (bouton “Installer” dans Chrome / Edge, etc.). Le déploiement (Kamal ou scripts `ops/`) n’a pas besoin d’être modifié : manifest et service worker sont servis par Rails comme le reste de l’app.
 
