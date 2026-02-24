@@ -163,7 +163,7 @@
   </article>
 </div>
 
-<% if user_signed_in? && policy(initiation).attend? && !initiation.full? %>
+<% if user_signed_in? && !initiation.past? && policy(initiation).attend? && !initiation.full? %>
   <div class="modal fade" id="confirmAttendModalInitiation<%= initiation.id %>" tabindex="-1" aria-labelledby="confirmAttendModalInitiationLabel<%= initiation.id %>" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

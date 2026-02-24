@@ -19,6 +19,7 @@ class Event::InitiationPolicy < ApplicationPolicy
 
   def attend?
     return false unless user
+    return false if record.past?
 
     # Utiliser les paramètres passés via l'initializer
     child_membership_id = child_membership_id_for_policy

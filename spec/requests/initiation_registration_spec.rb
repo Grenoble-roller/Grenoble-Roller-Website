@@ -265,6 +265,28 @@ RSpec.describe 'Initiation Registration - 16 Tests', type: :request do
       end
     end
 
+    describe 'Past event - no registration' do
+      it 'blocks registration when initiation is past' do
+        user = create_user(role: user_role)
+        create(:membership, user: user, status: :active, season: '2025-2026')
+        past_initiation = create_event(
+          type: 'Event::Initiation',
+          status: 'published',
+          max_participants: 30,
+          allow_non_member_discovery: false,
+          start_at: 2.days.ago
+        )
+        login_user(user)
+
+        expect do
+          post initiation_attendances_path(past_initiation)
+        end.not_to change { Attendance.count }
+
+        expect(response).to be_redirect
+        expect(flash[:alert]).to be_present
+      end
+    end
+
     describe 'Full Capacity - Bloquer quand complet' do
       it 'prevents registration when initiation is full' do
         user = create_user(role: user_role)

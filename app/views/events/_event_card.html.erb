@@ -180,7 +180,7 @@
   </article>
 </div>
 
-<% if defined?(render_signup_button) && render_signup_button && policy(event).can_attend? && !event.full? %>
+<% if defined?(render_signup_button) && render_signup_button && !event.past? && policy(event).can_attend? && !event.full? %>
     <div class="modal fade" id="confirmAttendModal<%= event.id %>" tabindex="-1" aria-labelledby="confirmAttendModalLabel<%= event.id %>" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
