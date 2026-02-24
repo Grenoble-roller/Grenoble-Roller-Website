@@ -29,10 +29,10 @@
         <%= f.select :status_eq,
             options_for_select([
               ["Tous", ""],
-              ["Brouillon", "draft"],
-              ["Publié", "published"],
-              ["Refusé", "rejected"],
-              ["Annulé", "canceled"]
+              [t("statuses.event.draft"), "draft"],
+              [t("statuses.event.published"), "published"],
+              [t("statuses.event.rejected"), "rejected"],
+              [t("statuses.event.canceled"), "canceled"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>
@@ -95,14 +95,7 @@
                   <% end %>
                 </td>
                 <td data-label="Statut">
-                  <span class="badge badge-liquid-<%= case event.status
-                    when 'published' then 'success'
-                    when 'draft' then 'warning'
-                    when 'rejected', 'canceled' then 'danger'
-                    else 'secondary'
-                  end %>">
-                    <%= human_status(:event, event.status) %>
-                  </span>
+                  <%= render "shared/event_status_badge", record: event %>
                 </td>
                 <td data-label="Places">
                   <% if event.full? %>
@@ -186,14 +179,7 @@
                   <% end %>
                 </td>
                 <td data-label="Statut">
-                  <span class="badge badge-liquid-<%= case event.status
-                    when 'published' then 'success'
-                    when 'draft' then 'warning'
-                    when 'rejected', 'canceled' then 'danger'
-                    else 'secondary'
-                  end %>">
-                    <%= human_status(:event, event.status) %>
-                  </span>
+                  <%= render "shared/event_status_badge", record: event %>
                 </td>
                 <td data-label="Places">
                   <% if event.full? %>

@@ -57,7 +57,7 @@
           <!-- Badge Statut (pour admins/moderateurs) - exclure les rejetées -->
           <% if can_moderate? && initiation.draft? %>
             <span class="badge bg-warning text-dark">
-              <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>En attente
+              <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i><%= t("statuses.event.draft") %>
             </span>
           <% elsif can_moderate? && initiation.rejected? %>
             <span class="badge bg-danger">

@@ -34,10 +34,11 @@
         <%= f.label :status_eq, "Statut", class: "form-label" %>
         <%= f.select :status_eq,
             options_for_select([
-              ["Tous", ""],
-              ["Brouillon", "draft"],
-              ["Publié", "published"],
-              ["Annulé", "canceled"]
+              ["Toutes", ""],
+              [t("statuses.event.draft"), "draft"],
+              [t("statuses.event.published"), "published"],
+              [t("statuses.event.rejected"), "rejected"],
+              [t("statuses.event.canceled"), "canceled"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>
@@ -94,14 +95,7 @@
                   <small class="text-muted">10h15-12h00</small>
                 </td>
                 <td data-label="Statut">
-                  <% case initiation.status %>
-                  <% when 'published' %>
-                    <span class="badge badge-liquid-success">Publié</span>
-                  <% when 'draft' %>
-                    <span class="badge badge-liquid-secondary">Brouillon</span>
-                  <% when 'canceled' %>
-                    <span class="badge badge-liquid-danger">Annulé</span>
-                  <% end %>
+                  <%= render "shared/event_status_badge", record: initiation %>
                 </td>
                 <td data-label="Places">
                   <% if initiation.full? %>
@@ -171,14 +165,7 @@
                   <small class="text-muted">10h15-12h00</small>
                 </td>
                 <td data-label="Statut">
-                  <% case initiation.status %>
-                  <% when 'published' %>
-                    <span class="badge badge-liquid-success">Publié</span>
-                  <% when 'draft' %>
-                    <span class="badge badge-liquid-secondary">Brouillon</span>
-                  <% when 'canceled' %>
-                    <span class="badge badge-liquid-danger">Annulé</span>
-                  <% end %>
+                  <%= render "shared/event_status_badge", record: initiation %>
                 </td>
                 <td data-label="Places">
                   <% if initiation.full? %>
