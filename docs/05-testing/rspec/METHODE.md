@@ -65,6 +65,10 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
    ```bash
    docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb
    ```
+4. **Vérifier l'impact des modifications** :
+   - Identifier les **vues / écrans** concernés par le code modifié (contrôleur, modèle, service).
+   - Si des vues ou flux utilisateur sont touchés : **test manuel** des écrans concernés (ou au minimum relire le code pour confirmer l’absence de régression).
+   - Documenter dans la fiche d’erreur si un impact vue a été vérifié (ou « aucune vue modifiée »).
 
 ### Étape 6 : Mettre à jour la documentation
 
@@ -97,6 +101,7 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
 - [ ] Solutions proposées documentées
 - [ ] Solution appliquée
 - [ ] Test passé
+- [ ] Vérification impact : autres tests + vues/écrans concernés (test manuel ou relecture)
 - [ ] Documentation mise à jour
 - [ ] Statut mis à jour dans README.md
 
@@ -107,7 +112,7 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
 1. **Une erreur à la fois** : Ne pas mélanger plusieurs corrections
 2. **Toujours tester** : Vérifier que la correction fonctionne
 3. **Documenter tout** : Mettre à jour les fichiers d'erreur
-4. **Vérifier les dépendances** : S'assurer qu'on ne casse pas d'autres tests
+4. **Vérifier les dépendances** : S'assurer qu'on ne casse pas d'autres tests ; vérifier l'impact sur les vues/écrans concernés (étape 5.4)
 5. **Suivre les priorités** : Traiter les erreurs par ordre de priorité
 
 ---

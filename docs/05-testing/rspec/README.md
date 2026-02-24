@@ -9,8 +9,8 @@
 | Fiche | Titre | Spec(s) concerné(s) |
 |-------|--------|----------------------|
 | [001](errors/001-dashboard-html-diff.md) ✅ | Dashboard GET /admin-panel – diff HTML | dashboard_spec.rb:21 (résolu) |
-| [002](errors/002-inventory-variant-ransack.md) | Inventory variant déjà utilisé + Ransack | inventory_spec.rb (20, 28, 36, 67, …) |
-| [003](errors/003-initiation-policy-index-update.md) | InitiationPolicy index? / update? | initiation_policy_spec.rb:18, :120 |
+| [002](errors/002-inventory-variant-ransack.md) ✅ | Inventory variant déjà utilisé + Ransack | inventory_spec.rb (résolu) |
+| [003](errors/003-initiation-policy-index-update.md) ✅ | InitiationPolicy index? / update? | initiation_policy_spec.rb (résolu) |
 | [004](errors/004-admin-initiations-redirect.md) | Admin initiations 302 et redirect | initiations_spec.rb, base_controller_spec.rb |
 | [005](errors/005-attendance-free-trial-can-register.md) | Attendance free_trial / can_register | attendance_spec.rb:321, 345, 438 |
 | [006](errors/006-waitlist-notify-child-trial.md) | WaitlistEntry notify! child free trial | waitlist_entry_spec.rb:40 |

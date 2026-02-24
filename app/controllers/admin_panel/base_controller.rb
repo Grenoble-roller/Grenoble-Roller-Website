@@ -21,14 +21,12 @@ module AdminPanel
         return
       end
 
-      # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
-      # Level 30 = ORGANIZER, Level 40 = INITIATION, Level 50 = MODERATOR, Level 60 = ADMIN, Level 70 = SUPERADMIN
+      # Permissions par level uniquement (10, 20, 30, 40, 50, 60, 70)
       user_level = current_user&.role&.level.to_i
 
-      # Les initiations et homepage content sont accessibles pour level >= 40
-      # Toutes les autres ressources nécessitent level >= 60
+      # Initiations et homepage : level >= 30. Autres ressources : level >= 60
       if controller_name == "initiations" || controller_name == "homepage_carousels" || controller_name == "homepage_announcements"
-        unless user_level >= 40
+        unless user_level >= 30
           redirect_to root_path, alert: "Accès non autorisé"
         end
       else
