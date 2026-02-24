@@ -232,6 +232,37 @@ RSpec.describe 'Initiation Registration - 16 Tests', type: :request do
         expect(flash[:alert]).to include("Cet enfant a déjà utilisé son essai gratuit")
         expect(flash[:alert]).to include("Une adhésion")
       end
+
+      it 'place découverte counts as one initiation: non-adherent cannot then use free trial for second' do
+        # Règle : une seule initiation pour non-adhérent (doc "une seule initiation gratuitement")
+        # Inscription en place découverte (sans cocher essai gratuit) → free_trial_used = true → bloqué pour 2e initiation
+        user = create_user(role: user_role)
+        first_initiation = create_event(
+          type: 'Event::Initiation',
+          status: 'published',
+          max_participants: 30,
+          allow_non_member_discovery: true,
+          non_member_discovery_slots: 10
+        )
+        login_user(user)
+        post initiation_attendances_path(first_initiation) # pas de use_free_trial (place découverte)
+        expect(response).to redirect_to(initiation_path(first_initiation))
+        attendance = user.attendances.find_by(event: first_initiation)
+        expect(attendance.free_trial_used).to be true
+
+        second_initiation = create_event(
+          type: 'Event::Initiation',
+          status: 'published',
+          max_participants: 30,
+          allow_non_member_discovery: false
+        )
+        expect do
+          post initiation_attendances_path(second_initiation), params: { use_free_trial: "1" }
+        end.not_to change { Attendance.count }
+        expect(response).to be_redirect
+        expect(flash[:alert]).to be_present
+        expect(Attendance.where(user: user, event: second_initiation).exists?).to be false
+      end
     end
 
     describe 'Full Capacity - Bloquer quand complet' do

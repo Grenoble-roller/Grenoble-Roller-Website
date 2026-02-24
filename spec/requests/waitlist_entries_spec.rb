@@ -114,6 +114,28 @@ RSpec.describe 'Waitlist Entries', type: :request do
           expect(response).to redirect_to(initiation_path(initiation))
           expect(flash[:alert]).to include("Vous avez déjà utilisé votre essai gratuit")
         end
+
+        it 'after confirm from waitlist without use_free_trial, cannot register to second initiation with use_free_trial' do
+          # Règle : une seule initiation pour non-adhérent (liste d'attente sans case = compte comme l unique)
+          login_user(user)
+          post initiation_waitlist_entries_path(initiation), params: { wants_reminder: false }
+          expect(response).to redirect_to(initiation_path(initiation))
+          waitlist_entry = WaitlistEntry.last
+          expect(waitlist_entry.use_free_trial).to be false
+
+          waitlist_entry.notify!
+          get confirm_waitlist_entry_path(waitlist_entry)
+          expect(response).to be_redirect
+          expect(flash[:notice]).to include("Inscription confirmée")
+
+          second_initiation = create(:event_initiation, :published, :upcoming, max_participants: 10)
+          expect do
+            post initiation_attendances_path(second_initiation), params: { use_free_trial: "1" }
+          end.not_to change { Attendance.count }
+          expect(response).to be_redirect
+          expect(flash[:alert]).to be_present
+          expect(Attendance.where(user: user, event: second_initiation).exists?).to be false
+        end
       end
 
       context 'with child free trial' do

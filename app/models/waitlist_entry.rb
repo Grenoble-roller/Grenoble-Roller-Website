@@ -243,7 +243,14 @@ class WaitlistEntry < ApplicationRecord
   private
 
   # Construire l'attendance pending pour verrouiller la place
+  # Règle : pour un non-adhérent parent en initiation, toute place (avec ou sans case "essai gratuit") compte comme son unique initiation → free_trial_used = true
   def build_pending_attendance
+    free_trial_used = if event.is_a?(Event::Initiation) && child_membership_id.nil? &&
+                         !user.memberships.active_now.where(is_child_membership: false).exists?
+      true
+    else
+      use_free_trial || false
+    end
     event.attendances.build(
       user: user,
       child_membership_id: child_membership_id,
@@ -251,7 +258,7 @@ class WaitlistEntry < ApplicationRecord
       wants_reminder: wants_reminder || false,
       needs_equipment: needs_equipment || false,
       roller_size: roller_size,
-      free_trial_used: use_free_trial || false
+      free_trial_used: free_trial_used
     )
   end
 

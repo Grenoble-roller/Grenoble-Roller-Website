@@ -47,5 +47,5 @@ ops/logs/
 # Métriques Prometheus (générées automatiquement à chaque déploiement)
 /metrics/
 
-# Cursor debug logs
-.cursor/debug.log
+# Cursor (IDE, debug logs, sessions)
+.cursor/
