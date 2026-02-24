@@ -16,7 +16,7 @@
 | [006](errors/006-waitlist-notify-child-trial.md) ✅ | WaitlistEntry notify! child free trial | waitlist_entry_spec.rb (résolu) |
 | [007](errors/007-initiation-registration.md) ✅ | Initiation registration Free Trial, member_participants_count | initiation_registration_spec.rb:109, 1407, 1437 (résolu) |
 | [008](errors/008-memberships-renew-child.md) ✅ | Memberships renouvellement enfant, GET new?type=child | memberships_spec.rb:293, 586, 620 (résolu) |
-| [009](errors/009-products-variant-options.md) | Products variantes options catégorisation | products_spec.rb:41 |
+| [009](errors/009-products-variant-options.md) ✅ | Products variantes options catégorisation | products_spec.rb:41 (résolu) |
 | [010](errors/010-registrations-welcome-email.md) | Registrations welcome email deliver_later | registrations_spec.rb:70 |
 
 ## Lancer les specs dans le conteneur dev

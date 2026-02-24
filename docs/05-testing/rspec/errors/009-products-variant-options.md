@@ -13,42 +13,47 @@
 - **Test** : `GET /products/:id loads active variants`
 - **Commande pour reproduire** :
   ```bash
-  docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/requests/products_spec.rb:41
+  bundle exec rspec spec/requests/products_spec.rb:41
   ```
 
 ---
 
 ## 🔴 Erreur
 
-`ActiveRecord::RecordInvalid: La validation a échoué : Les variantes doivent avoir des options de catégorisation` lors de `create(:product_variant, product: product, is_active: false)`.
+`ActiveRecord::RecordInvalid: La validation a échoué : Les variantes doivent avoir des options de catégorisation` lors de `create(:product_variant, product: product, is_active: false)` (ou avec plusieurs variantes).
 
 ---
 
 ## 🔍 Analyse
 
-La factory ou le spec crée une variante sans les options de catégorisation requises par le modèle ProductVariant.
+1. **Options de catégorisation** : `ProductVariant` exige que chaque variante ait des `variant_option_values` lorsque le produit a plus d’une variante (`has_required_option_values`). La factory créait ces options en `after(:create)`, donc après la validation → échec à la sauvegarde.
+2. **Option en `after(:build)`** : En construisant les `variant_option_values` en `after(:build)`, les enregistrements associés sont validés avec la variante ; `VariantOptionValue` exige `variant_id`, encore nil avant la persistance → validation des associés en échec.
+3. **Contournement** : Utiliser le flag existant `@skip_option_validation` (déjà utilisé en seed) en `after(:build)`, puis créer les `VariantOptionValue` en `after(:create)` une fois la variante persistée.
+4. **Image variante active** : Pour les variantes actives, une image est requise ; le fichier `spec/fixtures/files/test-image.jpg` est absent. La factory attache un blob minimal (StringIO) en fallback lorsque le fichier n’existe pas.
 
 ---
 
-## 💡 Solutions Proposées
+## 💡 Solutions Appliquées
 
-1. **Test** : Donner à la variante les options requises (option_types/option_values) dans le spec ou la factory.
-2. **App** : Si la validation est trop stricte pour certains cas (ex. variante inactive), adapter la validation ou les attributs allowlist.
+- **Factory `product_variants.rb`** :
+  - En `after(:build)` : `variant.instance_variable_set(:@skip_option_validation, true)` pour ne pas exiger d’options à la création.
+  - En `after(:create)` : création de `OptionType` "size", `OptionValue` "Medium" si besoin, puis `VariantOptionValue.find_or_create_by!(variant: variant, option_value: size_value)` pour que chaque variante ait bien des options après création.
+  - Pour les variantes actives : si `spec/fixtures/files/test-image.jpg` n’existe pas, attachement d’un blob minimal (`StringIO`) pour satisfaire `image_required_if_active`.
 
 ---
 
 ## 🎯 Type de Problème
 
-Souvent ❌ **PROBLÈME DE TEST** (factory/setup incomplet).
+**Problème de test** (factory/setup) : la factory ne respectait pas les validations du modèle (options après validation, image pour actif).
+
+---
+
+## Impact vues
+
+Aucune modification des vues. Uniquement la factory et le flux de création des variantes en test.
 
 ---
 
 ## 📊 Statut
 
-⏳ **À ANALYSER**
-
----
-
-## 🔗 Erreurs Similaires
-
-- [002-inventory-variant-ransack.md](002-inventory-variant-ransack.md)
+✅ **RÉSOLU**
