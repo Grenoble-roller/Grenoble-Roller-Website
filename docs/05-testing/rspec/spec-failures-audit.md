@@ -1,9 +1,11 @@
 # Audit des specs en échec
 
-**Dernier run (conteneur dev, RAILS_ENV=test) :** 1054 exemples, **29 échecs**, 10 pending.
+**Dernier run (après salve 1 + corrections 011–012) :** 1054 exemples, **0 échec**, 10 pending.
 
-**Commande pour reproduire dans le conteneur :**
+**Commande pour reproduire :**
 ```bash
+bundle exec rspec spec/
+# ou (conteneur dev)
 docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec spec/
 ```
 
@@ -11,37 +13,46 @@ docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle e
 
 ---
 
-## Liste des 29 échecs (dernier run)
+## Archive – Erreurs corrigées (fiches 001–012)
 
-| # | Fichier | Ligne | Résumé |
-|---|---------|-------|--------|
-| 1 | `spec/models/attendance_spec.rb` | 321 | free_trial_used validation – prevents bypassing for trial child |
-| 2 | `spec/models/attendance_spec.rb` | 345 | free_trial_used – prevents registration without free trial (JS disabled) |
-| 3 | `spec/models/attendance_spec.rb` | 438 | can_register_to_initiation – allows registration with child membership |
-| 4 | `spec/models/waitlist_entry_spec.rb` | 40 | notify! – does not create attendance if child free trial already used |
-| 5 | `spec/policies/admin_panel/event/initiation_policy_spec.rb` | 18 | index? – initiation (level 30) expected true |
-| 6 | `spec/policies/admin_panel/event/initiation_policy_spec.rb` | 120 | update? – organizer (level 40) expected false |
-| 7 | `spec/requests/admin_panel/base_controller_spec.rb` | 18 | initiations (level 30) allows access |
-| 8 | `spec/requests/admin_panel/dashboard_spec.rb` | 21 | GET /admin-panel displays dashboard (HTML diff) |
-| 9 | `spec/requests/admin_panel/initiations_spec.rb` | 54 | GET initiations – initiation user returns success (302) |
-| 10 | `spec/requests/admin_panel/initiations_spec.rb` | 137 | presences – organizer redirects not authorized (redirect vers initiations) |
-| 11 | `spec/requests/admin_panel/initiations_spec.rb` | 170 | update_presences – organizer redirects not authorized |
-| 12–21 | `spec/requests/admin_panel/inventory_spec.rb` | 20, 28, 36, 67, 72, 82, 112, 127, 138, 153 | Product variant déjà utilisé ; Ransack Inventory ransackable_attributes |
-| 22 | `spec/requests/initiation_registration_spec.rb` | 109 | Free Trial Second – bloque 2e essai (redirect root au lieu de initiation) |
-| 23 | `spec/requests/initiation_registration_spec.rb` | 1407 | Famille non-adhérente découverte – member_participants_count 2 vs 1 |
-| 24 | `spec/requests/initiation_registration_spec.rb` | 1437 | Mélange adhérents/non-adhérents – member_participants_count 3 vs 2 |
-| 25 | `spec/requests/memberships_spec.rb` | 293 | Renouvellement enfant – déjà adhésion saison → Membership.count 2 vs 1 |
-| 26 | `spec/requests/memberships_spec.rb` | 573 | GET new?type=child – essai déjà utilisé → 302 au lieu de 200 |
-| 27 | `spec/requests/memberships_spec.rb` | 607 | GET new?type=child – essai pas utilisé → 302 au lieu de 200 |
-| 28 | `spec/requests/products_spec.rb` | 41 | GET /products/:id – variantes options catégorisation (product_variant factory) |
-| 29 | `spec/requests/registrations_spec.rb` | 70 | sends welcome email – enqueued 0 (deliver_now vs deliver_later matcher) |
+| Fiche | Résumé | Statut |
+|-------|--------|--------|
+| 001 | Dashboard GET /admin-panel – diff HTML | ✅ Résolu |
+| 002 | Inventory variant + Ransack | ✅ Résolu |
+| 003 | InitiationPolicy index? / update? | ✅ Résolu |
+| 004 | Admin initiations redirect (admin_panel_root_path) | ✅ Résolu |
+| 005 | Attendance free_trial / can_register | ✅ Résolu |
+| 006 | WaitlistEntry notify! child free trial | ✅ Résolu |
+| 007 | Initiation registration redirect 2e essai + member_participants_count | ✅ Résolu |
+| 008 | Memberships renouvellement enfant + GET new?type=child | ✅ Résolu |
+| 009 | Products variantes options catégorisation (factory) | ✅ Résolu |
+| 010 | Registrations welcome email (matcher deliver_later / deliver_now) | ✅ Résolu |
+| 011 | AdminPanel::Payments DELETE – redirect admin_panel_root_path | ✅ Résolu |
+| 012 | Initiation free trial twice – redirect initiation_path | ✅ Résolu |
 
-**Commandes pour relancer un échec isolé :**
-```bash
-docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec spec/requests/admin_panel/dashboard_spec.rb:21
-```
+---
 
-**Fiches d’erreur (méthode)** : chaque type d’échec a une fiche dans [errors/](errors/) pour analyse et correction. Voir [README.md](README.md) pour l’index.
+## Nouvelle salve – Échecs actuels
+
+**Aucun échec** après correction des 2 derniers (011, 012).
+
+---
+
+## Pending (10) – à implémenter ou supprimer
+
+| Fichier | Description |
+|---------|-------------|
+| `spec/features/event_management_spec.rb` | 170, 189 – 2 exemples temporairement skippés (xit) |
+| `spec/helpers/memberships_helper_spec.rb` | 14 – Not yet implemented |
+| `spec/models/roller_stock_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/create.html.erb_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/index.html.erb_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/new.html.erb_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/pay.html.erb_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/payment_status.html.erb_spec.rb` | 4 – Not yet implemented |
+| `spec/views/memberships/show.html.erb_spec.rb` | 4 – Not yet implemented |
+
+**Fiches d’erreur** : [errors/](errors/) — index dans [README.md](README.md).
 
 ---
 

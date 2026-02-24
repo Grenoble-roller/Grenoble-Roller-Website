@@ -98,11 +98,10 @@ RSpec.describe 'Initiation Registration - 16 Tests', type: :request do
           post initiation_attendances_path(second_initiation), params: { use_free_trial: "1" }
         end.not_to change { Attendance.count }
 
-        # La policy bloque car l'essai gratuit a déjà été utilisé (Pundit::NotAuthorizedError)
-        # La policy vérifie l'essai gratuit AVANT que le contrôleur ne soit appelé (ligne 107 de InitiationPolicy)
-        # Le ApplicationController redirige vers root_path pour les erreurs Pundit sur les initiations
-        expect(response).to redirect_to(root_path)
+        # Le contrôleur gère le cas "essai gratuit déjà utilisé" et redirige vers la page de l'initiation (fiche 007)
+        expect(response).to redirect_to(initiation_path(second_initiation))
         expect(flash[:alert]).to be_present
+        expect(flash[:alert]).to include("Vous avez déjà utilisé votre essai gratuit")
       end
 
       # Case 4.3: Parent non-adhérent + essai utilisé → BLOQUÉ (test direct contrôleur)

@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'AdminPanel::Initiations', type: :request do
   include RequestAuthenticationHelper
+  include WaitlistTestHelper
 
   let(:initiation_role) { Role.find_or_create_by!(code: 'INITIATION') { |r| r.name = 'Initiation'; r.level = 30 } }
   let(:organizer_role) { Role.find_or_create_by!(code: 'ORGANIZER') { |r| r.name = 'Organisateur'; r.level = 40 } }
@@ -9,7 +10,7 @@ RSpec.describe 'AdminPanel::Initiations', type: :request do
   let(:superadmin_role) { Role.find_or_create_by!(code: 'SUPERADMIN') { |r| r.name = 'Super Administrateur'; r.level = 70 } }
   let(:user_role) { Role.find_or_create_by!(code: 'USER') { |r| r.name = 'Utilisateur'; r.level = 10 } }
 
-  let(:initiation) { create(:event_initiation) }
+  let(:initiation) { create(:event_initiation, max_participants: 2) }
 
   describe 'GET /admin-panel/initiations' do
     context 'when user is admin (level 60)' do
@@ -173,6 +174,110 @@ RSpec.describe 'AdminPanel::Initiations', type: :request do
           presences: { attendance.id.to_s => 'present' }
         }
         expect(response).to redirect_to(admin_panel_root_path)
+      end
+    end
+  end
+
+  describe 'POST /admin-panel/initiations/:id/notify_waitlist' do
+    let(:waitlist_user) { create(:user, confirmed_at: Time.current) }
+    let!(:waitlist_entry) do
+      fill_event_to_capacity(initiation, 2)
+      create(:waitlist_entry, event: initiation, user: waitlist_user, status: 'pending')
+    end
+
+    context 'when user is admin (level 60)' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { sign_in admin_user }
+
+      it 'notifies waitlist entry and redirects' do
+        post notify_waitlist_admin_panel_initiation_path(initiation),
+             params: { waitlist_entry_id: waitlist_entry.hashid }
+        expect(response).to redirect_to(admin_panel_initiation_path(initiation))
+        expect(flash[:notice].present? || flash[:alert].present?).to be true
+      end
+    end
+
+    context 'when user is organizer (level 40)' do
+      let(:organizer_user) { create(:user, :organizer) }
+
+      before { sign_in organizer_user }
+
+      it 'allows access and redirects' do
+        post notify_waitlist_admin_panel_initiation_path(initiation),
+             params: { waitlist_entry_id: waitlist_entry.hashid }
+        expect(response).to redirect_to(admin_panel_initiation_path(initiation))
+      end
+    end
+  end
+
+  describe 'POST /admin-panel/initiations/:id/convert_waitlist' do
+    let(:waitlist_user) { create(:user, confirmed_at: Time.current) }
+    let!(:waitlist_entry) do
+      fill_event_to_capacity(initiation, 2)
+      _pending, entry = create_notified_waitlist_with_pending_attendance(waitlist_user, initiation)
+      entry
+    end
+
+    context 'when user is admin (level 60)' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { sign_in admin_user }
+
+      it 'converts waitlist to registration and redirects' do
+        post convert_waitlist_admin_panel_initiation_path(initiation),
+             params: { waitlist_entry_id: waitlist_entry.hashid }
+        expect(response).to redirect_to(admin_panel_initiation_path(initiation))
+      end
+    end
+  end
+
+  describe 'PATCH /admin-panel/initiations/:id/toggle_volunteer' do
+    let(:attendance_user) { create(:user) }
+    let!(:membership) { create(:membership, user: attendance_user, status: :active, season: '2025-2026') }
+    let!(:attendance) { create(:attendance, event: initiation, user: attendance_user, status: 'registered', is_volunteer: false) }
+
+    context 'when user is admin (level 60)' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { sign_in admin_user }
+
+      it 'toggles volunteer status and redirects' do
+        patch toggle_volunteer_admin_panel_initiation_path(initiation),
+              params: { attendance_id: attendance.id }
+        expect(response).to redirect_to(admin_panel_initiation_path(initiation))
+        expect(flash[:notice]).to be_present
+      end
+    end
+  end
+
+  describe 'POST /admin-panel/initiations/:id/return_material' do
+    let(:past_initiation) do
+      create(:event_initiation, start_at: 2.hours.ago, duration_min: 60, stock_returned_at: nil)
+    end
+
+    context 'when user is admin (level 60)' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { sign_in admin_user }
+
+      it 'returns material and redirects to presences' do
+        post return_material_admin_panel_initiation_path(past_initiation)
+        expect(response).to redirect_to(presences_admin_panel_initiation_path(past_initiation))
+        expect(flash[:notice]).to be_present
+      end
+    end
+
+    context 'when initiation is in the future' do
+      let(:admin_user) { create(:user, :admin) }
+      let(:future_initiation) { create(:event_initiation, start_at: 1.hour.from_now, stock_returned_at: nil) }
+
+      before { sign_in admin_user }
+
+      it 'redirects with alert' do
+        post return_material_admin_panel_initiation_path(future_initiation)
+        expect(response).to redirect_to(presences_admin_panel_initiation_path(future_initiation))
+        expect(flash[:alert]).to include('pas encore terminée')
       end
     end
   end

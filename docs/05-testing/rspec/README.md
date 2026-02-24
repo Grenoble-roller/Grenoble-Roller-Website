@@ -18,6 +18,8 @@
 | [008](errors/008-memberships-renew-child.md) ✅ | Memberships renouvellement enfant, GET new?type=child | memberships_spec.rb:293, 586, 620 (résolu) |
 | [009](errors/009-products-variant-options.md) ✅ | Products variantes options catégorisation | products_spec.rb:41 (résolu) |
 | [010](errors/010-registrations-welcome-email.md) ✅ | Registrations welcome email deliver_later | registrations_spec.rb:70 (résolu) |
+| [011](errors/011-admin-payments-redirect.md) ✅ | AdminPanel::Payments DELETE redirect | payments_spec.rb:176 (résolu) |
+| [012](errors/012-initiation-free-trial-twice-redirect.md) ✅ | Initiation 2e essai gratuit redirect | initiation_registration_spec.rb:72 (résolu) |
 
 ## Lancer les specs dans le conteneur dev
 
