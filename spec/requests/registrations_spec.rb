@@ -56,8 +56,8 @@ RSpec.describe 'Registrations', type: :request do
 
       it 'redirects to confirmation page' do
         post user_registration_path, params: valid_params
-        # Le contrôleur redirige vers la page de confirmation email (après création)
-        expect(response).to redirect_to(new_user_confirmation_path)
+        # after_inactive_sign_up_path_for redirige vers welcome_path (page "Prochaines étapes")
+        expect(response).to redirect_to(welcome_path)
       end
 
       it 'sets a personalized welcome message' do
@@ -71,7 +71,7 @@ RSpec.describe 'Registrations', type: :request do
         expect {
           post user_registration_path, params: valid_params
         }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
-          .with('UserMailer', 'welcome_email', 'deliver_now', args: [ kind_of(User) ])
+          .with('UserMailer', 'welcome_email', 'deliver_later', args: [ kind_of(User) ])
       end
 
       it 'sends confirmation email' do

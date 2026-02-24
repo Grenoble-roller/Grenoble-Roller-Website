@@ -74,6 +74,12 @@ if Rails.env.development?
   end
 end
 
+# === WHITELIST (Test) ===
+# Désactiver tous les throttles en test pour éviter 429 dans les specs
+if Rails.env.test?
+  Rack::Attack.safelist("allow-test") { |_req| true }
+end
+
 # === CUSTOM RESPONSE ===
 Rack::Attack.throttled_responder = lambda do |request|
   # Accéder à match_data depuis l'environnement Rack

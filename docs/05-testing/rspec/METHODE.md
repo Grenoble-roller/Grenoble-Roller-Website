@@ -14,10 +14,11 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
 
 ### Étape 1 : Analyser l'erreur
 
-1. **Exécuter le test spécifique** pour voir l'erreur exacte :
+1. **Exécuter le test spécifique** pour voir l'erreur exacte (avec `RAILS_ENV=test` si tu passes par le conteneur dev) :
    ```bash
-   docker exec grenoble-roller-dev bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb:XX
+   docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb:XX
    ```
+   Ou avec le nom du conteneur : `docker exec -e RAILS_ENV=test grenoble-roller-dev bundle exec rspec ./spec/...`
 
 2. **Copier l'erreur complète** dans le fichier d'erreur
 
@@ -62,7 +63,7 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
 2. **Exécuter le test** pour vérifier qu'il passe
 3. **Vérifier qu'on n'a pas cassé d'autres tests** :
    ```bash
-   docker exec grenoble-roller-dev bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb
+   docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb
    ```
 
 ### Étape 6 : Mettre à jour la documentation
