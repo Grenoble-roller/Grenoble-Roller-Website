@@ -292,23 +292,23 @@ RSpec.describe "Memberships", type: :request do
 
         it "bloque le renouvellement et redirige vers l'adhésion existante" do
           login_user(user)
+          # S'assurer que les deux adhésions existent avant de compter (expired + current saison)
+          expired_child_membership.id
+          current_child_membership.id
 
-          # Compter les adhésions avant la tentative
-          initial_count = Membership.count
-
-          post memberships_path, params: {
-            renew_from: expired_child_membership.id,
-            membership: {
-              category: 'standard',
-              is_child_membership: 'true',
-              child_first_name: expired_child_membership.child_first_name,
-              child_last_name: expired_child_membership.child_last_name,
-              child_date_of_birth: expired_child_membership.child_date_of_birth
+          expect do
+            post memberships_path, params: {
+              renew_from: expired_child_membership.id,
+              membership: {
+                category: 'standard',
+                is_child_membership: 'true',
+                child_first_name: expired_child_membership.child_first_name,
+                child_last_name: expired_child_membership.child_last_name,
+                child_date_of_birth: expired_child_membership.child_date_of_birth
+              }
             }
-          }
+          end.not_to change(Membership, :count)
 
-          # Aucune nouvelle adhésion créée
-          expect(Membership.count).to eq(initial_count)
           expect(response).to redirect_to(membership_path(current_child_membership))
           expect(flash[:notice]).to include("Une adhésion existe déjà")
         end
@@ -548,12 +548,25 @@ RSpec.describe "Memberships", type: :request do
   end
 
   describe "GET /memberships/new?type=child - Affichage message essai gratuit" do
+    # Profil parent complet requis pour GET new type=child (ensure_parent_profile_complete_for_child)
+    let(:user_with_complete_profile) do
+      create_user(
+        first_name: 'Alex',
+        last_name: 'Rider',
+        phone: '0612345678',
+        address: '1 rue Test',
+        postal_code: '38000',
+        city: 'Grenoble',
+        date_of_birth: Date.new(1985, 5, 15)
+      )
+    end
+
     context "quand l'enfant a déjà utilisé son essai gratuit" do
       let(:trial_membership) do
         create(:membership,
           :child,
           :with_health_questionnaire,
-          user: user,
+          user: user_with_complete_profile,
           status: :trial,
           season: Membership.current_season_name,
           child_first_name: 'Enfant',
@@ -564,20 +577,22 @@ RSpec.describe "Memberships", type: :request do
 
       let!(:attendance_with_trial) do
         create(:attendance,
-          user: user,
+          user: user_with_complete_profile,
           child_membership_id: trial_membership.id,
           free_trial_used: true
         )
       end
 
       it "n'affiche PAS le message d'essai gratuit" do
-        login_user(user)
-        # Simuler un renouvellement avec @old_membership
+        login_user(user_with_complete_profile)
+        # Simuler un renouvellement avec @old_membership (expirée = end_date dans le passé)
         old_membership = create(:membership,
           :child,
-          user: user,
+          user: user_with_complete_profile,
           status: :expired,
           season: '2024-2025',
+          start_date: Date.new(2024, 9, 1),
+          end_date: Date.new(2025, 8, 31),
           child_first_name: trial_membership.child_first_name,
           child_last_name: trial_membership.child_last_name,
           child_date_of_birth: trial_membership.child_date_of_birth
@@ -595,7 +610,7 @@ RSpec.describe "Memberships", type: :request do
         create(:membership,
           :child,
           :with_health_questionnaire,
-          user: user,
+          user: user_with_complete_profile,
           status: :trial,
           season: Membership.current_season_name,
           child_first_name: 'Enfant',
@@ -605,12 +620,14 @@ RSpec.describe "Memberships", type: :request do
       end
 
       it "affiche le message d'essai gratuit" do
-        login_user(user)
+        login_user(user_with_complete_profile)
         old_membership = create(:membership,
           :child,
-          user: user,
+          user: user_with_complete_profile,
           status: :expired,
           season: '2024-2025',
+          start_date: Date.new(2024, 9, 1),
+          end_date: Date.new(2025, 8, 31),
           child_first_name: trial_membership.child_first_name,
           child_last_name: trial_membership.child_last_name,
           child_date_of_birth: trial_membership.child_date_of_birth
