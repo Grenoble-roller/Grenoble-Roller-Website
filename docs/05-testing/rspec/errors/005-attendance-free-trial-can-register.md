@@ -32,8 +32,12 @@ Validations et logique inscription initiation (essai gratuit, adhesion enfant). 
 
 Lire spec et modele Attendance, verifier attentes vs regles metier.
 
+### Modifications appliquées
+- **Attendance** : message d’erreur `free_trial_used` pour enfant trial/pending → « L'essai gratuit est obligatoire pour les enfants non adhérents. Veuillez cocher la case correspondante. »
+- **attendance_spec** : contexte « when user has child membership » → créer la membership en `let!(:child_membership)` et appeler `build_attendance(..., child_membership_id: child_membership.id)` pour tester l’inscription **de l’enfant** (adhésion enfant active = pas d’essai gratuit requis).
+
 ---
 
 ## Statut
 
-À ANALYSER
+✅ **RÉSOLU** – 1) Message de validation `free_trial_used` aligné sur le spec/doc : « L'essai gratuit est obligatoire pour les **enfants non adhérents**. Veuillez cocher la case correspondante. » 2) Spec « allows registration with child membership » : l’inscription doit être **pour l’enfant** (child_membership_id) ; le spec passait uniquement user/event donc l’attendance était pour le parent (sans adhésion adulte). Ajout de `let!(:child_membership)` et passage de `child_membership_id` dans `build_attendance`. 37 examples, 0 failures.
