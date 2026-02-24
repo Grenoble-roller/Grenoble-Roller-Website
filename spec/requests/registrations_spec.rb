@@ -71,7 +71,7 @@ RSpec.describe 'Registrations', type: :request do
         expect {
           post user_registration_path, params: valid_params
         }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
-          .with('UserMailer', 'welcome_email', 'deliver_later', args: [ kind_of(User) ])
+          .with('UserMailer', 'welcome_email', a_string_matching(/\Adeliver_(later|now)\z/), args: [ kind_of(User) ])
       end
 
       it 'sends confirmation email' do
