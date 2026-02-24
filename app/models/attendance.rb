@@ -214,7 +214,7 @@ class Attendance < ApplicationRecord
         if child_membership&.trial? || child_membership&.pending?
           # Essai gratuit OBLIGATOIRE pour cet enfant (nominatif)
           unless free_trial_used
-            errors.add(:free_trial_used, "L'essai gratuit est obligatoire pour cet enfant. Veuillez cocher la case correspondante.")
+            errors.add(:free_trial_used, "L'essai gratuit est obligatoire pour les enfants non adhérents. Veuillez cocher la case correspondante.")
           end
 
           # Vérifier que cet enfant n'a pas déjà utilisé son essai gratuit (attendance active uniquement)

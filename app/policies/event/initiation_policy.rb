@@ -19,6 +19,7 @@ class Event::InitiationPolicy < ApplicationPolicy
 
   def attend?
     return false unless user
+    return false if record.past?
 
     # Utiliser les paramètres passés via l'initializer
     child_membership_id = child_membership_id_for_policy
@@ -100,8 +101,9 @@ class Event::InitiationPolicy < ApplicationPolicy
       # Pour un enfant : vérifier si cet enfant spécifique a déjà utilisé son essai gratuit
       !user.attendances.active.where(free_trial_used: true, child_membership_id: child_membership_id).exists?
     else
-      # Pour le parent : vérifier si le parent a déjà utilisé son essai gratuit (sans child_membership_id)
-      !user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+      # Pour le parent non-adhérent : ne pas bloquer ici ; le contrôleur gère le cas "essai déjà utilisé"
+      # et redirige vers initiation_path avec le message approprié (spec 007)
+      true
     end
   end
 

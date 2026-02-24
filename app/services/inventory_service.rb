@@ -14,7 +14,8 @@ class InventoryService
   # Déplacer du stock (ajustement, achat, etc.)
   def self.move_stock(variant, quantity, reason, reference = nil)
     inventory = variant.inventory || create_inventory(variant)
-    inventory.move_stock(quantity, reason, reference, Current.user)
+    user = (defined?(::Current) && ::Current.respond_to?(:user)) ? ::Current.user : nil
+    inventory.move_stock(quantity, reason, reference, user)
   end
 
   # Obtenir stock disponible

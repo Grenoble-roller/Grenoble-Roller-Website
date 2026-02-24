@@ -126,7 +126,6 @@ module Initiations
         # IMPORTANT : Cette vérification doit être faite AVANT de permettre l'inscription
         # même si allow_non_member_discovery est activé
         free_trial_already_used = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
-
         if free_trial_already_used
           # L'essai gratuit a déjà été utilisé : l'utilisateur ne peut plus s'inscrire sans adhésion
           # même si allow_non_member_discovery est activé
@@ -141,12 +140,9 @@ module Initiations
             redirect_to initiation_path(@initiation), alert: "Les places pour non-adhérents sont complètes. Adhérez à l'association pour continuer."
             return
           end
-          # Les non-adhérents peuvent s'inscrire dans les places découverte (pas besoin d'essai gratuit)
-          # L'essai gratuit n'est utilisé que si explicitement demandé
-          if params[:use_free_trial] == "1"
-            # L'essai gratuit n'a pas encore été utilisé (vérifié plus haut)
-            attendance.free_trial_used = true
-          end
+          # Règle : une seule initiation pour un non-adhérent (doc "une seule initiation gratuitement")
+          # Place découverte = même droit qu'essai gratuit → compter comme utilisation
+          attendance.free_trial_used = true
         else
           # Option non activée : comportement classique - adhésion ou essai gratuit requis
           use_free_trial = params[:use_free_trial].present? && (params[:use_free_trial] == "1" || params[:use_free_trial] == true)
