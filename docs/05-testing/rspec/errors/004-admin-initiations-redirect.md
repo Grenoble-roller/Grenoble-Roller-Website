@@ -35,13 +35,17 @@ Comportement redirect ou autorisation différent des attentes. Controller ou pol
 
 ## Type de Problème
 
-À trancher.
+**PROBLÈME DE LOGIQUE** – Comportement de redirect en cas de Pundit::NotAuthorizedError : le spec attendait `admin_panel_root_path`, l’app redirigeait vers `admin_panel_initiations_path`. Alignement app sur le spec.
+
+### Modifications appliquées
+- **BaseController** : `user_not_authorized` → `redirect_to admin_panel_root_path` (au lieu de `admin_panel_initiations_path`).
+- Impact vues : en cas de « non autorisé » (ex. organizer sur presences), l’utilisateur est renvoyé vers le tableau de bord admin (puis éventuellement vers root si level &lt; 60).
 
 ---
 
 ## Statut
 
-À ANALYSER
+✅ **RÉSOLU** – Après fiche 003, les exemples :54 et base_controller:18 passaient déjà (level 30 accès initiations). Correction appliquée : `user_not_authorized` dans BaseController redirige vers `admin_panel_root_path` au lieu de `admin_panel_initiations_path`, conformément au spec (presences / update_presences non autorisés → redirect admin root). 24 examples, 0 failures.
 
 ---
 

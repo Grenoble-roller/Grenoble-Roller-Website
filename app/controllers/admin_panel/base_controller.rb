@@ -42,7 +42,7 @@ module AdminPanel
 
     def user_not_authorized(exception)
       flash[:alert] = "Vous n'êtes pas autorisé"
-      redirect_to admin_panel_initiations_path
+      redirect_to admin_panel_root_path
     end
   end
 end
