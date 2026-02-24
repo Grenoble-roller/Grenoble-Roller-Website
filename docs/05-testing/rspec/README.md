@@ -13,7 +13,7 @@
 | [003](errors/003-initiation-policy-index-update.md) ✅ | InitiationPolicy index? / update? | initiation_policy_spec.rb (résolu) |
 | [004](errors/004-admin-initiations-redirect.md) ✅ | Admin initiations 302 et redirect | initiations_spec.rb, base_controller_spec.rb (résolu) |
 | [005](errors/005-attendance-free-trial-can-register.md) ✅ | Attendance free_trial / can_register | attendance_spec.rb (résolu) |
-| [006](errors/006-waitlist-notify-child-trial.md) | WaitlistEntry notify! child free trial | waitlist_entry_spec.rb:40 |
+| [006](errors/006-waitlist-notify-child-trial.md) ✅ | WaitlistEntry notify! child free trial | waitlist_entry_spec.rb (résolu) |
 | [007](errors/007-initiation-registration.md) | Initiation registration Free Trial, member_participants_count | initiation_registration_spec.rb:109, 1407, 1437 |
 | [008](errors/008-memberships-renew-child.md) | Memberships renouvellement enfant, GET new?type=child | memberships_spec.rb:293, 573, 607 |
 | [009](errors/009-products-variant-options.md) | Products variantes options catégorisation | products_spec.rb:41 |

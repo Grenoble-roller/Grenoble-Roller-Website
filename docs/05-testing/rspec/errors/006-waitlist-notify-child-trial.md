@@ -25,8 +25,11 @@ Comportement attendu : ne pas creer attendance si enfant a deja utilise essai gr
 
 Logique WaitlistEntry notify! et condition essai gratuit enfant. Spec ou modele.
 
+### Modifications appliquées
+- **WaitlistEntry#notify!** : après `build_pending_attendance`, si `attendance.free_trial_used` et `attendance.child_membership_id` sont présents, vérifier que l’enfant n’a pas déjà une attendance active avec `free_trial_used`. Si oui, retourner `false` sans créer d’attendance ni passer l’entry en `notified`.
+
 ---
 
 ## Statut
 
-À ANALYSER
+✅ **RÉSOLU** – Dans `WaitlistEntry#notify!`, avant de sauvegarder l’attendance, vérification ajoutée : si l’inscription utilise l’essai gratuit pour un enfant (`free_trial_used` + `child_membership_id`) et que cet enfant a déjà une attendance active avec `free_trial_used`, on ne crée pas l’attendance et on retourne `false`. Évite la violation de la contrainte unique `index_attendances_unique_free_trial_child_active` et respecte la règle métier « un seul essai gratuit par enfant ». 8 examples, 0 failures.
