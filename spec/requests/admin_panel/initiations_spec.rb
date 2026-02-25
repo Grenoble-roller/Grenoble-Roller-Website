@@ -201,12 +201,13 @@ RSpec.describe 'AdminPanel::Initiations', type: :request do
     context 'when user is organizer (level 40)' do
       let(:organizer_user) { create(:user, :organizer) }
 
-      before { sign_in organizer_user }
+      before { login_user organizer_user }
 
-      it 'allows access and redirects' do
+      it 'redirects to admin panel root with not authorized' do
         post notify_waitlist_admin_panel_initiation_path(initiation),
              params: { waitlist_entry_id: waitlist_entry.hashid }
-        expect(response).to redirect_to(admin_panel_initiation_path(initiation))
+        expect(response).to redirect_to(admin_panel_root_path)
+        expect(flash[:alert]).to be_present
       end
     end
   end
