@@ -183,4 +183,15 @@ RSpec.describe 'AdminPanel::Memberships', type: :request do
       expect(response).to redirect_to(admin_panel_memberships_path)
     end
   end
+
+  describe 'POST /admin-panel/memberships/:id/check_payment' do
+    let(:admin_user) { create(:user, :admin) }
+
+    before { sign_in admin_user }
+
+    it 'redirects to membership show' do
+      post check_payment_admin_panel_membership_path(target_membership)
+      expect(response).to redirect_to(admin_panel_membership_path(target_membership))
+    end
+  end
 end

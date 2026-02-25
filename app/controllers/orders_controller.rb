@@ -226,7 +226,9 @@ class OrdersController < ApplicationController
     end
 
     redirect_to order_path(@order), notice: "Commande annulée avec succès."
-  rescue => e
+  rescue ActiveRecord::RecordNotFound
+    raise
+  rescue StandardError => e
     redirect_to order_path(@order), alert: "Erreur lors de l'annulation : #{e.message}"
   end
 

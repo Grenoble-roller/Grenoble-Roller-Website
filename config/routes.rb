@@ -103,6 +103,7 @@ Rails.application.routes.draw do
     resources :memberships do
       member do
         patch :activate
+        post :check_payment
       end
     end
 
