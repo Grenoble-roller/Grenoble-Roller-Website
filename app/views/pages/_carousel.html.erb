@@ -4,17 +4,17 @@
 %>
 
 <% if carousels.any? %>
-  <div id="homepageCarousel" class="carousel slide carousel-fade" data-controller="carousel" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="false">
+  <div id="homepageCarousel" class="carousel slide carousel-fade hero-carousel" data-controller="carousel" role="region" aria-label="Carrousel des mises en avant">
     <!-- Indicateurs -->
     <% if carousels.count > 1 %>
       <div class="carousel-indicators">
         <% carousels.each_with_index do |carousel, index| %>
-          <button type="button" 
-                  data-bs-target="#homepageCarousel" 
-                  data-bs-slide-to="<%= index %>" 
+          <button type="button"
+                  data-bs-target="#homepageCarousel"
+                  data-bs-slide-to="<%= index %>"
                   class="<%= 'active' if index == 0 %>"
                   aria-current="<%= 'true' if index == 0 %>"
-                  aria-label="Slide <%= index + 1 %>"></button>
+                  aria-label="Slide <%= index + 1 %> : <%= carousel.title %>"></button>
         <% end %>
       </div>
     <% end %>
@@ -24,55 +24,34 @@
       <% carousels.each_with_index do |carousel, index| %>
         <div class="carousel-item <%= 'active' if index == 0 %>">
           <% if carousel.image.attached? %>
-            <% 
-              # Variant hero pour le carrousel (ratio 3.2:1, max 1920x600)
-              image_variant = carousel.image.variant(resize_to_limit: [1920, 600])
-            %>
-            <%= image_tag image_variant, 
-                class: "d-block w-100", 
-                alt: carousel.title,
-                style: "height: 60vh; min-height: 400px; object-fit: cover;" %>
+            <% image_variant = carousel.image.variant(resize_to_fill: [1900, 500]) %>
+            <% if carousel.link_url.present? %>
+              <%= link_to carousel.link_url,
+                  class: "d-block w-100 h-100 hero-carousel-link",
+                  target: carousel.link_url.start_with?('http') ? '_blank' : nil,
+                  rel: carousel.link_url.start_with?('http') ? 'noopener noreferrer' : nil,
+                  aria: { label: "Voir la suite" } do %>
+                <%= image_tag image_variant,
+                    class: "d-block w-100 hero-carousel-img",
+                    alt: carousel.title %>
+              <% end %>
+            <% else %>
+              <%= image_tag image_variant,
+                  class: "d-block w-100 hero-carousel-img",
+                  alt: carousel.title %>
+            <% end %>
           <% end %>
-          
-          <!-- Caption -->
-          <div class="carousel-caption d-none d-md-block">
-            <div class="container">
-              <div class="row justify-content-center">
-                <div class="col-lg-8 text-center">
-                  <h2 class="display-4 fw-bold mb-3 text-white">
-                    <%= carousel.title %>
-                  </h2>
-                  <% if carousel.subtitle.present? %>
-                    <p class="lead mb-4 text-white">
-                      <%= carousel.subtitle %>
-                    </p>
-                  <% end %>
-                  <% if carousel.link_url.present? %>
-                    <%= link_to carousel.link_url, 
-                        class: "btn btn-liquid-primary btn-lg", 
-                        target: carousel.link_url.start_with?('http') ? '_blank' : nil,
-                        rel: carousel.link_url.start_with?('http') ? 'noopener noreferrer' : nil do %>
-                      <i class="bi bi-arrow-right me-2"></i>
-                      En savoir plus
-                    <% end %>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       <% end %>
     </div>
 
     <!-- Contrôles -->
     <% if carousels.count > 1 %>
-      <button class="carousel-control-prev" type="button" data-bs-target="#homepageCarousel" data-bs-slide="prev">
+      <button class="carousel-control-prev" type="button" data-bs-target="#homepageCarousel" data-bs-slide="prev" aria-label="Slide précédente">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Précédent</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#homepageCarousel" data-bs-slide="next">
+      <button class="carousel-control-next" type="button" data-bs-target="#homepageCarousel" data-bs-slide="next" aria-label="Slide suivante">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Suivant</span>
       </button>
     <% end %>
   </div>

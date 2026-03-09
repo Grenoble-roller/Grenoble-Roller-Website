@@ -24,7 +24,7 @@
       </div>
       <div class="card-body p-0">
         <% if @carousel.image.attached? %>
-          <%= image_tag @carousel.image.variant(resize_to_limit: [1920, 600]), 
+          <%= image_tag @carousel.image.variant(resize_to_limit: [1900, 500]), 
               class: "img-fluid w-100", 
               style: "max-height: 400px; object-fit: cover;" %>
         <% else %>
@@ -51,7 +51,7 @@
           <dd class="col-sm-7"><strong><%= @carousel.title %></strong></dd>
 
           <% if @carousel.subtitle.present? %>
-            <dt class="col-sm-5">Sous-titre</dt>
+            <dt class="col-sm-5">Description</dt>
             <dd class="col-sm-7"><%= @carousel.subtitle %></dd>
           <% end %>
 
