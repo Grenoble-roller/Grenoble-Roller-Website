@@ -386,7 +386,7 @@ end
 - [ ] **Drag & drop batch** : endpoint `reorder` présent ; UI SortableJS non intégrée (réordonnancement par move_up/move_down uniquement)
 
 #### Affichage Public
-- [x] Partial `app/views/pages/_carousel.html.erb` : Bootstrap 5 carousel, `HomepageCarousel.active.ordered`, variant image 1900×500, captions, lien « En savoir plus », indicateurs et contrôles si > 1 slide
+- [x] Partial `app/views/pages/_carousel.html.erb` : Bootstrap 5 carousel, `HomepageCarousel.active.ordered`, variant image 1600×550, pas de caption (texte dans l’image), indicateurs et contrôles si > 1 slide
 - [x] Intégration dans `pages/index.html.erb` ; fallback hero banner si aucun slide actif
 
 #### Tests
@@ -721,7 +721,7 @@ Chaque ressource nécessite :
 - `sortable_controller.js` : Drag & drop réordonnement (si pas gem)
 
 ### Active Storage Variants
-- Carrousel hero : `resize_to_fill: [1900, 500]` (ratio 3,8:1)
+- Carrousel hero : `resize_to_fill: [1600, 550]` (ratio 32/11, taille affichée finale 1600×550)
 - Annonces : `resize_to_limit: [800, 400]` (ratio 2:1)
 - Galerie thumbnails : `resize_to_limit: [400, 300]` (ratio 4:3)
 - Témoignages avatar : `resize_to_limit: [100, 100]` (carré)

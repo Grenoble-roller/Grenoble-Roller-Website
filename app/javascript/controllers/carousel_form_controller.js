@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Live image preview for carousel slide form: original format + 1900×500 ratio preview
+// Live image preview for carousel slide form: original format + 1600×550 ratio preview
 export default class extends Controller {
   static targets = ["fileInput", "imagePreview", "imagePreviewPlaceholder", "ratioPreview", "ratioPreviewPlaceholder"]
 
@@ -56,7 +56,7 @@ export default class extends Controller {
   showRatioPreview(url) {
     if (this.hasRatioPreviewTarget) {
       this.ratioPreviewTarget.src = url
-      this.ratioPreviewTarget.alt = "Aperçu au ratio 1900×500"
+      this.ratioPreviewTarget.alt = "Aperçu au ratio 1600×550"
       this.ratioPreviewTarget.classList.remove("d-none")
       this.ratioPreviewTarget.style.display = "block"
       if (this.hasRatioPreviewPlaceholderTarget) {
