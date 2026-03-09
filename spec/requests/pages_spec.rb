@@ -10,7 +10,7 @@ RSpec.describe 'Pages', type: :request do
     end
 
     context 'when no active carousel slides exist' do
-      it 'returns 200 and shows fallback hero (banner-hero, La communauté Roller Grenobloise)' do
+      it 'returns 200 and shows hero (banner-hero, La communauté Roller Grenobloise)' do
         get '/'
         expect(response).to have_http_status(:ok)
         expect(response.body).to include('banner-hero')
@@ -18,9 +18,9 @@ RSpec.describe 'Pages', type: :request do
         expect(response.body).to include('Roller Grenobloise')
       end
 
-      it 'does not show the carousel' do
+      it 'does not show the announcement banner carousel' do
         get '/'
-        expect(response.body).not_to include('id="homepageCarousel"')
+        expect(response.body).not_to include('id="announcementCarousel"')
       end
     end
 
@@ -29,21 +29,22 @@ RSpec.describe 'Pages', type: :request do
         create(:homepage_carousel, :active, :with_image, title: 'Événements à venir', position: 1)
       end
 
-      it 'returns 200 and shows the carousel' do
+      it 'returns 200, shows hero and announcement banner carousel' do
         get '/'
         expect(response).to have_http_status(:ok)
-        expect(response.body).to include('id="homepageCarousel"')
-        expect(response.body).to include('hero-carousel')
+        expect(response.body).to include('banner-hero')
+        expect(response.body).to include('id="announcementCarousel"')
+        expect(response.body).to include('announcement-banner-carousel')
       end
 
-      it 'includes aria-label for the carousel region' do
+      it 'includes aria-label for the announcement carousel region' do
         get '/'
-        expect(response.body).to include('aria-label="Carrousel des mises en avant"')
+        expect(response.body).to include('aria-label="Annonces importantes"')
       end
 
-      it 'does not enable autoplay by default (no data-bs-ride="carousel")' do
+      it 'enables autoplay for the announcement carousel (data-bs-interval)' do
         get '/'
-        expect(response.body).not_to include('data-bs-ride="carousel"')
+        expect(response.body).to include('data-bs-interval="6000"')
       end
 
       it 'shows only active slides (active slide title in body)' do

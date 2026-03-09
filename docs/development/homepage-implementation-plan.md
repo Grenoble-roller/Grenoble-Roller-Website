@@ -9,15 +9,15 @@ tags: ["homepage", "implementation", "benevoles", "autonomie", "admin"]
 
 # Plan d'Implémentation Page d'Accueil - Grenoble Roller
 
-**Dernière mise à jour** : 2026-03-09 (Direction unique : Option C « bannière à slides » ; capitalisation sur HomepageCarousel existant ; pas de modification dans l’app)
+**Dernière mise à jour** : 2026-03-09 (Implémentation réalisée : hero fixe `_hero.html.erb`, bannière annonces 16:9 `_announcement_banner.html.erb`, hiérarchie Hero → Bannière → Prochain RDV → À propos → Pourquoi → Chiffres.)
 
 Ce document classe les éléments de la réponse Perplexity par **pertinence** et **faisabilité**, en tenant compte de ce qui existe déjà dans l'application. **TOUTE** la gestion admin est détaillée pour chaque élément.
 
 ---
 
-## 📋 Mode Réflexion — Direction unique : Option C « bannière à slides » (sans modification app)
+## 📋 Mode Réflexion — Direction unique : Option C « bannière à slides »
 
-*Ce bloc documente la direction retenue. Aucun changement de code n’est appliqué tant que l’implémentation n’est pas lancée. Option A (bande + mini-list) et Option B (card slider horizontal) sont abandonnées ; on capitalise sur l’écosystème HomepageCarousel existant.*
+*Ce bloc documente la direction retenue. **Implémentation réalisée** : hero fixe, partial `_announcement_banner.html.erb` (16:9, variant 1200×675), ordre des sections appliqué dans `pages/index.html.erb`. Option A (bande + mini-list) et Option B (card slider horizontal) sont abandonnées.*
 
 **Clarification** : on **garde le hero** (bloc pitch + CTA en tête de page — aujourd’hui c’est le “fallback” quand il n’y a pas de slides). On **déplace** le système de carousel actuel : il ne fait plus le hero, il devient la **bannière annonces** (section dédiée sous le hero, 16:9, hauteur limitée). Même modèle `HomepageCarousel`, même AdminPanel ; seul le placement et le format d’affichage changent.
 
@@ -880,4 +880,4 @@ Chaque ressource nécessite :
 
 ---
 
-**Dernière mise à jour** : 2026-03-09 (Direction unique : Option C « bannière à slides » ; capitalisation sur HomepageCarousel existant ; pas de modification dans l’app)
+**Dernière mise à jour** : 2026-03-09 (Implémentation réalisée : hero fixe, bannière 16:9, hiérarchie de page en place.)

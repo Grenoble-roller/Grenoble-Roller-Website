@@ -1,35 +1,13 @@
 <% content_for :description, "Découvrez la communauté Roller Grenobloise ! Participez à des événements, partagez vos sorties et connectez-vous avec d'autres riders à Grenoble. Randonnées urbaines, cours d'initiation, événements à thème." %>
 
-<!-- Carrousel Hero -->
-<%= render 'pages/carousel' %>
+<!-- Hero (pitch + CTA) -->
+<%= render 'pages/hero' %>
 
 <!-- Ligne de séparation blanche (pleine largeur) -->
 <div style="height: 2px; background: #ffffff; width: 100%;"></div>
 
-<!-- Section À propos -->
-<section class="py-5 section-alt">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8 text-center">
-        <h2 class="h3 fw-bold mb-3">À propos de Grenoble Roller</h2>
-        
-        <!-- Ligne de séparation blanche -->
-        <div style="height: 2px; background: #ffffff; width: 100%; max-width: 200px; margin: 0 auto 1.5rem;"></div>
-        
-        <p class="lead text-body-secondary mb-4">
-          Association à but non lucratif, nous organisons des randonnées urbaines 
-          encadrées ainsi que des cours de roller pour favoriser le lien social dans un 
-          esprit convivial et sportif.
-          Rejoignez une communauté passionnée depuis plus de 20 ans !
-        </p>
-        <%= link_to about_path, class: "btn btn-liquid-primary" do %>
-          <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
-          En savoir plus sur l'association
-        <% end %>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- Bannière annonces -->
+<%= render 'pages/announcement_banner' %>
 
 <!-- Ligne de séparation blanche (pleine largeur) -->
 <div style="height: 2px; background: #ffffff; width: 100%;"></div>
@@ -303,6 +281,37 @@
     </div>
   <% end %>
 </section>
+
+<!-- Ligne de séparation blanche (pleine largeur) -->
+<div style="height: 2px; background: #ffffff; width: 100%;"></div>
+
+<!-- Section À propos -->
+<section class="py-5 section-alt">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center">
+        <h2 class="h3 fw-bold mb-3">À propos de Grenoble Roller</h2>
+        
+        <!-- Ligne de séparation blanche -->
+        <div style="height: 2px; background: #ffffff; width: 100%; max-width: 200px; margin: 0 auto 1.5rem;"></div>
+        
+        <p class="lead text-body-secondary mb-4">
+          Association à but non lucratif, nous organisons des randonnées urbaines 
+          encadrées ainsi que des cours de roller pour favoriser le lien social dans un 
+          esprit convivial et sportif.
+          Rejoignez une communauté passionnée depuis plus de 20 ans !
+        </p>
+        <%= link_to about_path, class: "btn btn-liquid-primary" do %>
+          <i class="bi bi-arrow-right-circle me-2" aria-hidden="true"></i>
+          En savoir plus sur l'association
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Ligne de séparation blanche (pleine largeur) -->
+<div style="height: 2px; background: #ffffff; width: 100%;"></div>
 
 <!-- Pourquoi nous rejoindre ? (version minimaliste) -->
 <section class="py-4 mb-4">

@@ -24,7 +24,7 @@
       </div>
       <div class="card-body p-0">
         <% if @carousel.image.attached? %>
-          <%= image_tag @carousel.image.variant(resize_to_fill: [1600, 550]), 
+          <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675]), 
               class: "img-fluid w-100", 
               style: "max-height: 400px; object-fit: cover;" %>
         <% else %>

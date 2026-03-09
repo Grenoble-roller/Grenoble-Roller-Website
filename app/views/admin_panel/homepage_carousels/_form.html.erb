@@ -148,7 +148,7 @@
                 required: @carousel.new_record?,
                 data: { carousel_form_target: "fileInput" } %>
             <div class="form-text">
-              Image au format d’origine ci-dessus. Bandeau hero 1600×550 (ratio 32/11) : intégrez tout le texte dans l’image.<br>
+              Bannière annonces 16:9 (recommandé 1920×1080 ou 1920×1005 ; le site affiche en 1200×675). Contenu centré, idéalement &lt; 20 % de texte dans l’image.<br>
               Formats : JPG, PNG, WebP. L’aperçu ci-dessous affiche le rendu réel avant publication.
             </div>
           </div>
@@ -162,15 +162,15 @@
         </div>
       </div>
 
-      <!-- Aperçu au ratio réel 1600×550 -->
+      <!-- Aperçu au ratio réel 16:9 -->
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-header">
-          <h5 class="mb-0">Aperçu bandeau (1600×550)</h5>
+          <h5 class="mb-0">Aperçu bannière (16:9)</h5>
         </div>
         <div class="card-body p-0">
-          <div class="carousel-form-ratio-preview rounded overflow-hidden position-relative" style="aspect-ratio: 1600/550; background: #eee;">
+          <div class="carousel-form-ratio-preview rounded overflow-hidden position-relative" style="aspect-ratio: 16/9; background: #eee;">
             <% if @carousel.image.attached? %>
-              <%= image_tag @carousel.image.variant(resize_to_fill: [1600, 550]),
+              <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675]),
                   data: { carousel_form_target: "ratioPreview" },
                   class: "w-100 h-100 position-absolute top-0 start-0",
                   style: "object-fit: cover; object-position: center;" %>
