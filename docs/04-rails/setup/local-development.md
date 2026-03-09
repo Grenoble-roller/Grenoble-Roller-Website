@@ -78,9 +78,9 @@ docker compose -f ops/dev/docker-compose.yml run --rm \
 
 After running `db:seed`, you can log in with:
 
-- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX123`
-- **Admin**: `admin@roller.com` / `admin123`
-- **Test Users**: `client1@example.com` to `client5@example.com` / `password123`
+- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX12345678`
+- **Admin**: `admin@roller.com` / `admin12345678`
+- **Test Users**: 50 users créés par le seed / `password12345678` (mot de passe minimum 12 caractères)
 
 ## Development Workflow
 

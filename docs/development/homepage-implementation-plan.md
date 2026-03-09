@@ -9,7 +9,7 @@ tags: ["homepage", "implementation", "benevoles", "autonomie", "admin"]
 
 # Plan d'Implémentation Page d'Accueil - Grenoble Roller
 
-**Dernière mise à jour** : 2025-01-30 (Complété avec TOUS les détails de gestion admin)
+**Dernière mise à jour** : 2026-03-09 (État carousel aligné avec l’app : implémenté ; annonces/galerie/témoignages non faits)
 
 Ce document classe les éléments de la réponse Perplexity par **pertinence** et **faisabilité**, en tenant compte de ce qui existe déjà dans l'application. **TOUTE** la gestion admin est détaillée pour chaque élément.
 
@@ -28,11 +28,16 @@ Ce document classe les éléments de la réponse Perplexity par **pertinence** e
 - **PagesController** : `@highlighted_event` déjà chargé
 
 ### ❌ Ce qui N'Existe Pas Encore
-- Modèles pour contenu homepage dynamique
-- Interface bénévoles pour gérer contenu homepage
 - Galerie photos événements passés
-- Système d'annonces/actualités
+- Système d'annonces/actualités (HomepageAnnouncement)
 - Témoignages membres
+
+### ✅ Carrousel Page d'Accueil (HomepageCarousel) — IMPLÉMENTÉ
+- Modèle `HomepageCarousel`, migrations (table + position unique), Active Storage `image`
+- AdminPanel complet : CRUD, publish/unpublish, move_up/move_down, reorder (endpoint)
+- Policy ORGANIZER+ (level ≥ 40) ; accès BaseController level ≥ 30
+- Partial `pages/_carousel.html.erb` (Bootstrap 5, actif si slides actifs), fallback hero si vide
+- Menu admin « Page d'Accueil » > « Carrousel ». Pas de drag & drop batch dans l’UI (boutons monter/descendre uniquement).
 
 ---
 
@@ -67,30 +72,19 @@ Ce document classe les éléments de la réponse Perplexity par **pertinence** e
 
 ---
 
-#### 1.2 Carrousel Hero (HomepageCarousel)
+#### 1.2 Carrousel Hero (HomepageCarousel) — ✅ IMPLÉMENTÉ
 **Pertinence** : ⭐⭐⭐⭐ (Visibilité immédiate)  
 **Faisabilité** : ⭐⭐⭐⭐⭐ (Bootstrap carousel natif)
 
-**Pourquoi prioritaire** :
-- Mise en avant visuelle des événements/actualités
-- Carrousel Bootstrap 5 déjà disponible
-- Impact visuel fort
-
-**Ce qui existe déjà** :
-- ✅ Bootstrap 5 carousel component
-- ✅ Active Storage (variants images)
-- ✅ Event.cover_image comme source possible
-- ✅ Design system "liquid"
-
-**À créer** :
-- Modèle `HomepageCarousel`
-- Migration (title, subtitle, image, link_url, position, published_at, expires_at)
-- Contrôleur `AdminPanel::HomepageCarouselsController`
-- Vue avec drag & drop pour réordonner (gem `ranked-model` ou Stimulus)
-- Partial `pages/_carousel.html.erb` (Bootstrap carousel)
-- Intégration dans hero section
-
-**Estimation** : 6-8h (avec drag & drop)
+**État actuel (vérifié)** :
+- ✅ Modèle `HomepageCarousel` (title, subtitle, link_url, position, published, published_at, expires_at, image via Active Storage)
+- ✅ Migrations : `create_homepage_carousels`, `add_unique_position_to_homepage_carousels`
+- ✅ Contrôleur `AdminPanel::HomepageCarouselsController` : index (Ransack, Pagy), show, new, create, edit, update, destroy, publish, unpublish, move_up, move_down, reorder
+- ✅ Policy `AdminPanel::HomepageCarouselPolicy` (level ≥ 40) ; accès admin level ≥ 30 dans BaseController
+- ✅ Routes `resources :homepage_carousels` avec member (publish, unpublish, move_up, move_down) et collection (reorder)
+- ✅ Vues admin : index (filtres, grille, boutons monter/descendre), show, new, edit, _form
+- ✅ Partial `pages/_carousel.html.erb` (Bootstrap 5, `HomepageCarousel.active.ordered`), intégré dans `pages/index` ; fallback hero si aucun slide actif
+- ⚠️ Réordonnancement : move_up/move_down en place ; pas d’UI drag & drop batch (endpoint `reorder` présent, SortableJS non intégré)
 
 ---
 
@@ -375,112 +369,31 @@ end
 
 ---
 
-### ✅ 2. Carrousel Hero (HomepageCarousel)
+### ✅ 2. Carrousel Hero (HomepageCarousel) — IMPLÉMENTÉ
+
+**Doc dédiée (liens code, routes, vues)** : [homepage-carousel.md](./homepage-carousel.md).
 
 #### Modèle & Migration
-- [ ] Migration `create_homepage_carousels`
-  - `title` (string, required)
-  - `subtitle` (string, optional)
-  - `image` (Active Storage, required)
-  - `link_url` (string, optional)
-  - `position` (integer, pour ordre)
-  - `published` (boolean, default: false)
-  - `published_at` (datetime)
-  - `expires_at` (datetime, optional)
-  - `created_at`, `updated_at`
-
-- [ ] Modèle `HomepageCarousel`
-  - `has_one_attached :image`
-  - Gem `ranked-model` pour position
-  - Scopes : `.published`, `.active`, `.ordered`
-  - Validations : title, image présents
+- [x] Migration `create_homepage_carousels` (title, subtitle, link_url, position, published, published_at, expires_at)
+- [x] Migration `add_unique_position_to_homepage_carousels` (index unique sur position)
+- [x] Modèle `HomepageCarousel` : `has_one_attached :image`, scopes `published`, `active`, `ordered`, validations (title, position unique, image si published), Ransack, callbacks (set_published_at, set_default_position)
 
 #### AdminPanel - Gestion Complète
-
-**Routes** (`config/routes.rb`) :
-```ruby
-namespace :admin_panel do
-  resources :homepage_carousels, path: "homepage-carousels" do
-    member do
-      post :publish
-      post :unpublish
-      patch :move_up
-      patch :move_down
-    end
-    collection do
-      patch :reorder  # Pour drag & drop batch
-    end
-  end
-end
-```
-
-**Contrôleur** (`app/controllers/admin_panel/homepage_carousels_controller.rb`) :
-- [ ] `index` : Liste ordonnée par position
-  - Grid avec preview thumbnails (200x100)
-  - Indicateur position (1, 2, 3...)
-  - Statut (publié/brouillon)
-  - Actions : éditer, publier/dépublier, monter/descendre, supprimer
-- [ ] `show` : Aperçu avec image complète
-- [ ] `new` : Formulaire création
-- [ ] `create` : Création avec position auto (dernier + 1)
-- [ ] `edit` : Formulaire édition
-- [ ] `update` : Mise à jour
-- [ ] `destroy` : Suppression avec réordonnement auto
-- [ ] `publish` / `unpublish` : Actions rapides
-- [ ] `move_up` / `move_down` : Réordonnement unitaire
-- [ ] `reorder` : Réordonnement batch (POST avec array de IDs)
-
-**Policy Pundit** (`app/policies/admin_panel/homepage_carousel_policy.rb`) :
-- [ ] Hérite de `AdminPanel::BasePolicy`
-- [ ] Permissions : level >= 40 (ORGANIZER+)
-- [ ] Mêmes méthodes que Announcement
-
-**Vues AdminPanel** :
-- [ ] `index.html.erb` :
-  - Breadcrumb
-  - Header avec titre + bouton "Nouveau slide"
-  - Grid responsive (2-3 colonnes desktop)
-  - Card par slide avec :
-    - Image preview (thumbnail)
-    - Titre + sous-titre
-    - Badge position
-    - Badge statut
-    - Actions (drag handle, éditer, publier/dépublier, supprimer)
-  - Zone drag & drop (Stimulus + SortableJS)
-  - Message si aucun slide
-- [ ] `show.html.erb` : Aperçu complet avec image hero
-- [ ] `new.html.erb` + `edit.html.erb` : Formulaire
-- [ ] `_form.html.erb` :
-  - Champs : titre, sous-titre, image (required), lien URL, dates
-  - Preview image (si uploadée)
-  - Validation : image requise
-
-**Stimulus Controller** (`app/javascript/controllers/sortable_controller.js`) :
-- [ ] Gestion drag & drop avec SortableJS
-- [ ] Envoi POST `/admin-panel/homepage-carousels/reorder` avec array IDs
-- [ ] Feedback visuel (loading, success)
-
-**Tests** :
-- [ ] Tests modèle (position, réordonnement)
-- [ ] Tests contrôleur (CRUD, reorder, move_up/down)
-- [ ] Tests permissions
-- [ ] Tests Stimulus (drag & drop)
+- [x] **Routes** : `resources :homepage_carousels` avec member (publish, unpublish, move_up, move_down) et collection (reorder)
+- [x] **Contrôleur** : index (Ransack, filtre published, Pagy), show, new, create, edit, update, destroy, publish, unpublish, move_up, move_down, reorder
+- [x] **Policy** : `AdminPanel::HomepageCarouselPolicy` (level ≥ 40), Scope pour organizer_user
+- [x] **Vues** : index (breadcrumb, filtre, grille cards avec thumbnail, position, statut, actions éditer / publier-dépublier / monter-descendre / supprimer), show, new, edit, _form (titre, sous-titre, image, link_url, position, published, published_at, expires_at)
+- [ ] **Drag & drop batch** : endpoint `reorder` présent ; UI SortableJS non intégrée (réordonnancement par move_up/move_down uniquement)
 
 #### Affichage Public
-- [ ] Partial `app/views/pages/_carousel.html.erb`
-  - Bootstrap 5 carousel
-  - Auto-play (5sec)
-  - Pause on hover
-  - Dots + prev/next
-  - Captions (titre + sous-titre)
-
-- [ ] Intégration `pages/index.html.erb`
-  - Remplacer ou compléter hero banner actuel
+- [x] Partial `app/views/pages/_carousel.html.erb` : Bootstrap 5 carousel, `HomepageCarousel.active.ordered`, variant image 1920x600, captions, lien « En savoir plus », indicateurs et contrôles si > 1 slide
+- [x] Intégration dans `pages/index.html.erb` ; fallback hero banner si aucun slide actif
 
 #### Tests
-- [ ] Tests modèle (validations, scopes, position)
-- [ ] Tests contrôleur (CRUD, reorder, permissions)
-- [ ] Tests vues (carousel fonctionnel)
+- [x] Request spec : GET index (admin, organizer, non connecté), GET new
+- [x] Policy spec : `AdminPanel::HomepageCarouselPolicy`
+- [ ] Request spec : CRUD complet, publish/unpublish, move_up/move_down, reorder (lacune couverture, voir `docs/05-testing/rspec/coverage-gaps.md`)
+- [ ] Model spec : optionnel (validations, scopes)
 
 ---
 
@@ -858,4 +771,4 @@ Chaque ressource nécessite :
 
 ---
 
-**Dernière mise à jour** : 2025-01-30 (Complété avec TOUS les détails de gestion admin)
+**Dernière mise à jour** : 2026-03-09 (État carousel aligné avec l’app : implémenté ; annonces/galerie/témoignages non faits)
