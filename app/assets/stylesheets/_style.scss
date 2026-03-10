@@ -2230,12 +2230,12 @@
       color: inherit;
     }
 
-    /* Indicateurs: point 3×3px visible — annuler la règle globale button { min-width/min-height: 44px } */
+    /* Indicateurs: point 6×6px visible — annuler la règle globale button { min-width/min-height: 44px } */
     .carousel-indicators [data-bs-target] {
       min-width: 0;
       min-height: 0;
-      width: 3px;
-      height: 3px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       border: none;
       padding: 21px; /* zone tactile 45×45px desktop */
@@ -2253,13 +2253,13 @@
       background-color: var(--gr-primary, #007bff);
     }
 
-    /* Mobile : puces toutes petites (flèches + tap au centre pour changer de slide) */
+    /* Mobile : puces 4×4px (flèches + tap au centre pour changer de slide) */
     @media (max-width: 767px) {
       .carousel-indicators [data-bs-target] {
         min-width: 0;
         min-height: 0;
-        width: 2px;
-        height: 2px;
+        width: 4px;
+        height: 4px;
         padding: 4px; /* point discret, pas de grosse zone tactile */
         margin-left: 3px;
         margin-right: 3px;
@@ -2312,8 +2312,8 @@
     .carousel-indicators [data-bs-target] {
       min-width: 0;
       min-height: 0;
-      width: 3px;
-      height: 3px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       border: none;
       padding: 21px;
@@ -2335,8 +2335,8 @@
       .carousel-indicators [data-bs-target] {
         min-width: 0;
         min-height: 0;
-        width: 2px;
-        height: 2px;
+        width: 4px;
+        height: 4px;
         padding: 4px;
         margin-left: 3px;
         margin-right: 3px;
