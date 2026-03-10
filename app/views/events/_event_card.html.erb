@@ -1,4 +1,5 @@
-<div class="col-12 col-sm-6 col-lg-4<%= ' position-relative' if local_assigns[:is_first] %>">
+<% column_class = local_assigns.fetch(:column_class, 'col-12 col-sm-6 col-lg-4') %>
+<div class="<%= column_class %><%= ' position-relative' if local_assigns[:is_first] %>">
   <% if local_assigns[:is_first] %>
     <!-- Badge "Prochain" sur le premier événement - aligné avec le badge de date -->
     <span class="badge bg-warning text-dark position-absolute" style="left: 2.5rem; z-index: 10;">
