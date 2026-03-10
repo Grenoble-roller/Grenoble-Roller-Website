@@ -195,14 +195,14 @@ class Event::InitiationPolicy < ApplicationPolicy
       if admin? || moderator?
         scope.all
       elsif instructor?
-        # Instructeurs voient leurs initiations + les initiations publiées
-        scope.where(creator_user_id: user.id).or(scope.published)
+        # Instructeurs voient leurs initiations + les initiations visibles (publiées + annulées)
+        scope.where(creator_user_id: user.id).or(scope.visible)
       elsif user.present?
-        # Utilisateurs connectés voient les initiations publiées + leurs propres initiations
-        scope.published.or(scope.where(creator_user_id: user.id))
+        # Utilisateurs connectés voient les initiations visibles (publiées/annulées) + leurs propres initiations
+        scope.visible.or(scope.where(creator_user_id: user.id))
       else
-        # Utilisateurs non connectés voient les initiations publiées
-        scope.published
+        # Utilisateurs non connectés voient les initiations visibles (publiées + annulées, comme pour les événements)
+        scope.visible
       end
     end
 

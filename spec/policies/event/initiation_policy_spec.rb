@@ -41,4 +41,51 @@ RSpec.describe Event::InitiationPolicy do
       expect(policy.attend?).to be(false)
     end
   end
+
+  describe 'Scope' do
+    it 'includes published and canceled initiations for guest users' do
+      published_initiation = create_event(
+        type: 'Event::Initiation',
+        status: 'published',
+        title: 'Publiée',
+        max_participants: 30,
+        allow_non_member_discovery: false
+      )
+      canceled_initiation = create_event(
+        type: 'Event::Initiation',
+        status: 'canceled',
+        title: 'Annulée',
+        max_participants: 30,
+        allow_non_member_discovery: false
+      )
+
+      scope = described_class::Scope.new(nil, Event::Initiation.all).resolve
+
+      expect(scope).to include(published_initiation)
+      expect(scope).to include(canceled_initiation)
+    end
+
+    it 'includes published and canceled initiations for normal users' do
+      user = create_user(role: user_role)
+      published_initiation = create_event(
+        type: 'Event::Initiation',
+        status: 'published',
+        title: 'Publiée',
+        max_participants: 30,
+        allow_non_member_discovery: false
+      )
+      canceled_initiation = create_event(
+        type: 'Event::Initiation',
+        status: 'canceled',
+        title: 'Annulée',
+        max_participants: 30,
+        allow_non_member_discovery: false
+      )
+
+      scope = described_class::Scope.new(user, Event::Initiation.all).resolve
+
+      expect(scope).to include(published_initiation)
+      expect(scope).to include(canceled_initiation)
+    end
+  end
 end
