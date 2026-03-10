@@ -9,7 +9,8 @@ class Event::Initiation < Event
 
   # description : assouplir la validation (minimum 10 caractères au lieu de 20)
   # La validation du parent est désactivée avec unless: :initiation?, on redéfinit ici
-  validates :description, presence: true, length: { minimum: 10, maximum: 1000 }
+  # Max 5000: same as Event; allows programme, consignes, links; doc initiations-specification-finale
+  validates :description, presence: true, length: { minimum: 10, maximum: 5000 }
 
   # Validations spécifiques
   validates :max_participants, presence: true, numericality: { greater_than: 0 }

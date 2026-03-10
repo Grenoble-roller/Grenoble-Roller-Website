@@ -1420,6 +1420,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor  # same as Membership#child_age
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1436,9 +1439,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo Léo Manon Nathan Inès Ethan Zoé Noah Lilou].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? current_season_start : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? current_season_start : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1460,6 +1463,9 @@ if regular_users_for_memberships.any?
     child_birth_year = previous_season_start.year - child_age_last_year
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1476,9 +1482,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Léo Manon Nathan Inès Ethan Zoé Noah Lilou Emma Lucas Sophie Max].sample,
       child_last_name: user.last_name || "Martin",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age_last_year < 16,
-      parent_authorization_date: child_age_last_year < 16 ? previous_season_start : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? previous_season_start : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1499,6 +1505,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1515,9 +1524,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? Date.today : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? Date.current : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1538,6 +1547,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1554,9 +1566,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? Date.today : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? Date.current : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,

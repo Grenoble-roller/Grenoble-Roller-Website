@@ -9,7 +9,7 @@ tags: ["homepage", "ux", "benevoles", "autonomie", "communication"]
 
 # Réflexion Page d'Accueil - Grenoble Roller
 
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-03-09 (Checklist carousel alignée avec l’état réel : AdminPanel implémenté.)
 
 ---
 
@@ -120,41 +120,11 @@ Merci de proposer des solutions concrètes, des exemples d'implémentation Rails
 - ✅ Dates de publication (début/fin)
 - ✅ Visibilité par rôle (public, membres, etc.)
 
-**Implémentation** :
-```ruby
-# Modèle
-class HomepageCarousel < ApplicationRecord
-  has_one_attached :image
-  validates :title, :image, presence: true
-  scope :active, -> { where('start_at <= ? AND (end_at IS NULL OR end_at >= ?)', Time.current, Time.current) }
-  scope :ordered, -> { order(:position, :created_at) }
-end
+**Implémentation (état actuel)** :
+- Modèle `HomepageCarousel` : `has_one_attached :image`, champs title, subtitle, link_url, position, published, published_at, expires_at. Scopes `published`, `active`, `ordered`. Validations : title, position unique, image requise si published.
+- Admin : **AdminPanel** (pas ActiveAdmin) : `AdminPanel::HomepageCarouselsController` avec CRUD, publish/unpublish, move_up/move_down, reorder. Policy level ≥ 40. Menu « Page d'Accueil » > « Carrousel ».
 
-# ActiveAdmin
-ActiveAdmin.register HomepageCarousel do
-  permit_params :title, :description, :link_url, :image, :position, :start_at, :end_at, :visible_to
-  
-  # Interface drag & drop pour réordonner
-end
-```
-
-**Vue** :
-```erb
-<!-- Carrousel Bootstrap 5 -->
-<div id="homepageCarousel" class="carousel slide" data-bs-ride="carousel">
-  <% @carousel_items.each_with_index do |item, index| %>
-    <div class="carousel-item <%= 'active' if index == 0 %>">
-      <%= image_tag item.image, class: "d-block w-100", alt: item.title %>
-      <div class="carousel-caption">
-        <h3><%= item.title %></h3>
-        <% if item.link_url.present? %>
-          <%= link_to "En savoir plus", item.link_url, class: "btn btn-light" %>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
-</div>
-```
+**Vue** : Partial `app/views/pages/_carousel.html.erb` (Bootstrap 5, `HomepageCarousel.active.ordered`), intégrée dans `pages/index` ; fallback hero si aucun slide actif.
 
 #### Option B : Section "Annonces" avec Cards
 **Description** : Section d'annonces/actualités avec cards cliquables
@@ -237,15 +207,11 @@ end
 
 ### Modèles à Créer
 
-1. **HomepageCarousel** (ou **HomepageSlide**)
-   - `title` (string)
-   - `description` (text, optionnel)
+1. **HomepageCarousel** — **IMPLÉMENTÉ**
+   - `title` (string), `subtitle` (string), `link_url` (string)
    - `image` (Active Storage)
-   - `link_url` (string, optionnel)
-   - `position` (integer, pour ordre)
-   - `start_at` (datetime)
-   - `end_at` (datetime, optionnel)
-   - `visible_to` (enum: public, members_only)
+   - `position` (integer, unique), `published` (boolean), `published_at`, `expires_at`
+   - Scopes : `published`, `active`, `ordered`
 
 2. **HomepageAnnouncement** (ou **NewsItem**)
    - `title` (string)
@@ -281,65 +247,67 @@ end
   - `_gallery.html.erb` : Galerie photos
   - `_testimonials.html.erb` : Témoignages
 
-### ActiveAdmin
+### Admin (AdminPanel)
 
-- Interfaces d'administration pour chaque modèle
-- Permissions : ORGANIZER (level 40) et plus peuvent créer/modifier
-- Interface drag & drop pour réordonner (gem `ranked-model`)
+- **Carousel** : AdminPanel implémenté (CRUD, publish/unpublish, move_up/move_down ; pas de drag & drop batch dans l’UI).
+- Permissions : ORGANIZER (level 40) et plus pour le carousel.
+- Annonces / Témoignages : à implémenter dans AdminPanel.
 
 ---
 
 ## 🎯 Priorités d'Implémentation
 
 ### Phase 1 : Communication Bénévoles (Priorité Haute)
-1. ✅ Créer modèle `HomepageCarousel`
-2. ✅ Interface ActiveAdmin pour gestion carrousel
-3. ✅ Intégrer carrousel dans homepage
-4. ✅ Permissions (ORGANIZER+ peuvent gérer)
+1. ✅ Créer modèle `HomepageCarousel` — **FAIT**
+2. ✅ Interface AdminPanel pour gestion carrousel (CRUD, publish/unpublish, move_up/move_down) — **FAIT**
+3. ✅ Intégrer carrousel dans homepage (`pages/_carousel.html.erb`) — **FAIT**
+4. ✅ Permissions (ORGANIZER+ level ≥ 40) — **FAIT**
 
 ### Phase 2 : Contenu Dynamique (Priorité Moyenne)
-1. ✅ Créer modèle `HomepageAnnouncement`
-2. ✅ Section annonces sur homepage
-3. ✅ Interface admin simple
+1. ❌ Créer modèle `HomepageAnnouncement` — **NON FAIT**
+2. ❌ Section annonces sur homepage — **NON FAIT**
+3. ❌ Interface admin simple — **NON FAIT**
 
 ### Phase 3 : Engagement Communautaire (Priorité Basse)
-1. ✅ Galerie photos événements passés
-2. ✅ Témoignages membres
-3. ✅ Section actualités
+1. ❌ Galerie photos événements passés — **NON FAIT**
+2. ❌ Témoignages membres — **NON FAIT**
+3. ❌ Section actualités — **NON FAIT**
+
+---
+
+**Doc dédiée carrousel (liens vers le code, routes, vues)** : [homepage-carousel.md](./homepage-carousel.md).
 
 ---
 
 ## 📝 Checklist Implémentation
 
 ### Modèles & Migrations
-- [ ] Migration `create_homepage_carousels`
+- [x] Migration `create_homepage_carousels` (+ `add_unique_position_to_homepage_carousels`)
 - [ ] Migration `create_homepage_announcements`
 - [ ] Migration `create_testimonials`
-- [ ] Modèles avec validations
-- [ ] Scopes (published, active, ordered)
+- [x] Modèle `HomepageCarousel` avec validations et scopes (published, active, ordered)
 
-### ActiveAdmin
-- [ ] Interface `HomepageCarousel`
+### Admin (AdminPanel, pas ActiveAdmin)
+- [x] Interface `HomepageCarousel` (AdminPanel::HomepageCarouselsController, vues index/show/new/edit, _form)
 - [ ] Interface `HomepageAnnouncement`
 - [ ] Interface `Testimonial`
-- [ ] Permissions Pundit (ORGANIZER+)
+- [x] Permissions Pundit pour carousel (ORGANIZER+ level ≥ 40)
 
 ### Vues & Partials
-- [ ] Partial `_carousel.html.erb`
+- [x] Partial `_carousel.html.erb` (Bootstrap 5, intégré dans `pages/index`)
 - [ ] Partial `_announcements.html.erb`
 - [ ] Partial `_gallery.html.erb`
 - [ ] Partial `_testimonials.html.erb`
-- [ ] Intégration dans `pages/index.html.erb`
 
 ### Contrôleur
-- [ ] `PagesController#index` : Charger tous les contenus dynamiques
-- [ ] Optimisation requêtes (includes, eager loading)
+- [x] Carousel : affiché via `HomepageCarousel.active.ordered` dans la partial
+- [ ] `PagesController#index` : charger annonces/galerie/témoignages quand implémentés
 
 ### Tests
-- [ ] Tests modèles
-- [ ] Tests contrôleur
-- [ ] Tests permissions
-- [ ] Tests vues (si nécessaire)
+- [x] Request spec homepage_carousels (index, new, auth)
+- [x] Policy spec HomepageCarouselPolicy
+- [ ] Request spec CRUD complet + actions custom (voir coverage-gaps.md)
+- [ ] Tests modèle HomepageCarousel (optionnel)
 
 ---
 
@@ -353,4 +321,4 @@ end
 
 ---
 
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-03-09 (Checklist carousel alignée avec l’état réel : AdminPanel implémenté.)

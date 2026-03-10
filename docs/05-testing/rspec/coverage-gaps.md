@@ -11,7 +11,7 @@ Document généré pour identifier ce qui **n’est pas couvert** par les specs 
 | **Health** | `GET /health` | Haute | Monitoring / load balancer. Vérifier 200 vs 503, JSON (database, migrations). |
 | **Admin – Maintenance** | `PATCH /admin-panel/maintenance/toggle` | Haute | Réservé superadmin. Vérifier authz (MaintenancePolicy) et effet enable/disable. |
 | **Admin – Mail logs** | `GET /admin-panel/mail-logs`, `GET .../:id` | Moyenne | Superadmin uniquement. Authz + accès liste/détail. |
-| **Admin – Homepage carousels** | CRUD + publish/unpublish, move_up, move_down, reorder | Moyenne | Niveau ORGANIZER+. Authz et actions custom. |
+| **Admin – Homepage carousels** | CRUD + publish/unpublish, move_up, move_down, reorder | Moyenne | Request spec partiel (index, new, auth). Manquent : create, update, destroy, publish, unpublish, move_up, move_down, reorder. Niveau ORGANIZER+. |
 | **Admin – Initiations (actions manquantes)** | `convert_waitlist`, `notify_waitlist`, `toggle_volunteer`, `return_material` | Haute | Actions métier sensibles ; actuellement seuls index/show/presences/update_presences sont testés. |
 | **Confirmations (Devise)** | `ConfirmationsController` (new, create, show) | Moyenne | Renvoi email confirmation, limite de taux, anti-énumération. |
 | **Pages légales** | `LegalPagesController` (mentions, RGPD, CGV, CGU, FAQ) | Basse | GET statiques ; utile en smoke (200 + contenu minimal). |

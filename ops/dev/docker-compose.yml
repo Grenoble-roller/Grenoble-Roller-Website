@@ -7,6 +7,7 @@ services:
       context: ../..
       dockerfile: Dockerfile.dev
     container_name: grenoble-roller-dev
+    restart: unless-stopped
     # env_file:
     #   - ../../.env  # Uncomment if .env file exists
     environment:
@@ -45,9 +46,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 15s
+      timeout: 10s
+      retries: 6
+      start_period: 60s
 
   css-watcher:
     build:
