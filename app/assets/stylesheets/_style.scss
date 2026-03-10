@@ -2267,32 +2267,46 @@
     }
   }
 
-  /* === BANNIÈRE ANNONCES (16:9, sous le hero) === */
+  /* === BANNIÈRE ANNONCES (16:9 fixe, sous le hero) === */
+  /* 16/9 garanti: on ne contraint que la largeur (min avec 38vh*16/9) → hauteur = largeur*9/16, jamais de max-height pour éviter que le navigateur casse le ratio */
   #announcementCarousel.announcement-banner-carousel {
-    width: 100%;
+    position: relative;
+    width: min(100%, calc(55vh * 16 / 9));
     max-width: 100%;
+    aspect-ratio: 16 / 9;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: hidden;
 
-    .carousel-inner,
-    .carousel-item {
-      aspect-ratio: 16 / 9;
-      max-height: 350px;
+    .carousel-inner {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
     }
 
     .carousel-item {
       position: relative;
-    }
-
-    .announcement-banner-img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: center;
+      float: left;
+      overflow: hidden;
     }
 
     .announcement-banner-link {
       display: block;
+      width: 100%;
+      height: 100%;
       color: inherit;
+    }
+
+    .announcement-banner-img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
     }
 
     .carousel-indicators [data-bs-target] {
@@ -2318,11 +2332,6 @@
     }
 
     @media (max-width: 767px) {
-      .carousel-inner,
-      .carousel-item {
-        max-height: 260px;
-      }
-
       .carousel-indicators [data-bs-target] {
         min-width: 0;
         min-height: 0;

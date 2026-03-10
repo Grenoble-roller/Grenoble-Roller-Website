@@ -3,7 +3,7 @@
 %>
 
 <% if carousels.any? %>
-  <section class="announcement-banner-section py-4">
+  <section class="announcement-banner-section py-0">
     <div class="container container-lg">
       <div id="announcementCarousel"
            class="carousel slide carousel-fade announcement-banner-carousel"
@@ -37,12 +37,12 @@
                       rel: carousel.link_url.start_with?('http') ? 'noopener noreferrer' : nil,
                       aria: { label: "Voir la suite" } do %>
                     <%= image_tag image_variant,
-                        class: "d-block w-100 announcement-banner-img",
+                        class: "d-block w-100 h-100 announcement-banner-img",
                         alt: carousel.title %>
                   <% end %>
                 <% else %>
                   <%= image_tag image_variant,
-                      class: "d-block w-100 announcement-banner-img",
+                      class: "d-block w-100 h-100 announcement-banner-img",
                       alt: carousel.title %>
                 <% end %>
               <% end %>

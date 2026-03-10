@@ -51,7 +51,7 @@ Référence : `app/views/admin_panel/homepage_carousels/_form.html.erb`.
 | Partial hero (pitch + CTA) | `app/views/pages/_hero.html.erb` |
 | Partial bannière annonces | `app/views/pages/_announcement_banner.html.erb` |
 | Intégration homepage | `app/views/pages/index.html.erb` |
-| Styles bannière (16:9, max-height, indicateurs) | `app/assets/stylesheets/_style.scss` — bloc `#announcementCarousel.announcement-banner-carousel` |
+| Styles bannière (16:9 fixe, aspect-ratio racine, image cover centrée) | `app/assets/stylesheets/_style.scss` — bloc `#announcementCarousel.announcement-banner-carousel` |
 | Variant image public (bannière) | `resize_to_fill: [1200, 675]` dans `_announcement_banner.html.erb` |
 | Formulaire admin | `app/views/admin_panel/homepage_carousels/_form.html.erb` |
 | Show admin (aperçu) | `app/views/admin_panel/homepage_carousels/show.html.erb` |
