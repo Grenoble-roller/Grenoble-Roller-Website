@@ -116,13 +116,22 @@ class Event::InitiationPolicy < ApplicationPolicy
     attend?
   end
 
-  def join_waitlist?
+  # Options may be passed by the controller: { child_membership_id: ... } or via Thread when called by Pundit (2-arg authorize)
+  def join_waitlist?(opts = {})
     return false unless user
-    # Pour rejoindre la liste d'attente, l'événement doit être complet
-    # Mais on ne vérifie pas les conditions d'adhésion/essai gratuit ici,
-    # car elles seront vérifiées lors de l'inscription en liste d'attente
-    # et lors de la conversion en inscription
     return false unless record.full?
+
+    # Initiations: waitlist is members only (explicit volunteer request)
+    child_membership_id = (opts.is_a?(Hash) ? opts[:child_membership_id] : nil) || Thread.current[:initiation_waitlist_child_membership_id]
+    if child_membership_id.present?
+      child_membership = user.memberships.find_by(id: child_membership_id, is_child_membership: true)
+      return false unless child_membership
+      # Only active child membership can join waitlist; trial and pending are not allowed
+      return false unless child_membership.active?
+    else
+      # Parent: must have active adult membership
+      return false unless user.memberships.active_now.where(is_child_membership: false).exists?
+    end
     true
   end
 
