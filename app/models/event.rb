@@ -69,7 +69,8 @@ class Event < ApplicationRecord
   validates :duration_min, presence: true, numericality: { only_integer: true, greater_than: 0 }
   validate :duration_multiple_of_five
   validates :title, presence: true, length: { minimum: 5, maximum: 140 }
-  validates :description, presence: true, length: { minimum: 20, maximum: 1000 }, unless: :initiation?
+  # Max 5000: balance between detail and readability; DB is text (unlimited); iCal has no DESCRIPTION limit
+  validates :description, presence: true, length: { minimum: 20, maximum: 5000 }, unless: :initiation?
   validates :price_cents, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :currency, presence: true, length: { is: 3 }
   validates :location_text, presence: true, length: { minimum: 3, maximum: 255 }
