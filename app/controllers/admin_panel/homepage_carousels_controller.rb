@@ -92,10 +92,9 @@ module AdminPanel
     def move_up
       previous = HomepageCarousel.where("position < ?", @carousel.position).ordered.last
       if previous
-        old_pos = @carousel.position
-        new_pos = previous.position
-        @carousel.update_column(:position, new_pos)
-        previous.update_column(:position, old_pos)
+        @carousel.position, previous.position = previous.position, @carousel.position
+        @carousel.save
+        previous.save
         flash[:notice] = "Position mise à jour"
       else
         flash[:alert] = "Déjà en première position"
@@ -107,10 +106,9 @@ module AdminPanel
     def move_down
       next_item = HomepageCarousel.where("position > ?", @carousel.position).ordered.first
       if next_item
-        old_pos = @carousel.position
-        new_pos = next_item.position
-        @carousel.update_column(:position, new_pos)
-        next_item.update_column(:position, old_pos)
+        @carousel.position, next_item.position = next_item.position, @carousel.position
+        @carousel.save
+        next_item.save
         flash[:notice] = "Position mise à jour"
       else
         flash[:alert] = "Déjà en dernière position"

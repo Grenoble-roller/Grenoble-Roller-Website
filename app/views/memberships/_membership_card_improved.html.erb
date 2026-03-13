@@ -41,15 +41,13 @@
   <span class="status-badge <%= membership.status %>">
     <% case membership.status %>
       <% when 'active' %>
-        ✓ <%= human_status(:membership, 'active').upcase %>
+        ✓ ACTIVE
       <% when 'pending' %>
-        ⏳ <%= human_status(:membership, 'pending').upcase %>
+        ⏳ PENDING
       <% when 'expired' %>
-        ✗ <%= human_status(:membership, 'expired').upcase %>
-      <% when 'trial' %>
-        🎁 <%= human_status(:membership, 'trial').upcase %>
+        ✗ EXPIRED
       <% else %>
-        <%= human_status(:membership, membership.status).upcase %>
+        <%= membership.status.humanize.upcase %>
     <% end %>
   </span>
 

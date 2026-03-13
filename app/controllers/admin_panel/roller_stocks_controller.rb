@@ -5,46 +5,6 @@ module AdminPanel
     before_action :set_roller_stock, only: %i[show edit update destroy]
     before_action :authorize_roller_stock
 
-    # POST /admin-panel/roller_stocks/return_all
-    # Remet en stock tous les rollers des initiations déjà terminées et non encore marquées "Matériel rendu".
-    # Équivalent à cliquer "Matériel rendu" sur chaque initiation concernée.
-    def return_all
-      authorize [ :admin_panel, RollerStock ]
-
-      now = Time.current
-      finished_initiations = ::Event::Initiation
-        .published
-        .where("start_at + INTERVAL '1 minute' * duration_min <= ?", now)
-        .where(stock_returned_at: nil)
-        .includes(:attendances)
-
-      count_initiations = 0
-      total_rollers = 0
-
-      finished_initiations.find_each do |initiation|
-        has_equipment = initiation.attendances
-          .where(needs_equipment: true)
-          .where.not(roller_size: nil)
-          .where.not(status: "canceled")
-          .exists?
-        next unless has_equipment
-
-        returned = initiation.return_roller_stock
-        next if returned.nil? # déjà traité (stock_returned_at présent)
-
-        count_initiations += 1
-        total_rollers += returned.to_i
-      end
-
-      if count_initiations > 0
-        redirect_to admin_panel_roller_stocks_path,
-                    notice: "#{count_initiations} initiation(s) traitée(s), #{total_rollers} roller(s) remis en stock."
-      else
-        redirect_to admin_panel_roller_stocks_path,
-                    notice: "Aucune initiation terminée à traiter (tout le matériel est déjà remis en stock)."
-      end
-    end
-
     # GET /admin-panel/roller_stocks
     def index
       authorize [ :admin_panel, RollerStock ]

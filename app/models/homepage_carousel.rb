@@ -6,22 +6,11 @@ class HomepageCarousel < ApplicationRecord
 
   # Validations
   validates :title, presence: true
-  validates :position, presence: true, uniqueness: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :image, presence: true, if: -> { published? }
 
   # Scopes
   scope :published, -> { where(published: true) }
-  # Visible sur la page d'accueil :
-  # - Publié coché : visible tout de suite jusqu'à expires_at (publication forcée)
-  # - Publié non coché : visible uniquement entre published_at et expires_at (dates seules)
-  scope :active, -> {
-    now = Time.current
-    where(
-      "(published = true AND (expires_at IS NULL OR expires_at > ?)) OR " \
-      "(published = false AND published_at IS NOT NULL AND published_at <= ? AND (expires_at IS NULL OR expires_at > ?))",
-      now, now, now
-    )
-  }
+  scope :active, -> { published.where("expires_at IS NULL OR expires_at > ?", Time.current) }
   scope :ordered, -> { order(position: :asc, created_at: :desc) }
 
   # Ransack pour recherche/filtres
@@ -38,12 +27,7 @@ class HomepageCarousel < ApplicationRecord
   before_create :set_default_position
 
   def active?
-    now = Time.current
-    if published?
-      expires_at.nil? || expires_at > now
-    else
-      published_at.present? && published_at <= now && (expires_at.nil? || expires_at > now)
-    end
+    published? && (expires_at.nil? || expires_at > Time.current)
   end
 
   def expired?

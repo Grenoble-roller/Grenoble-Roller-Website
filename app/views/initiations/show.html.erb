@@ -375,8 +375,7 @@
           <p class="mb-0">Toutes les places sont prises. Rejoignez la liste d'attente pour être notifié(e) si une place se libère.</p>
           <% if user_signed_in? %>
             <div class="mt-3 d-flex flex-wrap gap-2">
-              <%# Bouton "Rejoindre la liste d'attente" : uniquement si au moins 1 personne éligible (adhésion active) et pas déjà en file pour ce slot %>
-              <% if @show_waitlist_button %>
+              <%# Bouton pour rejoindre la liste d'attente : toujours disponible %>
               <button type="button" 
                       class="btn btn-liquid-primary" 
                       data-bs-toggle="modal" 
@@ -384,7 +383,6 @@
                       aria-label="Rejoindre la liste d'attente">
                 <i class="bi bi-person-plus me-2" aria-hidden="true"></i>Rejoindre la liste d'attente
               </button>
-              <% end %>
               
               <%# Bouton pour inscrire un enfant si disponible %>
               <% has_available_children = @can_register_child && current_user.memberships.where(is_child_membership: true)
@@ -490,8 +488,8 @@
   </div>
 <% end %>
 
-<!-- Modal pour rejoindre la liste d'attente (affichée seulement si le bouton est visible) -->
-<% if @show_waitlist_button %>
+<!-- Modal pour rejoindre la liste d'attente -->
+<% if user_signed_in? && @initiation.full? %>
   <div class="modal fade" id="joinWaitlistModalShowInitiation" tabindex="-1" aria-labelledby="joinWaitlistModalShowInitiationLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

@@ -6,20 +6,14 @@
 
 <%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
 
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-  <h1 class="mb-0">Initiations</h1>
-  <div class="d-flex gap-2">
-    <% if current_user&.role&.level.to_i >= 60 %>
-      <%= link_to admin_panel_roller_stocks_path, class: "btn btn-outline-liquid-primary" do %>
-        <i class="bi bi-box-seam me-2"></i>
-        Gestion du stock
-      <% end %>
-      <%= link_to new_initiation_path, class: "btn btn-liquid-primary", target: "_blank" do %>
-        <i class="bi bi-plus-circle me-2"></i>
-        Créer une initiation
-      <% end %>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1>Initiations</h1>
+  <% if current_user&.role&.level.to_i >= 60 %>
+    <%= link_to new_initiation_path, class: "btn btn-liquid-primary", target: "_blank" do %>
+      <i class="bi bi-plus-circle me-2"></i>
+      Créer une initiation
     <% end %>
-  </div>
+  <% end %>
 </div>
 
 <!-- Filtres et recherche -->
@@ -99,12 +93,8 @@
                     <span class="badge badge-liquid-success">Publié</span>
                   <% when 'draft' %>
                     <span class="badge badge-liquid-secondary">Brouillon</span>
-                  <% when 'rejected' %>
-                    <span class="badge badge-liquid-danger">Rejetée</span>
                   <% when 'canceled' %>
                     <span class="badge badge-liquid-danger">Annulé</span>
-                  <% else %>
-                    <span class="badge badge-liquid-secondary"><%= initiation.status %></span>
                   <% end %>
                 </td>
                 <td data-label="Places">
@@ -180,12 +170,8 @@
                     <span class="badge badge-liquid-success">Publié</span>
                   <% when 'draft' %>
                     <span class="badge badge-liquid-secondary">Brouillon</span>
-                  <% when 'rejected' %>
-                    <span class="badge badge-liquid-danger">Rejetée</span>
                   <% when 'canceled' %>
                     <span class="badge badge-liquid-danger">Annulé</span>
-                  <% else %>
-                    <span class="badge badge-liquid-secondary"><%= initiation.status %></span>
                   <% end %>
                 </td>
                 <td data-label="Places">

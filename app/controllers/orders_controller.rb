@@ -236,9 +236,9 @@ class OrdersController < ApplicationController
     session[:cart] ||= {}
     variant_ids = session[:cart].keys
     return [] if variant_ids.empty?
-    variants = ProductVariant.where(id: variant_ids).includes(:product, :inventory).index_by { |v| v.id.to_s }
+    variants = ProductVariant.where(id: variant_ids).includes(:product).index_by { |v| v.id.to_s }
     session[:cart].map do |vid, qty|
-      variant = variants[vid.to_s]
+      variant = variants[vid]
       next nil unless variant
       price_cents = variant.price_cents
       {

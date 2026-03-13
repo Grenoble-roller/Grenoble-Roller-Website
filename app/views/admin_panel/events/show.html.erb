@@ -53,14 +53,16 @@
       </div>
       <div class="col-md-6">
         <p><strong>Statut :</strong>
-          <span class="badge badge-liquid-<%= case @event.status
-            when 'published' then 'success'
-            when 'draft' then 'warning'
-            when 'rejected', 'canceled' then 'danger'
-            else 'secondary'
-          end %>">
-            <%= human_status(:event, @event.status) %>
-          </span>
+          <% case @event.status %>
+          <% when 'published' %>
+            <span class="badge badge-liquid-success">Publié</span>
+          <% when 'draft' %>
+            <span class="badge badge-liquid-warning">En attente</span>
+          <% when 'rejected' %>
+            <span class="badge badge-liquid-danger">Refusé</span>
+          <% when 'canceled' %>
+            <span class="badge badge-liquid-danger">Annulé</span>
+          <% end %>
         </p>
         <p><strong>Places :</strong>
           <% if @event.full? %>
@@ -127,14 +129,20 @@
                   <% end %>
                 </td>
                 <td>
-                  <span class="badge badge-liquid-<%= case attendance.status
-                    when 'registered', 'paid', 'present' then 'success'
-                    when 'pending' then 'warning'
-                    when 'canceled' then 'danger'
-                    else 'secondary'
-                  end %>">
-                    <%= human_status(:attendance, attendance.status) %>
-                  </span>
+                  <% case attendance.status %>
+                  <% when 'registered' %>
+                    <span class="badge badge-liquid-success">Inscrit</span>
+                  <% when 'paid' %>
+                    <span class="badge badge-liquid-success">Payé</span>
+                  <% when 'present' %>
+                    <span class="badge badge-liquid-success">Présent</span>
+                  <% when 'canceled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% when 'pending' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= attendance.status %></span>
+                  <% end %>
                 </td>
                 <td>
                   <% if attendance.payment.present? %>
@@ -181,15 +189,18 @@
                 <td><%= entry.participant_name %></td>
                 <td><%= entry.user.email %></td>
                 <td>
-                  <span class="badge badge-liquid-<%= case entry.status
-                    when 'pending' then 'warning'
-                    when 'notified' then 'info'
-                    when 'converted' then 'success'
-                    when 'cancelled' then 'danger'
-                    else 'secondary'
-                  end %>">
-                    <%= human_status(:waitlist_entry, entry.status) %>
-                  </span>
+                  <% case entry.status %>
+                  <% when 'pending' %>
+                    <span class="badge badge-liquid-warning">En attente</span>
+                  <% when 'notified' %>
+                    <span class="badge badge-liquid-info">Notifié</span>
+                  <% when 'converted' %>
+                    <span class="badge badge-liquid-success">Converti</span>
+                  <% when 'cancelled' %>
+                    <span class="badge badge-liquid-danger">Annulé</span>
+                  <% else %>
+                    <span class="badge badge-liquid-secondary"><%= entry.status %></span>
+                  <% end %>
                 </td>
                 <td><%= l(entry.created_at, format: :short) %></td>
                 <td>

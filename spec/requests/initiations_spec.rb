@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe 'Initiations', type: :request do
   include RequestAuthenticationHelper
   include TestDataHelper
-  include WaitlistTestHelper
 
   let(:role) { ensure_role(code: 'USER', name: 'Utilisateur', level: 10) }
 
@@ -28,46 +27,6 @@ RSpec.describe 'Initiations', type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('Cours Initiation')
-    end
-
-    context 'bouton "Rejoindre la liste d\'attente" (séance complète)' do
-      let(:initiation) do
-        e = build_event(type: 'Event::Initiation', status: 'published', start_at: 1.week.from_now, title: 'Initiation complète', max_participants: 2, allow_non_member_discovery: false)
-        e.save!
-        fill_event_to_capacity(e, 2)
-        e.reload
-      end
-      let(:user) { create(:user, role: role, confirmed_at: Time.current) }
-
-      it 'n\'affiche pas le bouton si l\'utilisateur n\'a pas d\'adhésion active' do
-        login_user(user)
-        get initiation_path(initiation)
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Cette séance est complète')
-        expect(response.body).not_to include('Rejoindre la liste d\'attente')
-      end
-
-      it 'affiche le bouton si l\'utilisateur a une adhésion active et n\'est pas déjà en liste d\'attente' do
-        create(:membership, user: user, season: '2025-2026', is_child_membership: false)
-        login_user(user)
-        get initiation_path(initiation)
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Rejoindre la liste d\'attente')
-      end
-
-      it 'n\'affiche pas le bouton si l\'utilisateur (adhérent) est déjà en liste d\'attente (parent)' do
-        create(:membership, user: user, season: '2025-2026', is_child_membership: false)
-        create(:waitlist_entry, user: user, event: initiation, child_membership_id: nil, status: 'pending').tap { |e| e.save(validate: false) }
-        initiation.waitlist_entries.reload
-        login_user(user)
-        get initiation_path(initiation)
-
-        expect(response).to have_http_status(:ok)
-        expect(response.body).to include('Vous êtes en liste d\'attente')
-        expect(response.body).not_to include('Rejoindre la liste d\'attente')
-      end
     end
 
     it 'redirects visitors trying to view a draft initiation' do

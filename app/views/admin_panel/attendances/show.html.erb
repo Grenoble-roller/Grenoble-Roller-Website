@@ -48,7 +48,7 @@
                  when "no_show" then "bg-danger"
                  else "bg-secondary"
                end %>
-            <span class="badge <%= badge_class %>"><%= human_status(:attendance, @attendance.status) %></span>
+            <span class="badge <%= badge_class %>"><%= @attendance.status %></span>
           </dd>
 
           <dt class="col-sm-3">Bénévole</dt>

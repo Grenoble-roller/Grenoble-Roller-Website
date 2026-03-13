@@ -181,7 +181,6 @@ RSpec.describe EventMailer, type: :mailer do
     end
 
     context 'when event is an initiation with multiple participants' do
-      before { allow_any_instance_of(Event::Initiation).to receive(:schedule_participants_report) }
       let(:initiation) { create_event(type: 'Event::Initiation', status: 'published', title: 'Initiation Roller', location_text: 'Parc Paul Mistral', creator_user: organizer, start_at: 3.days.from_now, max_participants: 20) }
       let(:child_membership1) { create(:membership, :child, user: user, status: :active, season: '2025-2026', child_first_name: 'Enfant1') }
       let(:attendance_parent) { create_attendance(user: user, event: initiation) }
@@ -260,7 +259,6 @@ RSpec.describe EventMailer, type: :mailer do
     end
 
     context 'when event is an initiation' do
-      before { allow_any_instance_of(Event::Initiation).to receive(:schedule_participants_report) }
       let(:initiation) { create_event(type: 'Event::Initiation', status: 'published', title: 'Initiation Roller', location_text: 'Parc Paul Mistral', creator_user: organizer, start_at: 3.days.from_now, max_participants: 20) }
       let(:attendance) { create_attendance(user: user, event: initiation) }
       let(:attendances) { [ attendance ] }
@@ -466,23 +464,6 @@ RSpec.describe EventMailer, type: :mailer do
         body_content = html_part ? html_part.decoded : mail.body.decoded
         # Devrait toujours afficher 2 participants (pas 3 avec le bénévole)
         expect(body_content).to include('2 inscrit')
-      end
-    end
-
-    context 'when recipient_email is provided (envoi bénévole)' do
-      let(:volunteer_email) { 'benevole@example.com' }
-      let(:mail) { EventMailer.initiation_participants_report(initiation, recipient_email: volunteer_email) }
-
-      it 'sends to the given recipient email' do
-        expect(mail.to).to eq([ volunteer_email ])
-      end
-
-      it 'includes same subject and content as contact report' do
-        expect(mail.subject).to include('Rapport participants')
-        expect(mail.subject).to include('Initiation')
-        html_part = mail.body.parts.find { |p| p.content_type.include?('text/html') }
-        body_content = html_part ? html_part.decoded : mail.body.decoded
-        expect(body_content).to include(initiation.title)
       end
     end
   end

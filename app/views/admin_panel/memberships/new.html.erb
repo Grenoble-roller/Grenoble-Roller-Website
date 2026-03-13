@@ -51,10 +51,10 @@
                 <%= f.label :status, "Statut *", class: "form-label" %>
                 <%= f.select :status,
                     options_for_select([
-                      [t("statuses.membership.pending"), "pending"],
-                      [t("statuses.membership.active"), "active"],
-                      [t("statuses.membership.expired"), "expired"],
-                      [t("statuses.membership.trial"), "trial"]
+                      ["En attente", "pending"],
+                      ["Active", "active"],
+                      ["Expirée", "expired"],
+                      ["Essai", "trial"]
                     ]),
                     { prompt: "Sélectionnez un statut" },
                     { class: "form-select form-control-liquid", required: true } %>
