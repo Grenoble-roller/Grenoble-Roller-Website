@@ -1,5 +1,4 @@
-<% column_class = local_assigns.fetch(:column_class, 'col-12 col-sm-6 col-lg-4') %>
-<div class="<%= column_class %><%= ' position-relative' if local_assigns[:is_first] %>">
+<div class="col-12 col-sm-6 col-lg-4<%= ' position-relative' if local_assigns[:is_first] %>">
   <% if local_assigns[:is_first] %>
     <!-- Badge "Prochain" sur le premier événement - aligné avec le badge de date -->
     <span class="badge bg-warning text-dark position-absolute" style="left: 2.5rem; z-index: 10;">
@@ -54,7 +53,7 @@
           <!-- Badge Statut (pour admins/moderateurs) - exclure les rejetés -->
           <% if can_moderate? && event.draft? %>
             <span class="badge bg-warning text-dark">
-              <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i><%= t("statuses.event.draft") %>
+              <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>En attente
             </span>
           <% elsif can_moderate? && event.rejected? %>
             <span class="badge bg-danger">
@@ -181,7 +180,7 @@
   </article>
 </div>
 
-<% if defined?(render_signup_button) && render_signup_button && !event.past? && policy(event).can_attend? && !event.full? %>
+<% if defined?(render_signup_button) && render_signup_button && policy(event).can_attend? && !event.full? %>
     <div class="modal fade" id="confirmAttendModal<%= event.id %>" tabindex="-1" aria-labelledby="confirmAttendModalLabel<%= event.id %>" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

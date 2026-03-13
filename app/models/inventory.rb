@@ -3,14 +3,6 @@ class Inventory < ApplicationRecord
   has_many :movements, class_name: "InventoryMovement", dependent: :destroy
 
   validates :product_variant_id, presence: true, uniqueness: true
-
-  def self.ransackable_attributes(auth_object = nil)
-    %w[created_at id product_variant_id reserved_qty stock_qty updated_at]
-  end
-
-  def self.ransackable_associations(auth_object = nil)
-    %w[product_variant movements]
-  end
   validates :stock_qty, numericality: { greater_than_or_equal_to: 0 }
   validates :reserved_qty, numericality: { greater_than_or_equal_to: 0 }
 

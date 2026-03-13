@@ -76,12 +76,17 @@ class InitiationsController < ApplicationController
         end
         @can_register = can_register?
         @can_register_child = can_register_child?
-        # Waitlist for initiations is members only: adult active or at least one child with active membership (not trial/pending)
-        @can_join_initiation_waitlist = if user_signed_in?
-          current_user.memberships.active_now.where(is_child_membership: false).exists? ||
-            current_user.memberships.where(is_child_membership: true).where(status: Membership.statuses[:active]).exists?
+
+        # Bouton "Rejoindre la liste d'attente" : uniquement si séance complète ET au moins 1 personne éligible (adhésion active) ET pas déjà en file pour ce slot
+        if user_signed_in? && @initiation.full?
+          parent_eligible = current_user.memberships.active_now.where(is_child_membership: false).exists?
+          parent_can_join = parent_eligible && @user_waitlist_entry.nil?
+          child_ids_in_waitlist = @child_waitlist_entries.to_a.map(&:child_membership_id).compact
+          children_eligible = current_user.memberships.where(is_child_membership: true).select(&:active?)
+          child_can_join = children_eligible.any? { |m| !child_ids_in_waitlist.include?(m.id) }
+          @show_waitlist_button = parent_can_join || child_can_join
         else
-          false
+          @show_waitlist_button = false
         end
       end
 

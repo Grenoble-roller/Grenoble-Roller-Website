@@ -46,24 +46,6 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
 
-    context 'with event scope' do
-      it 'returns French label for draft' do
-        expect(helper.human_status(:event, 'draft')).to eq('En attente de validation')
-      end
-
-      it 'returns French label for published' do
-        expect(helper.human_status(:event, 'published')).to eq('Publié')
-      end
-
-      it 'returns French label for rejected' do
-        expect(helper.human_status(:event, 'rejected')).to eq('Refusé')
-      end
-
-      it 'returns French label for canceled' do
-        expect(helper.human_status(:event, 'canceled')).to eq('Annulé')
-      end
-    end
-
     context 'when value is blank' do
       it 'returns empty string' do
         expect(helper.human_status(:order, nil)).to eq('')

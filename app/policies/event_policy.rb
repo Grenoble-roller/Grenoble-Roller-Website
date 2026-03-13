@@ -37,7 +37,6 @@ class EventPolicy < ApplicationPolicy
 
   def attend?
     return false unless user.present?
-    return false if record.past?
     return false if record.full?
 
     # Pour les événements normaux (randos) : ouverts à tous, aucune restriction d'adhésion

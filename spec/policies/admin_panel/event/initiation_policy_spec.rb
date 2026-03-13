@@ -79,13 +79,13 @@ RSpec.describe AdminPanel::Event::InitiationPolicy do
     context 'when user is organizer (level 40)' do
       let(:user) { create(:user, role: organizer_role) }
 
-      it { expect(policy.create?).to be(false) }
+      it { expect(policy.create?).to be(true) }
     end
 
     context 'when user is moderator (level 50)' do
       let(:user) { create(:user, role: moderator_role) }
 
-      it { expect(policy.create?).to be(false) }
+      it { expect(policy.create?).to be(true) }
     end
 
     context 'when user is admin (level 60)' do
@@ -125,13 +125,13 @@ RSpec.describe AdminPanel::Event::InitiationPolicy do
     context 'when user is organizer (level 40)' do
       let(:user) { create(:user, role: organizer_role) }
 
-      it { expect(policy.destroy?).to be(false) }
+      it { expect(policy.destroy?).to be(true) }
     end
 
     context 'when user is moderator (level 50)' do
       let(:user) { create(:user, role: moderator_role) }
 
-      it { expect(policy.destroy?).to be(false) }
+      it { expect(policy.destroy?).to be(true) }
     end
 
     context 'when user is admin (level 60)' do

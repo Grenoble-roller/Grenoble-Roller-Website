@@ -53,7 +53,14 @@
       </div>
       <div class="col-md-6">
         <p><strong>Statut :</strong>
-          <%= render "shared/event_status_badge", record: @event %>
+          <span class="badge badge-liquid-<%= case @event.status
+            when 'published' then 'success'
+            when 'draft' then 'warning'
+            when 'rejected', 'canceled' then 'danger'
+            else 'secondary'
+          end %>">
+            <%= human_status(:event, @event.status) %>
+          </span>
         </p>
         <p><strong>Places :</strong>
           <% if @event.full? %>

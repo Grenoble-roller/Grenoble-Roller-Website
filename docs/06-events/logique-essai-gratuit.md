@@ -104,15 +104,6 @@ T4: Essai gratuit redevient disponible (scope .active exclut canceled)
 T5: Enfant peut s'inscrire à Initiation B avec essai gratuit
 ```
 
-### 1.4. Liste d'attente (initiations)
-
-**Règle** : La liste d'attente des initiations est **réservée aux adhérents**. Un non-adhérent ne peut pas rejoindre la liste d'attente ; il peut uniquement s'inscrire directement à une initiation si une place est libre (avec essai gratuit si disponible). Cela évite qu'un non-adhérent s'inscrive en liste d'attente sans cocher l'essai gratuit, confirme à la libération d'une place, puis utilise l'essai gratuit sur une autre initiation.
-
-- **Parent** : doit avoir une adhésion adulte active pour rejoindre la liste d'attente.
-- **Enfant** : doit avoir une adhésion enfant **active** uniquement pour que le parent puisse l'inscrire en liste d'attente (les enfants en trial ou pending ne peuvent pas rejoindre la liste d'attente).
-
-**Inscription directe (hors liste d'attente)** : Un enfant en **pending** ne peut s'inscrire à une initiation **que** s'il a un essai gratuit disponible (case cochée, essai non encore utilisé). Le statut pending ne donne pas le droit de s'inscrire sans consommer l'essai gratuit.
-
 ---
 
 ## 2. Clarification Statut `pending` (Enfant)

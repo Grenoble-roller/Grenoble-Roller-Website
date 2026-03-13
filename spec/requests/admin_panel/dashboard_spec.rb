@@ -11,7 +11,7 @@ RSpec.describe 'AdminPanel::Dashboard', type: :request do
     context 'when user is admin (level 60)' do
       let(:admin_user) { create(:user, :admin) }
 
-      before { login_user admin_user }
+      before { sign_in admin_user }
 
       it 'returns success' do
         get admin_panel_root_path
@@ -20,14 +20,14 @@ RSpec.describe 'AdminPanel::Dashboard', type: :request do
 
       it 'displays dashboard' do
         get admin_panel_root_path
-        expect(response.body).to include('Dashboard Admin')
+        expect(response.body).to include('Tableau de bord')
       end
     end
 
     context 'when user is superadmin (level 70)' do
       let(:superadmin_user) { create(:user, :superadmin) }
 
-      before { login_user superadmin_user }
+      before { sign_in superadmin_user }
 
       it 'returns success' do
         get admin_panel_root_path
@@ -38,7 +38,7 @@ RSpec.describe 'AdminPanel::Dashboard', type: :request do
     context 'when user is organizer (level 40)' do
       let(:organizer_user) { create(:user, :organizer) }
 
-      before { login_user organizer_user }
+      before { sign_in organizer_user }
 
       it 'redirects to root with alert' do
         get admin_panel_root_path
@@ -50,7 +50,7 @@ RSpec.describe 'AdminPanel::Dashboard', type: :request do
     context 'when user level is below 60' do
       let(:regular_user) { create(:user, role: user_role) }
 
-      before { login_user regular_user }
+      before { sign_in regular_user }
 
       it 'redirects to root' do
         get admin_panel_root_path
