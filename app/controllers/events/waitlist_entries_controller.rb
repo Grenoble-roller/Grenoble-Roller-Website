@@ -112,15 +112,6 @@ module Events
         return
       end
 
-      # Initiation : refuser la conversion si parent non adhérent et sans essai gratuit (règle métier)
-      if waitlist_entry.event.is_a?(Event::Initiation) && waitlist_entry.child_membership_id.blank?
-        parent_has_membership = current_user.memberships.active_now.where(is_child_membership: false).exists?
-        unless parent_has_membership || pending_attendance.free_trial_used
-          redirect_to initiation_path(waitlist_entry.event), alert: "Adhésion requise ou utilisation de l'essai gratuit pour confirmer votre place."
-          return
-        end
-      end
-
       if waitlist_entry.convert_to_attendance!
         participant_name = waitlist_entry.for_child? ? waitlist_entry.participant_name : "Vous"
         EventMailer.attendance_confirmed(pending_attendance.reload).deliver_later if current_user.wants_events_mail?

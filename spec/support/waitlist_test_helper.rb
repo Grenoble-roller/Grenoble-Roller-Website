@@ -16,8 +16,7 @@ module WaitlistTestHelper
 
   # Créer une waitlist entry notifiée avec son attendance pending associée
   # Retourne [pending_attendance, waitlist_entry]
-  # Options: free_trial_used (default false)
-  def create_notified_waitlist_with_pending_attendance(user, event, free_trial_used: false)
+  def create_notified_waitlist_with_pending_attendance(user, event)
     # Créer l'attendance PENDING (la place réservée)
     pending_attendance = event.attendances.build(
       user: user,
@@ -26,12 +25,12 @@ module WaitlistTestHelper
       wants_reminder: false,
       needs_equipment: false,
       roller_size: nil,
-      free_trial_used: free_trial_used
+      free_trial_used: false
     )
     pending_attendance.save(validate: false)
 
     # Créer la waitlist_entry
-    waitlist_entry = build(:waitlist_entry, user: user, event: event, child_membership_id: nil, wants_reminder: false, use_free_trial: free_trial_used)
+    waitlist_entry = build(:waitlist_entry, user: user, event: event, child_membership_id: nil, wants_reminder: false)
     waitlist_entry.save(validate: false)
 
     # Mettre à jour le statut

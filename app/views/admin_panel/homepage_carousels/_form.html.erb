@@ -93,7 +93,6 @@
               <%= f.datetime_local_field :published_at, 
                   class: "form-control form-control-liquid",
                   value: @carousel.published_at&.strftime("%Y-%m-%dT%H:%M") %>
-              <div class="form-text">Optionnel. Utilisée uniquement si « Publié » n'est pas coché : le slide n'apparaît qu'à partir de cette date.</div>
             </div>
             <div class="col-md-6">
               <%= f.label :expires_at, "Date d'expiration", class: "form-label fw-semibold" %>
@@ -110,7 +109,7 @@
               <%= f.check_box :published, class: "form-check-input" %>
               <%= f.label :published, "Publié", class: "form-check-label" %>
             </div>
-            <div class="form-text"><strong>Coché</strong> = publication forcée : le slide est visible immédiatement (jusqu'à la date d'expiration si renseignée). <strong>Non coché</strong> = visibilité uniquement entre la date de publication et la date d'expiration.</div>
+            <div class="form-text">Cocher pour publier immédiatement le slide</div>
           </div>
         </div>
       </div>

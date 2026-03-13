@@ -60,10 +60,9 @@ class Product < ApplicationRecord
     price_cents / 100.0
   end
 
-  # Héritage image pour variantes (ProductVariant a has_many_attached :images)
+  # NOUVEAU : Héritage image pour variantes
   def image_for_variant(variant)
-    return variant.images.first if variant&.images&.attached?
-    image.attached? ? image : nil
+    variant.image.attached? ? variant.image : self.image
   end
 
   # NOUVEAU : Agrégat stock par option

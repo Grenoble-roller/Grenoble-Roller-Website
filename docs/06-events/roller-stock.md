@@ -206,19 +206,17 @@ Le champ `equipment_note` (text) dans `Attendance` permet d'ajouter des notes su
 
 ### Retour de Rollers
 
-**Trois options** (retour automatique désactivé tant que non validé par le staff) :
+**Méthode manuelle via le bouton "Matériel rendu"** (recommandée) :
 
-1. **Bouton "Tout remettre en stock"** (recommandé pour un rattrapage global) : **Admin Panel → Stock Rollers** (Gestion de stock). Un clic remet en stock tous les rollers des initiations **déjà terminées** et non encore marquées « Matériel rendu », et marque chaque initiation concernée comme si vous aviez cliqué « Matériel rendu » sur sa page Présences. Idéal pour rattraper plusieurs initiations d’un coup.
-2. **Bouton "Matériel rendu" par initiation** : Admin Panel → Initiations → [Initiation] → Présences. Le bouton apparaît si l’initiation est passée, qu’il y a du matériel prêté et qu’il n’a pas encore été rendu.
-3. **Job automatique** : `ReturnRollerStockJob` existe mais est **désactivé** (schedule.rb + recurring.yml) en attente de validation par le staff. Une fois validé, il pourra être réactivé (tous les jours à 2h).
+1. Après l'initiation, aller dans **Admin Panel → Initiations → [Initiation] → Présences**
+2. Le bouton **"Matériel rendu"** apparaît automatiquement si :
+   - L'initiation est passée (`start_at <= Time.current`)
+   - Il y a du matériel prêté (`has_equipment_loaned?`)
+   - Le matériel n'a pas encore été rendu (`stock_returned_at.nil?`)
+3. Cliquer sur le bouton → Confirmation → Les rollers sont remis en stock automatiquement
+4. Le bouton disparaît et un badge indique la date de retour
 
-**Permissions** : Grade INITIATION (level 40) ou plus pour « Matériel rendu » ; accès Admin Panel (RollerStock) pour « Tout remettre en stock ».
-
-**Impact du bouton "Tout remettre en stock"** :
-- Cible : toutes les initiations **terminées** (`start_at + duration_min <= now`) avec `stock_returned_at` nil et au moins une attendance avec matériel (non annulée).
-- Action : pour chaque telle initiation, appelle `Event#return_roller_stock` (incrémente `RollerStock` par taille, puis met à jour `stock_returned_at`). Aucun double traitement grâce à `stock_returned_at`.
-- Résultat : les quantités par taille dans Gestion de stock augmentent ; les initiations concernées affichent « Matériel rendu le [date] » sur la page Présences.
-- Aucun impact sur les initiations à venir ni sur les inscriptions en attente.
+**Permissions** : Grade INITIATION (level 40) ou plus
 
 **Méthode technique** :
 - La méthode `Event#return_roller_stock` incrémente le stock pour chaque taille prêtée
@@ -234,7 +232,7 @@ Le champ `equipment_note` (text) dans `Attendance` permet d'ajouter des notes su
 - **Décrémentation automatique** lors de l'inscription avec matériel
 - **Incrémentation automatique** lors de l'annulation
 - **Gestion des changements** de taille (swap automatique)
-- **Retour matériel** : bouton **"Tout remettre en stock"** dans Gestion de stock (Admin Panel → Stock Rollers) + bouton **"Matériel rendu"** par initiation (page Présences). Job automatique (`ReturnRollerStockJob`) désactivé en attente validation staff.
+- **Retour matériel** via bouton manuel dans la page Présences
 
 ### Méthode `Event#return_roller_stock`
 
@@ -255,16 +253,6 @@ end
 
 **Méthode `Event#has_equipment_loaned?`** : Vérifie s'il y a du matériel prêté pour l'événement
 
-### Bouton "Tout remettre en stock" dans Gestion de stock
-
-**Fichier** : `app/views/admin_panel/roller_stocks/index.html.erb`  
-**Action** : `POST /admin-panel/roller-stocks/return_all`  
-**Controller** : `AdminPanel::RollerStocksController#return_all`
-
-- Remet en stock tous les rollers des initiations **déjà terminées** et non encore marquées « Matériel rendu ».
-- Équivalent à cliquer « Matériel rendu » sur chaque initiation concernée.
-- Confirmation Turbo avant envoi. Permission : accès Admin Panel (RollerStock).
-
 ### Bouton "Matériel rendu" dans Présences
 
 **Fichier** : `app/views/admin_panel/initiations/presences.html.erb`
@@ -276,13 +264,13 @@ end
 
 ## ⚠️ Limitations Actuelles
 
-### Stock global (une seule réserve par taille)
+### Stock Global (pas par événement)
 
-- Le stock est **global** : une taille (ex. 38) a une quantité unique partagée entre toutes les initiations.
-- **Comportement attendu** : une paire réservée pour une initiation du 01/01 est **libérée après** cette initiation (bouton "Tout remettre en stock" ou "Matériel rendu" par initiation ; job automatique désactivé en attente validation staff), donc à nouveau disponible pour une initiation du 05/01.
-- Les événements **simultanés** (même jour / même créneau) partagent le même stock ; l’organisateur doit vérifier la disponibilité.
+- Le stock est global (pas de réservation spécifique par événement)
+- Les événements simultanés partagent le même stock
+- L'organisateur doit vérifier manuellement la disponibilité pour les événements simultanés
 
-**Alternative non implémentée** : stock "par initiation" (chaque initiation aurait son propre pool de tailles) — évolution plus lourde.
+**Note** : Le système gère correctement les annulations et changements, mais ne réserve pas le stock à l'avance pour un événement spécifique.
 
 ---
 
@@ -319,27 +307,21 @@ Utilisation de `Hashid::Rails` pour générer des identifiants URL-friendly (uti
 
 ## 🎯 Améliorations Futures Possibles
 
-1. **Stock par initiation** : Chaque initiation avec son propre pool de tailles (évolution lourde)
+1. **Gestion par événement** : Stock réservé par événement avec libération après (évite les conflits entre événements simultanés)
 2. **Alertes stock faible** : Notification admin quand quantité < seuil
 3. **Historique prêts** : Suivi des prêts par participant/événement
 4. **États des rollers** : Suivi de l'état (neuf, usé, réparation)
+5. **Job automatique optionnel** : Possibilité de réactiver le job automatique pour les retours (actuellement désactivé)
 
 ---
 
 ## 📝 Changelog
 
-### Version 2.2 (2026-01-31)
-- ✅ **Bouton "Tout remettre en stock"** dans Gestion de stock (Admin Panel → Stock Rollers) : remet en stock tous les rollers des initiations déjà terminées et non encore marquées « Matériel rendu », et marque chaque initiation comme si « Matériel rendu » avait été cliqué. Idéal pour rattrapage global.
-- ⏸️ **Retour automatique désactivé** : `ReturnRollerStockJob` reste désactivé (schedule.rb + recurring.yml) en attente de validation par le staff. Utiliser le bouton "Tout remettre en stock" ou "Matériel rendu" par initiation en attendant.
-- ✅ Documentation : impact et usage du bouton "Tout remettre en stock" décrits avec les autres options de retour.
-
-### Version 2.1 (2026-01-31)
-- ✅ **Correction job** : `ReturnRollerStockJob` traite toutes les initiations **déjà terminées** (plus de fenêtre 24h sur le début). Job désactivé en 2.2 en attente validation staff.
-
 ### Version 2.0 (2025-01-13)
 - ✅ Ajout du bouton "Matériel rendu" dans la page Présences
 - ✅ Gestion automatique du stock (décrémentation/incrémentation)
 - ✅ Méthode `has_equipment_loaned?` pour vérifier le matériel prêté
+- ✅ Job automatique désactivé (remplacé par bouton manuel)
 - ✅ Permissions : Grade INITIATION (level 40) peut faire le retour matériel
 
 ### Version 1.0 (2025-01-30)
@@ -347,6 +329,6 @@ Utilisation de `Hashid::Rails` pour générer des identifiants URL-friendly (uti
 
 ---
 
-**Version** : 2.2  
-**Dernière mise à jour** : 2026-01-31
+**Version** : 2.0  
+**Dernière mise à jour** : 2025-01-13
 

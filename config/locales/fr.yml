@@ -54,10 +54,7 @@ fr:
     models:
       user: "Utilisateur"
       membership: "Adhésion"
-      homepage_carousel: "Slide du carrousel"
     attributes:
-      homepage_carousel:
-        position: "Position"
       user:
         role: "Rôle"
         role_id: "Rôle"
@@ -84,10 +81,6 @@ fr:
               required: "doit être renseigné"
             role_id:
               required: "doit être renseigné"
-        homepage_carousel:
-          attributes:
-            position:
-              taken: "est déjà utilisée par un autre slide"
         membership:
           attributes:
             start_date:
@@ -120,7 +113,6 @@ fr:
       messages:
         record_invalid: "La validation a échoué : %{errors}"
         blank: "doit être renseigné"
-        taken: "est déjà utilisé"
         too_short: "doit contenir au moins %{count} caractères"
         too_long: "ne peut pas dépasser %{count} caractères"
   
@@ -134,70 +126,3 @@ fr:
   active_admin:
     logout: "Retour à l'accueil"
 
-  # Libellés des statuts (commandes, paiements, adhésions, participations, etc.)
-  statuses:
-    order:
-      pending: "En attente"
-      paid: "Payée"
-      payé: "Payée"
-      preparation: "En préparation"
-      preparing: "En préparation"
-      shipped: "Expédiée"
-      sent: "Expédiée"
-      envoyé: "Expédiée"
-      cancelled: "Annulée"
-      canceled: "Annulée"
-      annulé: "Annulée"
-      refund_requested: "Remboursement demandé"
-      refunded: "Remboursée"
-      remboursé: "Remboursée"
-      failed: "Échouée"
-      finished: "Terminée"
-      terminé: "Terminée"
-    payment:
-      pending: "En attente"
-      completed: "Complété"
-      succeeded: "Réussi"
-      failed: "Échoué"
-      cancelled: "Annulé"
-      refunded: "Remboursé"
-    membership:
-      pending: "En attente"
-      active: "Active"
-      expired: "Expirée"
-      trial: "Essai gratuit"
-    attendance:
-      pending: "En attente"
-      registered: "Inscrit"
-      paid: "Payé"
-      present: "Présent"
-      absent: "Absent"
-      canceled: "Annulé"
-      cancelled: "Annulé"
-      no_show: "Non présent"
-    waitlist_entry:
-      waiting: "En attente"
-      pending: "En attente"
-      notified: "Notifié"
-      converted: "Converti"
-      accepted: "Accepté"
-      refused: "Refusé"
-      cancelled: "Annulé"
-      canceled: "Annulé"
-    organizer_application:
-      pending: "En attente"
-      approved: "Approuvée"
-      approved_plural: "Approuvées"
-      rejected: "Refusée"
-      rejected_plural: "Refusées"
-    event:
-      draft: "En attente de validation"
-      pending_validation: "En attente de validation"
-      published: "Publié"
-      rejected: "Refusé"
-      canceled: "Annulé"
-      cancelled: "Annulé"
-    mail_log:
-      pending: "En attente"
-      finished: "Terminés"
-      failed: "Échecs"

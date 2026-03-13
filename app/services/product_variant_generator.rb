@@ -113,8 +113,7 @@ class ProductVariantGenerator
   end
 
   # NOUVEAU : Générer combinaisons avec valeurs individuelles sélectionnées
-  # @param base_stock_qty [Integer] Stock initial à appliquer à chaque variante (défaut: 0)
-  def self.generate_combinations_from_values(product, option_value_ids, base_stock_qty: 0)
+  def self.generate_combinations_from_values(product, option_value_ids)
     return 0 if option_value_ids.blank? || product.nil?
 
     option_values = OptionValue.where(id: option_value_ids).includes(:option_type).order(:value)
@@ -137,8 +136,6 @@ class ProductVariantGenerator
 
     return 0 if combinations.nil? || combinations.empty?
 
-    stock_initial = base_stock_qty.to_i
-
     ActiveRecord::Base.transaction do
       combinations.each do |combo|
         # Générer SKU sûr + unique
@@ -148,7 +145,7 @@ class ProductVariantGenerator
           sku: sku,
           price_cents: product.price_cents,
           currency: product.currency || "EUR",
-          stock_qty: stock_initial,
+          stock_qty: 0,
           is_active: false  # Créer inactif par défaut, nécessite une image pour activer
         )
         # Ignorer la validation d'image lors de la génération automatique
@@ -169,8 +166,7 @@ class ProductVariantGenerator
   end
 
   # NOUVEAU : Générer combinaisons (avec transaction)
-  # @param base_stock_qty [Integer] Stock initial à appliquer à chaque variante (défaut: 0)
-  def self.generate_combinations(product, option_ids, base_stock_qty: 0)
+  def self.generate_combinations(product, option_ids)
     return 0 if option_ids.blank? || product.nil?
 
     option_types = OptionType.where(id: option_ids)
@@ -182,8 +178,6 @@ class ProductVariantGenerator
     combinations = option_values_array.first&.product(*option_values_array[1..-1])
     return 0 if combinations.nil? || combinations.empty?
 
-    stock_initial = base_stock_qty.to_i
-
     ActiveRecord::Base.transaction do
       combinations.each do |combo|
         # Générer SKU sûr + unique
@@ -193,7 +187,7 @@ class ProductVariantGenerator
           sku: sku,
           price_cents: product.price_cents,  # NOUVEAU : Héritage prix
           currency: product.currency || "EUR",
-          stock_qty: stock_initial,
+          stock_qty: 0,
           is_active: false  # Créer inactif par défaut, nécessite une image pour activer
         )
         # Ignorer la validation d'image lors de la génération automatique

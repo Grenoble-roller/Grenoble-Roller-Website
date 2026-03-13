@@ -29,7 +29,18 @@
           'btn-secondary'
       end
       
-      status_text = membership.status == 'trial' ? t("statuses.membership.trial") : human_status(:membership, membership.status)
+      status_text = case membership.status
+        when 'pending'
+          'En attente'
+        when 'active'
+          'Active'
+        when 'expired'
+          'Expirée'
+        when 'trial'
+          'Essai gratuit'
+        else
+          membership.status.humanize
+      end
     %>
     <span class="badge <%= status_btn %>"><%= status_text %></span>
 

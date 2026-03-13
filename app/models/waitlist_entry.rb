@@ -90,10 +90,6 @@ class WaitlistEntry < ApplicationRecord
     attendance = build_pending_attendance
     bypass_validations_if_initiation(attendance)
 
-    # #region agent log
-    File.open("/home/flowtech/The_Hacking_Project/Mes-repo/Grenoble-Roller-Project/.cursor/debug.log", "a") { |f| f.puts({ id: "log_#{Time.now.to_f}", timestamp: (Time.now.to_f * 1000).to_i, location: "waitlist_entry.rb:notify!", message: "notify! saving pending", data: { event_type: event.class.name, free_trial_used: attendance.free_trial_used, saving_validate_false: true }, hypothesisId: "H2" }.to_json) }
-    # #endregion
-
     if attendance.save(validate: false) # Sauvegarder sans validation pour éviter les erreurs d'autorisation
       notified_time = Time.current
       update!(
@@ -126,11 +122,6 @@ class WaitlistEntry < ApplicationRecord
       Rails.logger.error("Pending attendance not found for WaitlistEntry #{id} (user: #{user_id}, event: #{event_id}, child_membership_id: #{child_membership_id.inspect})")
       return false
     end
-
-    # #region agent log
-    parent_member = event.is_a?(Event::Initiation) && child_membership_id.blank? ? user.memberships.active_now.where(is_child_membership: false).exists? : nil
-    File.open("/home/flowtech/The_Hacking_Project/Mes-repo/Grenoble-Roller-Project/.cursor/debug.log", "a") { |f| f.puts({ id: "log_#{Time.now.to_f}", timestamp: (Time.now.to_f * 1000).to_i, location: "waitlist_entry.rb:convert_to_attendance!", message: "convert without re-validation", data: { attendance_id: attendance.id, free_trial_used: attendance.free_trial_used, is_initiation: event.is_a?(Event::Initiation), parent_has_active_membership: parent_member }, hypothesisId: "H3" }.to_json) }
-    # #endregion
 
     # Passer de "pending" à "registered"
     # Ne pas re-vérifier les validations d'adhésion/essai gratuit car elles ont déjà été vérifiées lors de l'inscription en liste d'attente

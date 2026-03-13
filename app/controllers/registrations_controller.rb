@@ -41,20 +41,6 @@ class RegistrationsController < Devise::RegistrationsController
     render json: { valid: false, message: "Erreur lors de la vérification" }, status: :internal_server_error
   end
 
-  # DELETE /users (suppression de compte)
-  # Bloquer avec un message explicite si un enfant rattaché a une adhésion active
-  def destroy
-    if resource.has_active_children_memberships?
-      redirect_to edit_user_registration_path,
-                  alert: "La suppression de votre compte n'est pas possible tant qu'un enfant rattaché à votre compte a une adhésion active. " \
-                         "Contactez l'association pour plus d'information.",
-                  status: :see_other
-      return
-    end
-
-    super
-  end
-
   # POST /resource
   def create
     # Vérifier le consentement RGPD avant création

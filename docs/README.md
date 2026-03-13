@@ -110,7 +110,6 @@ Ce dossier structure la **documentation vivante** du monolithe Ruby on Rails. El
 - ✅ `04-rails/background-jobs/` - Documentation complète des jobs récurrents (Solid Queue, migration terminée)
 - ✅ `02-shape-up/building/phase2-migrations-models.md` - Documentation Phase 2 (migrations et modèles) ✅ **TERMINÉ**
 - ✅ `04-rails/setup/README.md` - Index de la documentation setup Rails
-- ✅ `04-rails/pwa/` - Étude PWA (Progressive Web App) conformité 2026, modifications à prévoir, impact déploiement (Kamal vs scripts)
 
 ### Événements & Initiations
 - ✅ `06-events/README.md` - Documentation complète gestion événements

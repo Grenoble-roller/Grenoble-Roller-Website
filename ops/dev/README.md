@@ -16,23 +16,7 @@ Scripts dédiés à l'environnement de développement.
 
 ## 🚀 Utilisation
 
-### Lancer les conteneurs (Docker Compose)
-
-```bash
-# Depuis la racine du projet
-docker compose -f ops/dev/docker-compose.yml up -d
-```
-
-### Migrations base de données
-
-```bash
-# Exécuter les migrations dans le conteneur Rails (service "web")
-docker compose -f ops/dev/docker-compose.yml exec web bin/rails db:migrate
-```
-
-> **Attention** : `exec` attend d’abord le **nom du service** (`web`), puis la commande. Ne pas utiliser `exec db:migrate` (erreur « requires at least 2 arg(s) »).
-
-### Test manuel du déploiement
+### Test manuel
 
 ```bash
 # Depuis la racine du projet
