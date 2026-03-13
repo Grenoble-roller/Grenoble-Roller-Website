@@ -3,10 +3,10 @@
 module AdminPanel
   module Event
     class InitiationPolicy < AdminPanel::BasePolicy
-      # Permissions pour les initiations :
-      # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
-      # - Lecture (index?, show?) : level >= 40
-      # - Écriture (create?, update?, destroy?) : level >= 40
+      # Permissions par level uniquement (les noms de grades ne sont pas utilisés) :
+      # - Lecture (index?, show?) : level >= 30
+      # - Écriture (create?, update?, destroy?) : level >= 60
+      # - return_material? : level >= 40
       # - Actions spéciales (presences, waitlist, etc.) : level >= 60
 
       def index?
@@ -18,15 +18,15 @@ module AdminPanel
       end
 
       def create?
-        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
+        admin_user?
       end
 
       def update?
-        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
+        admin_user?
       end
 
       def destroy?
-        can_view_initiations? # level >= 40 (ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
+        admin_user?
       end
 
       def presences?
@@ -50,20 +50,20 @@ module AdminPanel
       end
 
       def return_material?
-        can_view_initiations? # level >= 40 (INITIATION, ORGANIZER, MODERATOR, ADMIN, SUPERADMIN)
+        can_return_material?
       end
 
       private
 
       def can_view_initiations?
-        # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
-        # Level >= 40 permet la lecture des initiations
+        user.present? && user.role&.level.to_i >= 30
+      end
+
+      def can_return_material?
         user.present? && user.role&.level.to_i >= 40
       end
 
       def admin_user?
-        # IMPORTANT : Utilise le NUMÉRO du level, pas le code du rôle
-        # Level >= 60 permet l'écriture et les actions spéciales
         user.present? && user.role&.level.to_i >= 60
       end
     end

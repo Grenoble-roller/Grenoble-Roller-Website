@@ -32,18 +32,7 @@
       </div>
       <div class="col-md-6">
         <p><strong>Statut :</strong>
-          <% case @initiation.status %>
-          <% when 'published' %>
-            <span class="badge bg-success">Publié</span>
-          <% when 'draft' %>
-            <span class="badge bg-secondary">Brouillon</span>
-          <% when 'rejected' %>
-            <span class="badge bg-danger">Rejetée</span>
-          <% when 'canceled' %>
-            <span class="badge bg-danger">Annulé</span>
-          <% else %>
-            <span class="badge bg-secondary"><%= @initiation.status %></span>
-          <% end %>
+          <%= render "shared/event_status_badge", record: @initiation, badge_prefix: "badge" %>
         </p>
         <p><strong>Places :</strong>
           <% if @initiation.full? %>

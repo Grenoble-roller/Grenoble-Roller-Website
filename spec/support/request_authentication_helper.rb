@@ -4,9 +4,9 @@
 module RequestAuthenticationHelper
   # Wrapper pour utiliser sign_in de Devise de manière cohérente
   # @param user [User] L'utilisateur à authentifier
-  def login_user(user)
+  # @param _options [Hash] Options ignorées (ex: confirm_user: false pour compatibilité avec orders_spec)
+  def login_user(user, **_options)
     # ✅ Utiliser sign_in natif de Devise (fonctionne avec DatabaseCleaner + truncation)
-    # S'assurer que le mapping Devise est configuré
     sign_in user
   rescue RuntimeError => e
     # Fallback: si sign_in échoue, utiliser POST (comme avant)

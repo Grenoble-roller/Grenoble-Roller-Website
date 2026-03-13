@@ -185,10 +185,10 @@ Devise.setup do |config|
   # NIST 2025 standard : 12 caractères minimum (excellent équilibre sécurité/UX)
   config.password_length = 12..128
 
-  # Email regex used to validate email formats. It simply asserts that
-  # one (and only one) @ exists in the given string. This is mainly
-  # to give user feedback and not to assert the e-mail validity.
-  config.email_regexp = /\A[^@\s]+@[^@\s]+\z/
+  # Email regex (bonnes pratiques 2025) : exige un domaine avec TLD (ex. .com, .fr)
+  # pour refuser des saisies comme "user@gmail". Inspiré RFC 5322, sans être exhaustif.
+  # Limites : partie locale et domaine raisonnables, TLD d'au moins 2 caractères.
+  config.email_regexp = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]{2,}\z/i
 
   # ==> Configuration for :timeoutable
   # The time you want to timeout the user session without activity. After this

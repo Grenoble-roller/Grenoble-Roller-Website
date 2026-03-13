@@ -57,15 +57,15 @@ Cette section est réservée pour la documentation des **fonctionnalités en cou
 ### 🟡 Priorité Moyenne
 
 #### Page d'Accueil - Amélioration & Autonomie Bénévoles
-- ❌ Système de communication bénévoles (carrousel images, annonces, etc.)
-- ❌ Interface d'administration autonome pour bénévoles (gestion contenu homepage)
+- ✅ **Carrousel hero (HomepageCarousel)** — implémenté (AdminPanel CRUD, publish/unpublish, move_up/move_down, partial `pages/_carousel`, level ORGANIZER+)
+- ❌ Système d’annonces (HomepageAnnouncement)
+- ❌ Galerie photos événements passés, témoignages
 
-**Impact** : Haut (autonomie bénévoles)  
-**Effort** : Moyen  
 **Références** :
-- [`homepage-quick-wins.md`](./homepage-quick-wins.md) - **NOUVEAU** - Quick wins (difficulté faible + impact élevé)
-- [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - Plan complet avec gestion admin détaillée
-- [`homepage-reflection.md`](./homepage-reflection.md) - Réflexion initiale + prompt Perplexity
+- **[`homepage-carousel.md`](./homepage-carousel.md)** — Doc dédiée carrousel (liens code, routes, vues, doc associée)
+- [`homepage-quick-wins.md`](./homepage-quick-wins.md) - Quick wins (difficulté faible + impact élevé)
+- [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - Plan complet (état carousel à jour 2026-03-09)
+- [`homepage-reflection.md`](./homepage-reflection.md) - Réflexion initiale (checklist carousel alignée)
 
 #### Calendrier Interactif
 - ❌ Vue calendrier (FullCalendar) pour événements

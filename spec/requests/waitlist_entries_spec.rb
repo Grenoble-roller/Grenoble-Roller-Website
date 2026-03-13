@@ -73,9 +73,55 @@ RSpec.describe 'Waitlist Entries', type: :request do
         expect(response).to redirect_to(new_user_session_path)
       end
 
-      context 'when parent without membership' do
-        it 'refuses parent without active membership (règle staff : liste d\'attente réservée aux adhérents)' do
+      it 'prevents non-member from joining initiation waitlist (members only)' do
+        login_user(user)
+        expect(user.memberships.active_now.where(is_child_membership: false).exists?).to be(false)
+
+        expect {
+          post initiation_waitlist_entries_path(initiation), params: {
+            use_free_trial: '1',
+            wants_reminder: false
+          }
+        }.not_to change { WaitlistEntry.count }
+
+        expect(response).to redirect_to(initiation_path(initiation))
+        expect(flash[:alert]).to include("réservée aux adhérents")
+      end
+
+      context 'with parent (member)' do
+        before do
+          create(:membership, user: user, status: :active, season: '2025-2026', is_child_membership: false)
+        end
+
+        it 'allows member to join waitlist with free trial if not already used' do
           login_user(user)
+
+          expect {
+            post initiation_waitlist_entries_path(initiation), params: {
+              use_free_trial: '1',
+              wants_reminder: false
+            }
+          }.to change { WaitlistEntry.count }.by(1)
+
+          waitlist_entry = WaitlistEntry.last
+          expect(waitlist_entry.use_free_trial).to be true
+          expect(waitlist_entry.child_membership_id).to be_nil
+          expect(response).to redirect_to(initiation_path(initiation))
+          expect(flash[:notice]).to be_present
+        end
+
+        it 'prevents parent from joining waitlist if free trial already used' do
+          other_initiation = create(:event_initiation, :published, :upcoming, max_participants: 10)
+          create(:attendance,
+            user: user,
+            event: other_initiation,
+            status: 'registered',
+            free_trial_used: true,
+            child_membership_id: nil
+          )
+
+          login_user(user)
+
           expect {
             post initiation_waitlist_entries_path(initiation), params: {
               use_free_trial: '0',
@@ -89,26 +135,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
         end
       end
 
-      context 'when parent with active membership' do
-        it 'allows parent with active membership to join waitlist' do
-          create(:membership, user: user, season: "2025-2026", is_child_membership: false)
-          login_user(user)
-
-          expect {
-            post initiation_waitlist_entries_path(initiation), params: {
-              use_free_trial: '0',
-              wants_reminder: false
-            }
-          }.to change { WaitlistEntry.count }.by(1)
-
-          waitlist_entry = WaitlistEntry.last
-          expect(waitlist_entry.child_membership_id).to be_nil
-          expect(response).to redirect_to(initiation_path(initiation))
-          expect(flash[:notice]).to be_present
-        end
-      end
-
-      context 'when child with trial membership' do
+      context 'with child trial membership' do
         let(:child_membership) do
           create(:membership, :child, :trial, :with_health_questionnaire,
             user: user,
@@ -116,7 +143,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
           )
         end
 
-        it 'refuses child with trial membership (règle staff : adhésion active requise)' do
+        it 'prevents child with trial from joining initiation waitlist (members only, active child)' do
           login_user(user)
 
           expect {
@@ -129,11 +156,10 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
           expect(response).to redirect_to(initiation_path(initiation))
           expect(flash[:alert]).to include("réservée aux adhérents")
-          expect(flash[:alert]).to include("adhésion active")
         end
       end
 
-      context 'when child with pending membership' do
+      context 'with child pending membership' do
         let(:child_membership) do
           create(:membership, :child, :pending, :with_health_questionnaire,
             user: user,
@@ -141,7 +167,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
           )
         end
 
-        it 'refuses child with pending membership (règle staff : adhésion active requise)' do
+        it 'prevents child with pending from joining initiation waitlist (members only, active child)' do
           login_user(user)
 
           expect {
@@ -154,15 +180,15 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
           expect(response).to redirect_to(initiation_path(initiation))
           expect(flash[:alert]).to include("réservée aux adhérents")
-          expect(flash[:alert]).to include("adhésion active")
         end
       end
 
-      context 'when child with active membership' do
+      context 'with child active membership' do
         let(:child_membership) do
           create(:membership, :child, :with_health_questionnaire,
             user: user,
-            season: '2025-2026'
+            season: '2025-2026',
+            status: :active
           )
         end
 
@@ -172,7 +198,6 @@ RSpec.describe 'Waitlist Entries', type: :request do
           expect {
             post initiation_waitlist_entries_path(initiation), params: {
               child_membership_id: child_membership.id,
-              use_free_trial: '0',
               wants_reminder: false
             }
           }.to change { WaitlistEntry.count }.by(1)

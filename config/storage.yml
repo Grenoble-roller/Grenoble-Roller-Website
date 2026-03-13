@@ -7,13 +7,14 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 # MinIO configuration (S3-compatible for dev/staging/prod)
+# En Docker dev : utiliser les variables d'environnement (MINIO_*). Sinon : credentials Rails.
 minio:
   service: S3
-  access_key_id: <%= Rails.application.credentials.dig(:minio, :access_key_id) %>
-  secret_access_key: <%= Rails.application.credentials.dig(:minio, :secret_access_key) %>
+  access_key_id: <%= ENV["MINIO_ACCESS_KEY_ID"].presence || Rails.application.credentials.dig(:minio, :access_key_id) %>
+  secret_access_key: <%= ENV["MINIO_SECRET_ACCESS_KEY"].presence || Rails.application.credentials.dig(:minio, :secret_access_key) %>
   region: us-east-1
   bucket: grenoble-roller-<%= Rails.env %>
-  endpoint: <%= Rails.application.credentials.dig(:minio, :endpoint) %>
+  endpoint: <%= ENV["MINIO_ENDPOINT"].presence || Rails.application.credentials.dig(:minio, :endpoint) %>
   force_path_style: true
 
 # Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)

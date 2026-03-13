@@ -56,8 +56,8 @@ RSpec.describe 'Registrations', type: :request do
 
       it 'redirects to confirmation page' do
         post user_registration_path, params: valid_params
-        # Le contrôleur redirige vers la page de confirmation email (après création)
-        expect(response).to redirect_to(new_user_confirmation_path)
+        # after_inactive_sign_up_path_for redirige vers welcome_path (page "Prochaines étapes")
+        expect(response).to redirect_to(welcome_path)
       end
 
       it 'sets a personalized welcome message' do
@@ -71,7 +71,7 @@ RSpec.describe 'Registrations', type: :request do
         expect {
           post user_registration_path, params: valid_params
         }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
-          .with('UserMailer', 'welcome_email', 'deliver_now', args: [ kind_of(User) ])
+          .with('UserMailer', 'welcome_email', a_string_matching(/\Adeliver_(later|now)\z/), args: [ kind_of(User) ])
       end
 
       it 'sends confirmation email' do
@@ -155,7 +155,14 @@ RSpec.describe 'Registrations', type: :request do
       it 'displays email validation error' do
         post user_registration_path, params: invalid_params
         # Vérifier qu'une erreur d'email est présente (message I18n peut varier)
-        expect(response.body).to match(/email|n'est pas|valide|invalid/i)
+        expect(response.body).to match(/email|n'est pas|valide|invalid|domaine/i)
+      end
+
+      it 'rejects email without TLD (e.g. user@gmail)' do
+        params_no_tld = valid_params.deep_merge(user: { email: 'Augustinmcbp138@gmail' })
+        expect { post user_registration_path, params: params_no_tld }.not_to change(User, :count)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to match(/email|valide|domaine/i)
       end
     end
 

@@ -14,8 +14,9 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 ## 📚 Documentation Disponible
 
 ### Page d'Accueil & Communication
-- [`homepage-reflection.md`](./homepage-reflection.md) - Réflexion sur l'amélioration de la page d'accueil avec focus autonomie bénévoles (carrousel images, annonces, galerie photos, témoignages)
-- [`homepage-implementation-plan.md`](./homepage-implementation-plan.md) - **NOUVEAU** - Plan d'implémentation détaillé : éléments réalisables classés par pertinence et faisabilité, avec checklist complète
+- **Carrousel hero** : ✅ implémenté. **Doc dédiée** : [`../development/homepage-carousel.md`](../development/homepage-carousel.md) (liens code, routes, vues, doc associée).
+- [`../development/homepage-implementation-plan.md`](../development/homepage-implementation-plan.md) - Plan d’implémentation (carousel complété ; annonces/galerie/témoignages non faits)
+- [`../development/homepage-reflection.md`](../development/homepage-reflection.md) - Réflexion page d'accueil (annonces, galerie, témoignages à faire)
 
 ## 📚 Documentation Disponible
 

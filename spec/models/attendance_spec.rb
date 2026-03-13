@@ -430,13 +430,18 @@ RSpec.describe Attendance, type: :model do
       end
 
       context 'when user has child membership' do
-        before do
-          # Utiliser le trait :child pour respecter toutes les validations des adhésions enfants
+        let!(:child_membership) do
           create(:membership, :child, user: user, status: :active, season: '2025-2026')
         end
 
         it 'allows registration with child membership' do
-          attendance = build_attendance(user: user, event: initiation, free_trial_used: false)
+          # Inscription pour l'enfant (child_membership_id) : adhésion enfant active = pas besoin d'essai gratuit
+          attendance = build_attendance(
+            user: user,
+            event: initiation,
+            free_trial_used: false,
+            child_membership_id: child_membership.id
+          )
           expect(attendance).to be_valid
         end
       end

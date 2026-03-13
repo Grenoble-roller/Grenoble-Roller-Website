@@ -32,6 +32,21 @@ docker compose -f ops/dev/docker-compose.yml exec web bin/rails db:migrate
 
 > **Attention** : `exec` attend d’abord le **nom du service** (`web`), puis la commande. Ne pas utiliser `exec db:migrate` (erreur « requires at least 2 arg(s) »).
 
+### Lancer les tests RSpec
+
+Le conteneur `web` tourne en `RAILS_ENV=development`. Les specs doivent s'exécuter en **test** : passer `RAILS_ENV=test` à `exec`.
+
+```bash
+# Tous les specs
+docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec spec/
+
+# Un fichier ou une ligne
+docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec spec/models/event/initiation_spec.rb
+docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec spec/models/event/initiation_spec.rb:31
+```
+
+Sans `-e RAILS_ENV=test`, tu obtiendras : `spec/support ne peut être chargé qu'en environnement de test! (actuel: development)`.
+
 ### Test manuel du déploiement
 
 ```bash
