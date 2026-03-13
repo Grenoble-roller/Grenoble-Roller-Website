@@ -95,7 +95,7 @@ group :development do
   gem "web-console"
 
   # File watcher for auto-reload in development (required for Docker volumes)
-  gem "listen", "~> 3.8"
+  gem "listen", "~> 3.10"
 end
 
 group :test do
