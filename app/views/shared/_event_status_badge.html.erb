@@ -1,0 +1,14 @@
+<%# Badge de statut pour Event ou Event::Initiation (même enum status).
+    Utilise les libellés I18n statuses.event.* pour harmoniser partout.
+    Variables: record (event ou initiation), optionnel: badge_prefix ("badge" ou "badge-liquid") %>
+<% badge_prefix = local_assigns.fetch(:badge_prefix, "badge-liquid") %>
+<% status = record.status.to_s %>
+<% badge_suffix = case status
+   when "published" then "success"
+   when "draft" then "warning"
+   when "rejected", "canceled" then "danger"
+   else "secondary"
+   end %>
+<span class="badge <%= badge_prefix %>-<%= badge_suffix %>" data-status="<%= status %>">
+  <%= human_status(:event, status) %>
+</span>

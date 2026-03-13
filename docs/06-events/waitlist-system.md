@@ -254,13 +254,16 @@ Mêmes routes que pour les événements généraux.
 
 ### Event::InitiationPolicy
 
-Mêmes autorisations que `EventPolicy`, avec vérifications supplémentaires pour initiations.
+- `join_waitlist?` : Utilisateur connecté, événement complet, **et adhérent** (demande bénévoles). Pour les initiations, la liste d'attente est **réservée aux adhérents** : parent = adhésion adulte active ; enfant = adhésion enfant **active** uniquement (trial et pending ne peuvent pas rejoindre la liste d'attente). Les non-adhérents ne peuvent pas rejoindre la liste d'attente (ils peuvent uniquement s'inscrire directement si une place est libre, avec essai gratuit si disponible).
+- `leave_waitlist?`, `convert_waitlist_to_attendance?`, `refuse_waitlist?` : comme `EventPolicy`.
 
 ---
 
 ## 🎯 Cas Particuliers
 
 ### Initiations
+
+**Liste d'attente réservée aux adhérents** : Pour les initiations, seuls les adhérents (parent avec adhésion adulte active, ou enfant avec adhésion **active** uniquement) peuvent rejoindre la liste d'attente. Les enfants en trial ou pending ne peuvent pas rejoindre la liste d'attente. Cela évite le contournement : s'inscrire en liste d'attente sans cocher l'essai gratuit, confirmer à la libération d'une place, puis utiliser l'essai gratuit sur une autre initiation.
 
 Pour les initiations (`Event::Initiation`), des validations spéciales sont bypassées lors de la conversion :
 

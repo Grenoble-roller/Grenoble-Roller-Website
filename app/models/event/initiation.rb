@@ -9,7 +9,8 @@ class Event::Initiation < Event
 
   # description : assouplir la validation (minimum 10 caractères au lieu de 20)
   # La validation du parent est désactivée avec unless: :initiation?, on redéfinit ici
-  validates :description, presence: true, length: { minimum: 10, maximum: 1000 }
+  # Max 5000: same as Event; allows programme, consignes, links; doc initiations-specification-finale
+  validates :description, presence: true, length: { minimum: 10, maximum: 5000 }
 
   # Validations spécifiques
   validates :max_participants, presence: true, numericality: { greater_than: 0 }
@@ -116,9 +117,10 @@ class Event::Initiation < Event
         # Pour un enfant : vérifier l'adhésion enfant
         is_member = attendance.child_membership&.active?
       else
-        # Pour le parent : vérifier UNIQUEMENT l'adhésion parent (pas celle des enfants)
+        # Pour le parent : adhésion adulte OU au moins une adhésion enfant active (parent "via adhésion enfant")
         # ⚠️ v4.0 : Les essais gratuits sont NOMINATIFS - pas d'adhésion "famille"
-        is_member = attendance.user.memberships.active_now.where(is_child_membership: false).exists?
+        is_member = attendance.user.memberships.active_now.where(is_child_membership: false).exists? ||
+                    attendance.user.memberships.active_now.where(is_child_membership: true).exists?
       end
 
       count += 1 if is_member

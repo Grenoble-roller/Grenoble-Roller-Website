@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-bs-theme="light">
+<html lang="fr" data-bs-theme="dark">
   <head>
     <title><%= content_for(:title) || "Grenoble Roller" %></title>
     <meta charset="UTF-8">
@@ -10,15 +10,18 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= yield :head %>
-
     <!-- Favicons -->
     <%= favicon_link_tag asset_path('favicon-512.png'), type: 'image/png', sizes: '512x512' %>
     <link rel="apple-touch-icon" href="<%= asset_path('favicon-512.png') %>" sizes="512x512">
     <link rel="shortcut icon" href="<%= asset_path('favicon-512.png') %>" type="image/png">
 
+    <!-- PWA -->
+    <link rel="manifest" href="<%= pwa_manifest_path %>">
+    <meta name="theme-color" content="#007bff">
+
     <%= stylesheet_link_tag "application.bootstrap", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= yield :head %>
   </head>
 
   <body class="d-flex flex-column min-vh-100">
@@ -38,6 +41,9 @@
 
     <!-- Cookie Consent Banner -->
     <%= render 'layouts/cookie_banner' %>
+
+    <!-- PWA Install Banner (mobile : propose d'installer l'app) -->
+    <%= render 'layouts/pwa_install_banner' %>
 
     <!-- Theme toggle script -->
     <script>
@@ -75,7 +81,7 @@
       
       // Initialize theme when DOM is ready
       document.addEventListener('DOMContentLoaded', function() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem('theme') || 'dark';
         const html = document.documentElement;
         
         html.setAttribute('data-bs-theme', savedTheme);

@@ -91,7 +91,11 @@ Rails.application.routes.draw do
     end
 
     # Roller Stock
-    resources :roller_stocks, path: "roller-stocks"
+    resources :roller_stocks, path: "roller-stocks" do
+      collection do
+        post :return_all
+      end
+    end
 
     # Utilisateurs
     resources :users
@@ -99,6 +103,7 @@ Rails.application.routes.draw do
     resources :memberships do
       member do
         patch :activate
+        post :check_payment
       end
     end
 
@@ -161,9 +166,9 @@ Rails.application.routes.draw do
   # Returns JSON with detailed status (DB + migrations) - useful for monitoring/alerting
   get "health" => "health#check", as: :health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  # PWA: manifest et service worker (liens dans application.html.erb)
+  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
   # root "posts#index"

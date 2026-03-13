@@ -79,7 +79,7 @@
                 <td><%= l(attendance.created_at, format: :short) %></td>
                 <td>
                   <span class="badge bg-<%= attendance.status == 'present' ? 'success' : 'secondary' %>">
-                    <%= attendance.status.humanize %>
+                    <%= human_status(:attendance, attendance.status) %>
                   </span>
                 </td>
               </tr>

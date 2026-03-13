@@ -87,9 +87,9 @@ docker exec grenoble-roller-dev bin/rails db:seed
 - Database: localhost:5434 (user: postgres, password: postgres)
 
 ### Default Test Accounts
-- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX123`
-- **Admin**: `admin@roller.com` / `admin123`
-- **Test Users**: `client1@example.com` to `client5@example.com` / `password123`
+- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX12345678`
+- **Admin**: `admin@roller.com` / `admin12345678`
+- **Test Users**: voir les 50 utilisateurs créés par le seed / `password12345678`
 
 ## 📁 Project Structure
 

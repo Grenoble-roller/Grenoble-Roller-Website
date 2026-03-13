@@ -226,7 +226,9 @@ class OrdersController < ApplicationController
     end
 
     redirect_to order_path(@order), notice: "Commande annulée avec succès."
-  rescue => e
+  rescue ActiveRecord::RecordNotFound
+    raise
+  rescue StandardError => e
     redirect_to order_path(@order), alert: "Erreur lors de l'annulation : #{e.message}"
   end
 
@@ -236,9 +238,9 @@ class OrdersController < ApplicationController
     session[:cart] ||= {}
     variant_ids = session[:cart].keys
     return [] if variant_ids.empty?
-    variants = ProductVariant.where(id: variant_ids).includes(:product).index_by { |v| v.id.to_s }
+    variants = ProductVariant.where(id: variant_ids).includes(:product, :inventory).index_by { |v| v.id.to_s }
     session[:cart].map do |vid, qty|
-      variant = variants[vid]
+      variant = variants[vid.to_s]
       next nil unless variant
       price_cents = variant.price_cents
       {

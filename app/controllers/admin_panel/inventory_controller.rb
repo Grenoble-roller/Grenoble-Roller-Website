@@ -7,20 +7,22 @@ module AdminPanel
     before_action :authorize_inventory
 
     # GET /admin-panel/inventory
+    # Utiliser left_joins pour inclure les variantes avec ou sans enregistrement Inventory
+    # Stock disponible = COALESCE(inventory.stock_qty, variant.stock_qty) - COALESCE(inventory.reserved_qty, 0)
     def index
-      # Stock faible (<= 10) - Calcul: stock_qty - reserved_qty
+      available_sql = "COALESCE(inventories.stock_qty, product_variants.stock_qty) - COALESCE(inventories.reserved_qty, 0)"
+
       @low_stock = ProductVariant
-        .joins(:inventory)
-        .where("(inventories.stock_qty - inventories.reserved_qty) <= ?", 10)
+        .left_joins(:inventory)
         .where(is_active: true)
-        .order(Arel.sql("(inventories.stock_qty - inventories.reserved_qty) ASC"))
+        .where("#{available_sql} <= ?", 10)
+        .order(Arel.sql("#{available_sql} ASC"))
         .includes(:product, :inventory)
 
-      # Rupture de stock (0) - Calcul: stock_qty - reserved_qty
       @out_of_stock = ProductVariant
-        .joins(:inventory)
-        .where("(inventories.stock_qty - inventories.reserved_qty) <= 0")
+        .left_joins(:inventory)
         .where(is_active: true)
+        .where("#{available_sql} <= 0")
         .includes(:product, :inventory)
 
       # Mouvements récents

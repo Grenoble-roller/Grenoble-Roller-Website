@@ -8,7 +8,7 @@ class ProductsController < ApplicationController
       @selected_category = ProductCategory.find_by(slug: params[:category])
     end
 
-    products = Product.includes(:category, product_variants: { inventory: {}, variant_option_values: :option_value })
+    products = Product.includes(:category, product_variants: [ :inventory, { variant_option_values: :option_value } ])
                       .where(is_active: true)
 
     # Appliquer le filtre de catégorie si une catégorie est sélectionnée

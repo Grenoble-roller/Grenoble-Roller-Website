@@ -75,11 +75,12 @@ def create_product_with_image(attrs)
   attach_test_image_to_product(product, filename)
   # Recharger le produit pour s'assurer que l'image est bien attachée
   product.reload
-  # Vérifier que l'image est attachée avant de continuer
+  # En cas d'échec d'attachement (ex. Active Storage indisponible dans l'environnement), on continue
   unless product.image.attached?
-    raise "Impossible d'attacher l'image au produit #{attrs[:name]}"
+    Rails.logger.warn("Impossible d'attacher l'image au produit #{attrs[:name]} (seed continue sans image)")
+    puts "  ⚠️  Image non attachée pour: #{attrs[:name]}"
   end
-  # Le produit est déjà sauvegardé avec l'image attachée, pas besoin de re-sauvegarder
+  # Le produit est déjà sauvegardé (avec ou sans image selon l'environnement)
   # Les variants seront créés après et la validation has_at_least_one_active_variant
   # sera satisfaite une fois qu'au moins un variant actif sera créé
   product
@@ -95,7 +96,7 @@ def attach_test_image_to_product(product, filename = nil)
   )
 rescue => e
   Rails.logger.warn("Erreur lors de l'attachement de l'image au produit #{product.name}: #{e.message}")
-  # Ne pas lever d'exception, juste logger l'erreur
+  puts "  ⚠️  Erreur image produit #{product.name}: #{e.class} - #{e.message}" if Rails.env.development?
 end
 
 # Helper pour attacher une image de test aux ProductVariant
@@ -114,6 +115,7 @@ def attach_test_image_to_variant(variant, filename = nil)
     )
   rescue => e
     Rails.logger.warn("Impossible d'attacher une image de test au variant : #{e.message}")
+    puts "  ⚠️  Erreur image variant #{variant.sku}: #{e.class} - #{e.message}" if Rails.env.development?
   end
 end
 
@@ -516,7 +518,7 @@ variant_casquette.update_column(:is_active, true) if variant_casquette.images.at
 # ---------------------------
 # 3. SAC À DOS + ROLLER - 1 produit, 4 variantes couleur
 # ---------------------------
-sac_roller = Product.create!(
+sac_roller = create_product_with_image(
   name: "Sac à dos + Roller",
   slug: "sac-dos-roller",
   category: categories[2],
@@ -536,15 +538,17 @@ sac_roller = Product.create!(
   color_violet,
   color_blue
 ].each do |color_ov|
-  variant = ProductVariant.create!(
+  variant = ProductVariant.new(
     product: sac_roller,
     sku: "SAC-DOS-#{color_ov.value.upcase}",
     price_cents: 45_00,
     stock_qty: 10,
     currency: "EUR",
-    is_active: false, # Temporairement false
-    image_url: sac_roller.image_url # Image principale pour toutes les couleurs
+    is_active: false,
+    image_url: sac_roller.image_url
   )
+  variant.instance_variable_set(:@skip_option_validation, true)
+  variant.save!(validate: false)
   attach_test_image_to_variant(variant, "sac_roller_#{color_ov.value}.png")
   variant.reload
   variant.update_column(:is_active, true) if variant.images.attached?
@@ -584,7 +588,7 @@ variant_sac_simple.update_column(:is_active, true) if variant_sac_simple.images.
 # ---------------------------
 # 5. T-SHIRT - Clair et plusieurs tailles
 # ---------------------------
-tshirt = Product.create!(
+tshirt = create_product_with_image(
   name: "T-shirt Grenoble Roller",
   slug: "tshirt-grenoble-roller",
   category: categories[2],
@@ -1416,6 +1420,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor  # same as Membership#child_age
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1432,9 +1439,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo Léo Manon Nathan Inès Ethan Zoé Noah Lilou].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? current_season_start : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? current_season_start : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1456,6 +1463,9 @@ if regular_users_for_memberships.any?
     child_birth_year = previous_season_start.year - child_age_last_year
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1472,9 +1482,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Léo Manon Nathan Inès Ethan Zoé Noah Lilou Emma Lucas Sophie Max].sample,
       child_last_name: user.last_name || "Martin",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age_last_year < 16,
-      parent_authorization_date: child_age_last_year < 16 ? previous_season_start : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? previous_season_start : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1495,6 +1505,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1511,9 +1524,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? Date.today : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? Date.current : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,
@@ -1534,6 +1547,9 @@ if regular_users_for_memberships.any?
     child_birth_year = current_year - child_age
     child_birth_month = rand(1..12)
     child_birth_day = rand(1..28)
+    child_dob = Date.new(child_birth_year, child_birth_month, child_birth_day)
+    child_age_computed = ((Date.current - child_dob) / 365.25).floor
+    needs_parent_auth = child_age_computed < 16
     category = [ :standard, :with_ffrs ].sample
 
     Membership.create!(
@@ -1550,9 +1566,9 @@ if regular_users_for_memberships.any?
       is_minor: true,
       child_first_name: %w[Emma Lucas Sophie Max Léa Tom Chloé Hugo].sample,
       child_last_name: user.last_name || "Dupont",
-      child_date_of_birth: Date.new(child_birth_year, child_birth_month, child_birth_day),
-      parent_authorization: child_age < 16,
-      parent_authorization_date: child_age < 16 ? Date.today : nil,
+      child_date_of_birth: child_dob,
+      parent_authorization: needs_parent_auth,
+      parent_authorization_date: needs_parent_auth ? Date.current : nil,
       parent_name: "#{user.first_name} #{user.last_name}",
       parent_email: user.email,
       parent_phone: user.phone,

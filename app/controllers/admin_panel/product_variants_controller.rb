@@ -197,7 +197,14 @@ module AdminPanel
     private
 
     def set_product
-      @product = Product.find(params[:product_id])
+      id = params[:product_id]
+      # Accepter hashid (ex: JKqN4TbV) ou id numérique pour les URLs admin
+      @product = if id.to_s.match?(/\A\d+\z/)
+        Product.find_by(id: id)
+      else
+        Product.find_by_hashid(id)
+      end
+      raise ActiveRecord::RecordNotFound, "Produit introuvable" if @product.nil?
     end
 
     def set_variant
@@ -215,6 +222,7 @@ module AdminPanel
         :currency,
         :stock_qty,
         :is_active,
+        :image_url,
         images: []  # Images multiples
       )
     end

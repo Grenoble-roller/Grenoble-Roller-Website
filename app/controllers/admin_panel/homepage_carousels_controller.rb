@@ -92,9 +92,7 @@ module AdminPanel
     def move_up
       previous = HomepageCarousel.where("position < ?", @carousel.position).ordered.last
       if previous
-        @carousel.position, previous.position = previous.position, @carousel.position
-        @carousel.save
-        previous.save
+        swap_positions(@carousel, previous)
         flash[:notice] = "Position mise à jour"
       else
         flash[:alert] = "Déjà en première position"
@@ -106,9 +104,7 @@ module AdminPanel
     def move_down
       next_item = HomepageCarousel.where("position > ?", @carousel.position).ordered.first
       if next_item
-        @carousel.position, next_item.position = next_item.position, @carousel.position
-        @carousel.save
-        next_item.save
+        swap_positions(@carousel, next_item)
         flash[:notice] = "Position mise à jour"
       else
         flash[:alert] = "Déjà en dernière position"
@@ -140,6 +136,16 @@ module AdminPanel
 
     def carousel_params
       params.require(:homepage_carousel).permit(:title, :subtitle, :link_url, :position, :published, :published_at, :expires_at, :image)
+    end
+
+    # Swap positions of two records without violating unique constraint
+    def swap_positions(a, b)
+      old_a = a.position
+      old_b = b.position
+      temp = (HomepageCarousel.maximum(:position) || 0) + 1
+      a.update_column(:position, temp)
+      b.update_column(:position, old_a)
+      a.update_column(:position, old_b)
     end
   end
 end

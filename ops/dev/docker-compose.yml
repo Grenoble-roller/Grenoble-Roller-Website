@@ -7,6 +7,7 @@ services:
       context: ../..
       dockerfile: Dockerfile.dev
     container_name: grenoble-roller-dev
+    restart: unless-stopped
     # env_file:
     #   - ../../.env  # Uncomment if .env file exists
     environment:
@@ -24,6 +25,10 @@ services:
       TZ: Europe/Paris
       # Solid Queue activé dans Puma pour traiter les jobs (emails, etc.)
       SOLID_QUEUE_IN_PUMA: "true"
+      # MinIO (Active Storage) - même identifiants que le service minio du compose
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ACCESS_KEY_ID: minioadmin
+      MINIO_SECRET_ACCESS_KEY: minioadmin
     ports:
       - "3000:3000"
     entrypoint: ["./bin/docker-entrypoint"]
@@ -41,9 +46,10 @@ services:
       - /etc/localtime:/etc/localtime:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/up"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      interval: 15s
+      timeout: 10s
+      retries: 6
+      start_period: 60s
 
   css-watcher:
     build:

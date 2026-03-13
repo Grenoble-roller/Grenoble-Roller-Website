@@ -1,7 +1,8 @@
 <%= form_with model: [:admin_panel, @carousel], 
     local: true, 
     multipart: true, 
-    class: "carousel-form" do |f| %>
+    class: "carousel-form",
+    data: { controller: "carousel-form" } do |f| %>
   
   <% if @carousel.errors.any? %>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -48,23 +49,23 @@
           <h5 class="mb-0">Informations</h5>
         </div>
         <div class="card-body">
-          <!-- Titre -->
+          <!-- Titre (administration) -->
           <div class="mb-3">
             <%= f.label :title, "Titre *", class: "form-label fw-semibold" %>
             <%= f.text_field :title, 
                 class: "form-control form-control-liquid", 
-                placeholder: "Titre du slide",
+                placeholder: "Ex. Événement à la une",
                 required: true %>
-            <div class="form-text">Titre principal affiché sur le slide</div>
+            <div class="form-text">Utilisé uniquement en administration (liste, breadcrumb). Le texte du bandeau doit être intégré à l’image.</div>
           </div>
 
-          <!-- Sous-titre -->
+          <!-- Description (optionnel) -->
           <div class="mb-3">
-            <%= f.label :subtitle, "Sous-titre", class: "form-label fw-semibold" %>
+            <%= f.label :subtitle, "Description", class: "form-label fw-semibold" %>
             <%= f.text_field :subtitle, 
                 class: "form-control form-control-liquid", 
-                placeholder: "Sous-titre optionnel" %>
-            <div class="form-text">Texte secondaire affiché sous le titre</div>
+                placeholder: "Indications optionnelles pour les bénévoles" %>
+            <div class="form-text">Optionnel. Notes internes, non affichées sur le site.</div>
           </div>
 
           <!-- Lien URL -->
@@ -73,7 +74,7 @@
             <%= f.url_field :link_url, 
                 class: "form-control form-control-liquid", 
                 placeholder: "https://..." %>
-            <div class="form-text">URL vers laquelle rediriger au clic sur le slide (optionnel)</div>
+            <div class="form-text">Optionnel. URL de destination au clic sur le slide.</div>
           </div>
 
           <!-- Position -->
@@ -93,6 +94,7 @@
               <%= f.datetime_local_field :published_at, 
                   class: "form-control form-control-liquid",
                   value: @carousel.published_at&.strftime("%Y-%m-%dT%H:%M") %>
+              <div class="form-text">Optionnel. Utilisée uniquement si « Publié » n'est pas coché : le slide n'apparaît qu'à partir de cette date.</div>
             </div>
             <div class="col-md-6">
               <%= f.label :expires_at, "Date d'expiration", class: "form-label fw-semibold" %>
@@ -109,7 +111,7 @@
               <%= f.check_box :published, class: "form-check-input" %>
               <%= f.label :published, "Publié", class: "form-check-label" %>
             </div>
-            <div class="form-text">Cocher pour publier immédiatement le slide</div>
+            <div class="form-text"><strong>Coché</strong> = publication forcée : le slide est visible immédiatement (jusqu'à la date d'expiration si renseignée). <strong>Non coché</strong> = visibilité uniquement entre la date de publication et la date d'expiration.</div>
           </div>
         </div>
       </div>
@@ -122,52 +124,64 @@
           <h5 class="mb-0">Image *</h5>
         </div>
         <div class="card-body">
-          <% if @carousel.image.attached? %>
-            <div class="mb-3">
-              <%= image_tag @carousel.image.variant(resize_to_limit: [400, 200]), 
-                  class: "img-fluid rounded w-100", 
-                  style: "max-height: 200px; object-fit: cover;" %>
-            </div>
-          <% else %>
-            <div class="bg-light d-flex align-items-center justify-content-center rounded mb-3" style="height: 200px;">
-              <i class="bi bi-image fs-1 text-muted"></i>
-            </div>
-          <% end %>
+          <div class="mb-3 carousel-form-image-preview" style="min-height: 200px;">
+            <% if @carousel.image.attached? %>
+              <%= image_tag @carousel.image,
+                  data: { carousel_form_target: "imagePreview" },
+                  class: "img-fluid rounded w-100",
+                  style: "max-height: 280px; width: auto; object-fit: contain; display: block; margin: 0 auto;" %>
+            <% else %>
+              <div data-carousel-form-target="imagePreviewPlaceholder" class="bg-light d-flex align-items-center justify-content-center rounded" style="min-height: 200px;">
+                <i class="bi bi-image fs-1 text-muted"></i>
+              </div>
+              <img data-carousel-form-target="imagePreview"
+                  class="img-fluid rounded w-100 d-none"
+                  style="max-height: 280px; width: auto; object-fit: contain; display: block; margin: 0 auto;"
+                  alt="">
+            <% end %>
+          </div>
 
           <div class="mb-3">
             <%= f.file_field :image, 
                 class: "form-control form-control-liquid",
                 accept: "image/*",
-                required: @carousel.new_record? %>
+                required: @carousel.new_record?,
+                data: { carousel_form_target: "fileInput" } %>
             <div class="form-text">
-              Format recommandé : 1920x600px (ratio 3.2:1)<br>
-              Formats acceptés : JPG, PNG, WebP
+              Bannière annonces 16:9 (recommandé 1920×1080 ; le site affiche en 1200×675). Contenu centré, idéalement &lt; 20 % de texte dans l’image.<br>
+              Formats : JPG, PNG, WebP. L’aperçu ci-dessous affiche le rendu réel avant publication.
             </div>
           </div>
 
           <% if @carousel.image.attached? %>
             <div class="alert alert-info mb-0">
               <i class="bi bi-info-circle me-2"></i>
-              Une image est déjà attachée. Uploadez une nouvelle image pour la remplacer.
+              Une image est déjà attachée. Choisir un nouveau fichier pour la remplacer (aperçu immédiat).
             </div>
           <% end %>
         </div>
       </div>
 
-      <!-- Aperçu -->
+      <!-- Aperçu au ratio réel 16:9 -->
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-header">
-          <h5 class="mb-0">Aperçu</h5>
+          <h5 class="mb-0">Aperçu bannière (16:9)</h5>
         </div>
-        <div class="card-body">
-          <div class="bg-light rounded p-3 text-center" style="min-height: 150px;">
+        <div class="card-body p-0">
+          <div class="carousel-form-ratio-preview rounded overflow-hidden position-relative" style="aspect-ratio: 16/9; background: #eee;">
             <% if @carousel.image.attached? %>
-              <%= image_tag @carousel.image.variant(resize_to_limit: [600, 200]), 
-                  class: "img-fluid rounded", 
-                  style: "max-height: 150px; object-fit: cover;" %>
+              <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675]),
+                  data: { carousel_form_target: "ratioPreview" },
+                  class: "w-100 h-100 position-absolute top-0 start-0",
+                  style: "object-fit: cover; object-position: center;" %>
             <% else %>
-              <i class="bi bi-image fs-1 text-muted"></i>
-              <p class="text-muted small mb-0 mt-2">Aperçu après upload</p>
+              <div data-carousel-form-target="ratioPreviewPlaceholder" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                <span class="text-muted small"><i class="bi bi-image me-1"></i>Choisir un fichier pour voir l’aperçu</span>
+              </div>
+              <img data-carousel-form-target="ratioPreview"
+                  class="position-absolute top-0 start-0 w-100 h-100 d-none"
+                  style="object-fit: cover; object-position: center;"
+                  alt="">
             <% end %>
           </div>
         </div>

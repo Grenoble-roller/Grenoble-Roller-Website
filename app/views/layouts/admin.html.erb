@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-bs-theme="light">
+<html lang="fr" data-bs-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -91,7 +91,7 @@
         
         // Initialize theme when DOM is ready
         function initTheme() {
-          const savedTheme = localStorage.getItem('theme') || 'light';
+          const savedTheme = localStorage.getItem('theme') || 'dark';
           const html = document.documentElement;
           
           html.setAttribute('data-bs-theme', savedTheme);

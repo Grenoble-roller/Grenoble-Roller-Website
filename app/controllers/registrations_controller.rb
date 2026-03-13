@@ -14,9 +14,9 @@ class RegistrationsController < Devise::RegistrationsController
       return
     end
 
-    # Vérifier le format email
-    unless email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
-      render json: { valid: false, message: "Format d'email invalide" }, status: :unprocessable_entity
+    # Même règle que Devise (config.email_regexp) pour cohérence inscription / check AJAX
+    unless email.match?(Devise.email_regexp)
+      render json: { valid: false, message: "Format d'email invalide (ex. nom@domaine.fr)" }, status: :unprocessable_entity
       return
     end
 
@@ -39,6 +39,20 @@ class RegistrationsController < Devise::RegistrationsController
   rescue => e
     Rails.logger.error("Erreur lors de la vérification de l'email: #{e.message}")
     render json: { valid: false, message: "Erreur lors de la vérification" }, status: :internal_server_error
+  end
+
+  # DELETE /users (suppression de compte)
+  # Bloquer avec un message explicite si un enfant rattaché a une adhésion active
+  def destroy
+    if resource.has_active_children_memberships?
+      redirect_to edit_user_registration_path,
+                  alert: "La suppression de votre compte n'est pas possible tant qu'un enfant rattaché à votre compte a une adhésion active. " \
+                         "Contactez l'association pour plus d'information.",
+                  status: :see_other
+      return
+    end
+
+    super
   end
 
   # POST /resource
