@@ -124,13 +124,14 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
           expect {
             post initiation_waitlist_entries_path(initiation), params: {
-              use_free_trial: '1',
+              use_free_trial: '0',
               wants_reminder: false
             }
           }.not_to change { WaitlistEntry.count }
 
           expect(response).to redirect_to(initiation_path(initiation))
-          expect(flash[:alert]).to include("Vous avez déjà utilisé votre essai gratuit")
+          expect(flash[:alert]).to include("réservée aux adhérents")
+          expect(flash[:alert]).to include("adhésion active")
         end
       end
 
@@ -282,6 +283,67 @@ RSpec.describe 'Waitlist Entries', type: :request do
 
       expect(response).to redirect_to(event_path(event))
       expect(flash[:notice]).to be_present
+    end
+
+    context 'when initiation and parent (règle adhésion / essai gratuit)' do
+      before do
+        fill_event_to_capacity(initiation, 2)
+      end
+
+      it 'refuses conversion when parent is non-member and did not use free trial' do
+        # Utilisateur sans adhésion, liste d'attente sans essai gratuit
+        pending_att, waitlist_entry = create_notified_waitlist_with_pending_attendance(user, initiation, free_trial_used: false)
+        initiation.attendances.reload
+        initiation.waitlist_entries.reload
+        initiation.reload
+
+        login_user(user)
+
+        expect {
+          post convert_to_attendance_waitlist_entry_path(waitlist_entry)
+        }.not_to change { waitlist_entry.reload.status }
+
+        expect(response).to redirect_to(initiation_path(initiation))
+        expect(flash[:alert]).to include("Adhésion requise")
+        expect(flash[:alert]).to include("essai gratuit")
+        expect(pending_att.reload.status).to eq("pending")
+      end
+
+      it 'allows conversion when parent has active membership' do
+        create(:membership, user: user, season: "2025-2026", is_child_membership: false)
+        pending_att, waitlist_entry = create_notified_waitlist_with_pending_attendance(user, initiation, free_trial_used: false)
+        initiation.attendances.reload
+        initiation.waitlist_entries.reload
+        initiation.reload
+
+        login_user(user)
+
+        expect {
+          post convert_to_attendance_waitlist_entry_path(waitlist_entry)
+        }.to change { waitlist_entry.reload.status }.from("notified").to("converted")
+          .and change { pending_att.reload.status }.from("pending").to("registered")
+
+        expect(response).to redirect_to(event_path(initiation))
+        expect(flash[:notice]).to be_present
+      end
+
+      it 'allows conversion when parent used free trial (pending attendance with free_trial_used)' do
+        # Pas d'adhésion, mais la place a été réservée avec essai gratuit
+        pending_att, waitlist_entry = create_notified_waitlist_with_pending_attendance(user, initiation, free_trial_used: true)
+        initiation.attendances.reload
+        initiation.waitlist_entries.reload
+        initiation.reload
+
+        login_user(user)
+
+        expect {
+          post convert_to_attendance_waitlist_entry_path(waitlist_entry)
+        }.to change { waitlist_entry.reload.status }.from("notified").to("converted")
+          .and change { pending_att.reload.status }.from("pending").to("registered")
+
+        expect(response).to redirect_to(event_path(initiation))
+        expect(flash[:notice]).to be_present
+      end
     end
   end
 

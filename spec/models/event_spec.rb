@@ -203,4 +203,39 @@ RSpec.describe Event, type: :model do
       expect(event.has_available_spots?).to be false
     end
   end
+
+  describe 'callback #notify_waitlist_if_capacity_increased' do
+    it 'does not notify when max_participants is 0 (unlimited)' do
+      event = create_event(creator_user: creator, max_participants: 10)
+      expect(WaitlistEntry).not_to receive(:notify_next_in_queue)
+      event.update!(max_participants: 0)
+    end
+
+    it 'notifies waitlist when max_participants is increased and people are waiting' do
+      event = create_event(creator_user: creator, max_participants: 2)
+      user1 = create_user(role: user_role)
+      user2 = create_user(role: user_role)
+      create(:membership, user: user1, status: :active, season: '2025-2026')
+      create(:membership, user: user2, status: :active, season: '2025-2026')
+      create_attendance(event: event, user: user1)
+      create_attendance(event: event, user: user2)
+      event.reload
+      expect(event).to be_full
+
+      waitlist_user = create_user(role: user_role)
+      create(:membership, user: waitlist_user, status: :active, season: '2025-2026')
+      we = build(:waitlist_entry, user: waitlist_user, event: event, child_membership_id: nil)
+      we.save!(validate: false)
+
+      expect {
+        event.update!(max_participants: 3)
+      }.to change { we.reload.status }.from('pending').to('notified')
+    end
+
+    it 'does not run when max_participants is decreased' do
+      event = create_event(creator_user: creator, max_participants: 10)
+      expect(WaitlistEntry).not_to receive(:notify_next_in_queue)
+      event.update!(max_participants: 5)
+    end
+  end
 end

@@ -22,9 +22,7 @@ module Initiations
       wants_reminder = params[:wants_reminder].present? ? params[:wants_reminder] == "1" : false
       use_free_trial = params[:use_free_trial] == "1"
 
-      # Vérifier les conditions d'essai gratuit pour les enfants
-      # RÈGLE MÉTIER : Les essais gratuits sont NOMINATIFS - chaque enfant a droit à 1 essai gratuit
-      # L'essai gratuit est OBLIGATOIRE pour les enfants pending et trial, peu importe si le parent est adhérent
+      # Règle staff : la liste d'attente est réservée aux adhérents. Adhésion active obligatoire (parent ou enfant).
       if child_membership_id.present?
         child_membership = current_user.memberships.find_by(id: child_membership_id, is_child_membership: true)
 
@@ -33,36 +31,14 @@ module Initiations
           return
         end
 
-        # Pour un enfant avec statut trial OU pending : essai gratuit OBLIGATOIRE (nominatif)
-        # Chaque enfant a droit à son propre essai gratuit, indépendamment de l'adhésion du parent
-        if child_membership.trial? || child_membership.pending?
-          # Essai gratuit OBLIGATOIRE pour cet enfant
-          unless use_free_trial
-            redirect_to initiation_path(@initiation), alert: "L'essai gratuit est obligatoire pour cet enfant. Veuillez cocher la case correspondante."
-            return
-          end
-
-          # Vérifier si cet enfant a déjà utilisé son essai gratuit (nominatif)
-          if current_user.attendances.active.where(free_trial_used: true, child_membership_id: child_membership_id).exists?
-            redirect_to initiation_path(@initiation), alert: "Cet enfant a déjà utilisé son essai gratuit."
-            return
-          end
-        end
-
-        # Si use_free_trial est coché, vérifier que l'essai gratuit n'a pas déjà été utilisé
-        if use_free_trial
-          if current_user.attendances.active.where(free_trial_used: true, child_membership_id: child_membership_id).exists?
-            redirect_to initiation_path(@initiation), alert: "Cet enfant a déjà utilisé son essai gratuit."
-            return
-          end
+        unless child_membership.active?
+          redirect_to initiation_path(@initiation), alert: "La liste d'attente est réservée aux adhérents. Une adhésion active est requise pour cet enfant."
+          return
         end
       else
-        # Pour le parent : vérifier si le PARENT a déjà utilisé son essai gratuit (nominatif)
-        if use_free_trial
-          if current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
-            redirect_to initiation_path(@initiation), alert: "Vous avez déjà utilisé votre essai gratuit."
-            return
-          end
+        unless current_user.memberships.active_now.where(is_child_membership: false).exists?
+          redirect_to initiation_path(@initiation), alert: "La liste d'attente est réservée aux adhérents. Une adhésion active est requise."
+          return
         end
       end
 
@@ -193,6 +169,21 @@ module Initiations
         redirect_path = event.is_a?(Event::Initiation) ? initiation_path(event) : event_path(event)
         redirect_to redirect_path, alert: "La place réservée n'est plus disponible. Vous restez en liste d'attente."
         return
+      end
+
+      # #region agent log
+      parent_member = waitlist_entry.child_membership_id.blank? ? current_user.memberships.active_now.where(is_child_membership: false).exists? : nil
+      File.open("/home/flowtech/The_Hacking_Project/Mes-repo/Grenoble-Roller-Project/.cursor/debug.log", "a") { |f| f.puts({ id: "log_#{Time.now.to_f}", timestamp: (Time.now.to_f * 1000).to_i, location: "initiations/waitlist_entries_controller.rb:convert_to_attendance", message: "before convert", data: { is_initiation: true, pending_free_trial_used: pending_attendance.free_trial_used, parent_has_active_membership: parent_member }, hypothesisId: "H4" }.to_json) }
+      # #endregion
+
+      # Initiation : refuser la conversion si parent non adhérent et sans essai gratuit (règle métier)
+      if waitlist_entry.event.is_a?(Event::Initiation) && waitlist_entry.child_membership_id.blank?
+        parent_has_membership = current_user.memberships.active_now.where(is_child_membership: false).exists?
+        unless parent_has_membership || pending_attendance.free_trial_used
+          redirect_path = initiation_path(waitlist_entry.event)
+          redirect_to redirect_path, alert: "Adhésion requise ou utilisation de l'essai gratuit pour confirmer votre place."
+          return
+        end
       end
 
       if waitlist_entry.convert_to_attendance!

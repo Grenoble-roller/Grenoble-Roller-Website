@@ -67,6 +67,7 @@ def attach_test_image_to_event(event)
 end
 
 # Helper pour créer un Product avec image attachée
+# Si l'attachement échoue (storage non dispo, etc.), le produit est quand même créé et le seed continue.
 def create_product_with_image(attrs)
   product = Product.new(attrs)
   # Désactiver temporairement toutes les validations pour pouvoir attacher l'image
@@ -552,7 +553,7 @@ sac_roller = create_product_with_image(
   attach_test_image_to_variant(variant, "sac_roller_#{color_ov.value}.png")
   variant.reload
   variant.update_column(:is_active, true) if variant.images.attached?
-  VariantOptionValue.create!(variant:, option_value: color_ov)
+  VariantOptionValue.create!(variant: variant, option_value: color_ov)
 end
 
 # ---------------------------
@@ -930,16 +931,20 @@ events_data = [
 ]
 
 events = events_data.map do |attrs|
-  # Retirer cover_image_url qui n'est plus utilisé
   cover_image_url = attrs.delete(:cover_image_url)
   status = attrs[:status]
-  # Créer l'événement avec build pour pouvoir attacher l'image avant save
   event = Event.new(attrs)
-  # Attacher une image de test si l'événement est publié ou annulé (avant save pour validation)
   if status == "published" || status == "canceled"
     attach_test_image_to_event(event)
   end
-  event.save!
+  begin
+    event.save!
+  rescue StandardError => e
+    # Stockage (Minio/S3) indisponible : ne pas appeler purge (réessaie le réseau). Détacher puis sauver sans validation.
+    event.cover_image.detach if event.cover_image.attached?
+    event.save!(validate: false)
+    puts "  ⚠️  Événement créé sans image de couverture (stockage peut-être indisponible)."
+  end
   event
 end
 puts "✅ #{Event.count} événements créés !"
@@ -1065,56 +1070,65 @@ if florian || admin_user
 
   initiations = initiations_data.map do |attrs|
     status = attrs.delete(:status)
-    # Créer l'initiation avec build pour pouvoir attacher l'image avant save
     initiation = Event::Initiation.new(attrs)
-    # Attacher une image de test si l'initiation est publiée (avant save pour validation)
     if status == "published"
       attach_test_image_to_event(initiation)
     end
-    initiation.save!
+    begin
+      initiation.save!
+    rescue StandardError => e
+      initiation.cover_image.detach if initiation.cover_image.attached?
+      initiation.save!(validate: false)
+      puts "  ⚠️  Initiation créée sans image de couverture (stockage peut-être indisponible)."
+    end
     initiation
   end
 
   puts "✅ #{Event::Initiation.count} initiations créées !"
 
   # Inscriptions aux initiations (avec enfants)
+  # Note : les adhésions sont créées plus loin dans le seed ; on utilise save(validate: false)
+  # pour ne pas dépendre de l'ordre. En prod, les règles (adhésion active / essai gratuit) s'appliquent.
   published_initiations = Event::Initiation.where(status: "published")
   published_initiations.each do |initiation|
     num_subscribers = [ rand(5..15), initiation.max_participants ].min
     subscribers = regular_users.sample(num_subscribers)
 
     subscribers.each do |user|
-      # Inscription adulte ou enfant selon le hasard
       if rand > 0.6 # 40% d'inscriptions enfants
         child_membership = user.memberships.children.where(status: [ :active, :pending, :trial ]).sample
         if child_membership
-          Attendance.create!(
+          att = Attendance.new(
             user: user,
             event: initiation,
             child_membership: child_membership,
             status: "registered",
             is_volunteer: false,
+            free_trial_used: false,
             created_at: initiation.created_at + rand(1..5).hours
           )
+          att.save!(validate: false)
         else
-          # Inscription adulte si pas d'enfant disponible
-          Attendance.create!(
+          att = Attendance.new(
             user: user,
             event: initiation,
             status: "registered",
             is_volunteer: rand > 0.9,
+            free_trial_used: false,
             created_at: initiation.created_at + rand(1..5).hours
           )
+          att.save!(validate: false)
         end
       else
-        # Inscription adulte
-        Attendance.create!(
+        att = Attendance.new(
           user: user,
           event: initiation,
           status: "registered",
           is_volunteer: rand > 0.9,
+          free_trial_used: false,
           created_at: initiation.created_at + rand(1..5).hours
         )
+        att.save!(validate: false)
       end
     end
   end

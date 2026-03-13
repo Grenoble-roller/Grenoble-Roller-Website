@@ -5,6 +5,7 @@ class EventMailer < ApplicationMailer
     @attendance = attendance
     @event = attendance.event
     @user = attendance.user
+    @participant_name = attendance.participant_name
     @is_initiation = @event.is_a?(Event::Initiation)
 
     subject = if @is_initiation
