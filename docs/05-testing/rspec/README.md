@@ -3,6 +3,7 @@
 - **Méthodologie** : [METHODE.md](METHODE.md)
 - **Audit des échecs** : [spec-failures-audit.md](spec-failures-audit.md)
 - **Template fiche d’erreur** : [errors/TEMPLATE.md](errors/TEMPLATE.md)
+- **Risques avant merge chore/rspec** : [merge-risks-chore-rspec.md](merge-risks-chore-rspec.md)
 
 ## Fiches d’erreur (errors/)
 
