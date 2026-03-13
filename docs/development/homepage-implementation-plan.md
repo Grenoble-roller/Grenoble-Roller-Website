@@ -9,113 +9,9 @@ tags: ["homepage", "implementation", "benevoles", "autonomie", "admin"]
 
 # Plan d'Implémentation Page d'Accueil - Grenoble Roller
 
-**Dernière mise à jour** : 2026-03-09 (À jour : hero fixe `_hero.html.erb`, bannière 16:9 `_announcement_banner.html.erb`, **Prochains rendez-vous** = 2 cartes `@highlighted_events`, hiérarchie Hero → Bannière → Prochains RDV → À propos → Pourquoi → Chiffres.)
+**Dernière mise à jour** : 2025-01-30 (Complété avec TOUS les détails de gestion admin)
 
 Ce document classe les éléments de la réponse Perplexity par **pertinence** et **faisabilité**, en tenant compte de ce qui existe déjà dans l'application. **TOUTE** la gestion admin est détaillée pour chaque élément.
-
----
-
-## 📋 Mode Réflexion — Direction unique : Option C « bannière à slides »
-
-*Ce bloc documente la direction retenue. **Implémentation réalisée** : hero fixe, partial `_announcement_banner.html.erb` (16:9, variant 1200×675), ordre des sections appliqué dans `pages/index.html.erb`. Option A (bande + mini-list) et Option B (card slider horizontal) sont abandonnées.*
-
-**Clarification** : on **garde le hero** (bloc pitch + CTA en tête de page — aujourd’hui c’est le “fallback” quand il n’y a pas de slides). On **déplace** le système de carousel actuel : il ne fait plus le hero, il devient la **bannière annonces** (section dédiée sous le hero, 16:9, hauteur limitée). Même modèle `HomepageCarousel`, même AdminPanel ; seul le placement et le format d’affichage changent.
-
-### 1. Constat et contraintes bénévole
-
-Historiquement, les bénévoles font des **affiches complètes** (visuel + texte dedans). Donc :
-
-- **Ne pas ajouter** une couche de texte HTML par-dessus l’image (déjà bien identifié).
-- Le slide reste un **bloc cliquable** ou avec **1 CTA** ; l’essentiel du contenu est **dans l’image**.
-- **Existant à exploiter** :
-  - Modèle `HomepageCarousel` avec `published_at` / `expires_at` → auto-publication.
-  - Positions, ordre, AdminPanel, etc. → zéro friction pour les bénévoles.
-
-**Conclusion** : le plus rentable est de **garder le carousel**, mais de le **sortir du hero** et de le transformer en **bandeau annonces** (bannière à slides).
-
----
-
-### 2. Pattern recommandé : « bannière à slides » (Option C affinée)
-
-#### Placement dans la page
-
-**Hiérarchie finale (implémentée) :**
-
-| Ordre | Bloc |
-|-------|------|
-| 1 | **Hero** (pitch + CTA) — `_hero.html.erb` |
-| 2 | **Bannière annonces** (carousel 16:9) — `_announcement_banner.html.erb` |
-| 3 | **Prochains rendez-vous** (2 cartes, `@highlighted_events`) |
-| 4 | À propos |
-| 5 | Pourquoi nous rejoindre |
-| 6 | Chiffres clés |
-
-Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les annonces (bannière) → tu as les 2 prochaines sorties (2 cartes) → puis À propos, Pourquoi, Chiffres.
-
-**Changement par rapport à l’état actuel** : la section « À propos » est déplacée sous « Prochain rendez-vous » pour que la première zone après le hero soit l’action (bannière + prochain RDV), pas l’explication institutionnelle.
-
-#### Ratio officiel et affichage sur la home
-
-- **Aspect ratio officiel** pour les affiches d’annonces : **16:9** (standard événementiel, aligné avec les plateformes externes et les affiches complètes déjà produites).
-- Section “bannière annonces” : images 16:9, carousel **centré**, **largeur limitée** (largeur `min(100%, calc(55vh * 16/9))`, ratio 16:9 garanti), **clic sur toute la slide**.
-
-#### Format visuel (desktop / mobile)
-
-**Desktop**
-
-- Carousel **centré** dans un container : `container` ou `container-lg`, **max-width ~1100–1200 px**.
-- **Hauteur max** : 300–350 px (pas de “second hero” qui pousse tout vers le bas).
-
-**Mobile**
-
-- Full width (100 %), hauteur limitée **220–260 px** avec `object-fit: cover`.
-- On voit encore le début du bloc “Prochain rendez-vous” après un scroll léger (pas 2 écrans de visuels d’affilée).
-
-#### Guidelines bénévoles (affiches 16:9)
-
-- **Travailler en** : 1920×1080 ou 1920×1005 (format type Facebook) ; le site redimensionnera en **1200×675** ou **1600×900**.
-- **Contenu centré** : éviter le texte trop proche des bords pour gérer les recadrages.
-- **Lisibilité** : éviter de bourrer l’image de texte ; idéalement **&lt; 20 % de texte** dans le visuel (surtout pour le mobile).
-
-#### Comportement UX
-
-- **Slides** : 1 à 5 max, ordonnés via `position`. Chaque slide cliquable (ex. `link_url` déjà sur le modèle) → redirige vers l’event ou la page d’info.
-- **Autoplay** : timer doux (6 s, `data-bs-interval="6000"`) avec pause au hover/focus. Option : désactiver l’autoplay sur mobile (ou le rendre très lent) pour éviter que ça bouge pendant le scroll.
-- **Accessibilité** : contrôles Bootstrap visibles (flèches + indicateurs). `aria-label` sur le container : “Annonces importantes” ou “Événements à thème”.
-
-#### Implémentation (logique, sans code)
-
-- **Nouveau partial** (ex. `_announcement_banner.html.erb`) :
-  - Utilise `HomepageCarousel.active.ordered` avec un **variant image dédié** (ex. `banner`).
-  - Container Bootstrap, **id dédié** (`announcementCarousel`) séparé du hero.
-  - `image_tag` sur toute la slide, **pas de caption**.
-  - Optionnel : petit badge HTML superposé avec le type (“Rando à thème”, “Info importante”) ; sinon 100 % visuel.
-- Dans `pages/index.html.erb` : `<%= render 'pages/announcement_banner' %>` **juste après le hero**.
-
-**En résumé** : on part sur un **16:9 standard événementiel**, qui correspond à ce que vous faites déjà (affiches complètes) et aux plateformes externes, et on l’exploite en “bannière à slides” **compacte** sous le hero.
-
----
-
-### 3. Pourquoi cette option est cohérente
-
-- **Workflow bénévole inchangé** : ils continuent à produire des affiches au format spécifié (ratio + max poids). Ils ne gèrent pas de texte HTML, seulement titre / link / dates dans l’AdminPanel.
-- **Capitalisation** : exploitation de tout l’existant (modèle, CRUD, positions, publish/unpublish automatiques).
-- **Limitation des défauts UX des carrousels** : placement **sous** le hero (pas bloc principal), hauteur **limitée** (impact maîtrisé sur le scroll), nombre de slides **raisonnable**.
-
----
-
-### 4. Format image (rappel)
-
-- **Hero** : ratio 1600×550 (32:11) pour l’image pleine largeur.
-- **Bannière annonces** : ratio **16:9** uniquement. Variants côté site : **1200×675** ou **1600×900** (bénévoles fournissent en 1920×1080 ou 1920×1005).
-
----
-
-### 5. Autres éléments à prévoir (homepage 2026)
-
-- **Micro-section “Niveaux & matériel”** (2–3 bullet points), juste avant ou après “Prochain rendez-vous” : “Ouvert à tous niveaux (du débutant au confirmé).” “Casque fortement recommandé, protections conseillées.” “Mineurs accompagnés d’un adulte.”
-- **Encart “Météo / annulation”** : si une annonce a un tag “Important” / “Météo”, la remonter en alerte (fond orange/rouge).
-- **Lien vers les réseaux sociaux** dans la zone communication (icônes discrets).
 
 ---
 
@@ -129,19 +25,14 @@ Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les a
 - **Stimulus + Turbo** : Interactivité moderne
 - **Design System** : "Liquid" (couleurs, cartes arrondies)
 - **Event Model** : `cover_image` avec variants (hero, card, featured, thumb)
-- **PagesController** : `@highlighted_events` (2 prochains événements) pour la section « Prochains rendez-vous »
+- **PagesController** : `@highlighted_event` déjà chargé
 
 ### ❌ Ce qui N'Existe Pas Encore
+- Modèles pour contenu homepage dynamique
+- Interface bénévoles pour gérer contenu homepage
 - Galerie photos événements passés
-- Système d'annonces/actualités (HomepageAnnouncement)
+- Système d'annonces/actualités
 - Témoignages membres
-
-### ✅ Carrousel Page d'Accueil (HomepageCarousel) — IMPLÉMENTÉ
-- Modèle `HomepageCarousel`, migrations (table + position unique), Active Storage `image`
-- AdminPanel complet : CRUD, publish/unpublish, move_up/move_down, reorder (endpoint)
-- Policy ORGANIZER+ (level ≥ 40) ; accès BaseController level ≥ 30
-- Hero `_hero.html.erb` (toujours affiché) ; bannière `_announcement_banner.html.erb` (affichée si au moins un slide actif)
-- Menu admin « Page d'Accueil » > « Carrousel ». Pas de drag & drop batch dans l’UI (boutons monter/descendre uniquement).
 
 ---
 
@@ -152,8 +43,6 @@ Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les a
 #### 1.1 Système d'Annonces (Announcement)
 **Pertinence** : ⭐⭐⭐⭐⭐ (Autonomie bénévoles maximale)  
 **Faisabilité** : ⭐⭐⭐⭐⭐ (Simple CRUD Rails)
-
-**Split d’usage (éviter la confusion)** : **HomepageCarousel** = bannières visuelles événementielles (affiches 16:9, section “bannière annonces” sous le hero). **HomepageAnnouncement** = annonces éditoriales (texte + petite image) affichées plus bas dans la page ou dans une page dédiée « Actualités ».
 
 **Pourquoi prioritaire** :
 - Permet aux bénévoles de communiquer rapidement (événements spéciaux, infos importantes)
@@ -178,18 +67,30 @@ Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les a
 
 ---
 
-#### 1.2 Bannière annonces (HomepageCarousel) — IMPLÉMENTÉE
-**État des lieux (déjà en place)** : le carousel hero est **implémenté** (modèle, AdminPanel, partial `_announcement_banner.html.erb`). Il ne reste **pas** à créer un carousel hero ; le travail restant est l’**adaptation** en “bannière annonces” sous le hero (voir Mode Réflexion).
+#### 1.2 Carrousel Hero (HomepageCarousel)
+**Pertinence** : ⭐⭐⭐⭐ (Visibilité immédiate)  
+**Faisabilité** : ⭐⭐⭐⭐⭐ (Bootstrap carousel natif)
 
-**État actuel (vérifié)** :
-- ✅ Modèle `HomepageCarousel` (title, subtitle, link_url, position, published, published_at, expires_at, image via Active Storage)
-- ✅ Migrations : `create_homepage_carousels`, `add_unique_position_to_homepage_carousels`
-- ✅ Contrôleur `AdminPanel::HomepageCarouselsController` : index (Ransack, Pagy), show, new, create, edit, update, destroy, publish, unpublish, move_up, move_down, reorder
-- ✅ Policy `AdminPanel::HomepageCarouselPolicy` (level ≥ 40) ; accès admin level ≥ 30 dans BaseController
-- ✅ Routes `resources :homepage_carousels` avec member (publish, unpublish, move_up, move_down) et collection (reorder)
-- ✅ Vues admin : index (filtres, grille, boutons monter/descendre), show, new, edit, _form
-- ✅ Hero `_hero.html.erb` ; bannière `_announcement_banner.html.erb` (Bootstrap 5, 16:9, `HomepageCarousel.active.ordered`), dans `pages/index` ; bannière affichée seulement si `carousels.any?`
-- ⚠️ Réordonnancement : move_up/move_down en place ; pas d’UI drag & drop batch (endpoint `reorder` présent, SortableJS non intégré)
+**Pourquoi prioritaire** :
+- Mise en avant visuelle des événements/actualités
+- Carrousel Bootstrap 5 déjà disponible
+- Impact visuel fort
+
+**Ce qui existe déjà** :
+- ✅ Bootstrap 5 carousel component
+- ✅ Active Storage (variants images)
+- ✅ Event.cover_image comme source possible
+- ✅ Design system "liquid"
+
+**À créer** :
+- Modèle `HomepageCarousel`
+- Migration (title, subtitle, image, link_url, position, published_at, expires_at)
+- Contrôleur `AdminPanel::HomepageCarouselsController`
+- Vue avec drag & drop pour réordonner (gem `ranked-model` ou Stimulus)
+- Partial `pages/_carousel.html.erb` (Bootstrap carousel)
+- Intégration dans hero section
+
+**Estimation** : 6-8h (avec drag & drop)
 
 ---
 
@@ -282,8 +183,8 @@ Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les a
 - Sous-titre contextuel (prochain événement)
 
 **Ce qui existe déjà** :
-- ✅ Hero fixe `_hero.html.erb` dans `pages/index.html.erb`
-- ✅ `@highlighted_events` (2 prochains événements) pour les cartes « Prochains rendez-vous »
+- ✅ Hero banner dans `pages/index.html.erb`
+- ✅ `@highlighted_event` chargé
 - ✅ Design system
 
 **À créer** :
@@ -300,16 +201,17 @@ Effet : tu arrives → tu comprends de quoi il s’agit (hero) → tu vois les a
 ### Sprint 1 (Semaine 1-2) : Autonomie Bénévoles
 **Objectif** : Permettre aux bénévoles de communiquer rapidement
 
-1. [ ] **Système d'Annonces** (HomepageAnnouncement) (4-6h)
+1. ✅ **Système d'Annonces** (4-6h)
    - Modèle + CRUD AdminPanel
-   - Affichage homepage (ou page Actualités)
+   - Affichage homepage
    - Publication immédiate (modération = phase 2)
 
-2. ✅ **Bannière annonces (HomepageCarousel)** — IMPLÉMENTÉE
-   - Hero fixe `_hero.html.erb` ; bannière `_announcement_banner.html.erb` sous le hero (16:9, variant 1200×675, autoplay 6 s)
-   - Section « Prochains rendez-vous » : 2 cartes (`@highlighted_events`) au lieu d’une seule grosse card
+2. ✅ **Carrousel Hero** (6-8h)
+   - Modèle + CRUD AdminPanel
+   - Drag & drop réordonnement
+   - Intégration hero section
 
-**Livrable** : Bénévoles peuvent gérer la bannière visuelle (slides 16:9). Annonces éditoriales (HomepageAnnouncement) restent à faire si besoin.
+**Livrable** : Bénévoles peuvent créer annonces et gérer carrousel
 
 ---
 
@@ -353,8 +255,6 @@ Cette section détaille **TOUTE** la gestion admin nécessaire pour chaque élé
 ## 📋 Checklist Détaillée par Élément
 
 ### ✅ 1. Système d'Annonces (Announcement)
-
-**Rappel** : **HomepageCarousel** = bannières visuelles événementielles (affiches 16:9, bannière sous le hero). **HomepageAnnouncement** = annonces éditoriales (texte + petite image), affichées plus bas ou en page « Actualités ».
 
 #### Modèle & Migration
 - [ ] Migration `create_homepage_announcements`
@@ -475,31 +375,112 @@ end
 
 ---
 
-### ✅ 2. Carrousel Hero (HomepageCarousel) — IMPLÉMENTÉ
-
-**Doc dédiée (liens code, routes, vues)** : [homepage-carousel.md](./homepage-carousel.md).
+### ✅ 2. Carrousel Hero (HomepageCarousel)
 
 #### Modèle & Migration
-- [x] Migration `create_homepage_carousels` (title, subtitle, link_url, position, published, published_at, expires_at)
-- [x] Migration `add_unique_position_to_homepage_carousels` (index unique sur position)
-- [x] Modèle `HomepageCarousel` : `has_one_attached :image`, scopes `published`, `active`, `ordered`, validations (title, position unique, image si published), Ransack, callbacks (set_published_at, set_default_position)
+- [ ] Migration `create_homepage_carousels`
+  - `title` (string, required)
+  - `subtitle` (string, optional)
+  - `image` (Active Storage, required)
+  - `link_url` (string, optional)
+  - `position` (integer, pour ordre)
+  - `published` (boolean, default: false)
+  - `published_at` (datetime)
+  - `expires_at` (datetime, optional)
+  - `created_at`, `updated_at`
+
+- [ ] Modèle `HomepageCarousel`
+  - `has_one_attached :image`
+  - Gem `ranked-model` pour position
+  - Scopes : `.published`, `.active`, `.ordered`
+  - Validations : title, image présents
 
 #### AdminPanel - Gestion Complète
-- [x] **Routes** : `resources :homepage_carousels` avec member (publish, unpublish, move_up, move_down) et collection (reorder)
-- [x] **Contrôleur** : index (Ransack, filtre published, Pagy), show, new, create, edit, update, destroy, publish, unpublish, move_up, move_down, reorder
-- [x] **Policy** : `AdminPanel::HomepageCarouselPolicy` (level ≥ 40), Scope pour organizer_user
-- [x] **Vues** : index (breadcrumb, filtre, grille cards avec thumbnail, position, statut, actions éditer / publier-dépublier / monter-descendre / supprimer), show, new, edit, _form (titre, sous-titre, image, link_url, position, published, published_at, expires_at)
-- [ ] **Drag & drop batch** : endpoint `reorder` présent ; UI SortableJS non intégrée (réordonnancement par move_up/move_down uniquement)
+
+**Routes** (`config/routes.rb`) :
+```ruby
+namespace :admin_panel do
+  resources :homepage_carousels, path: "homepage-carousels" do
+    member do
+      post :publish
+      post :unpublish
+      patch :move_up
+      patch :move_down
+    end
+    collection do
+      patch :reorder  # Pour drag & drop batch
+    end
+  end
+end
+```
+
+**Contrôleur** (`app/controllers/admin_panel/homepage_carousels_controller.rb`) :
+- [ ] `index` : Liste ordonnée par position
+  - Grid avec preview thumbnails (200x100)
+  - Indicateur position (1, 2, 3...)
+  - Statut (publié/brouillon)
+  - Actions : éditer, publier/dépublier, monter/descendre, supprimer
+- [ ] `show` : Aperçu avec image complète
+- [ ] `new` : Formulaire création
+- [ ] `create` : Création avec position auto (dernier + 1)
+- [ ] `edit` : Formulaire édition
+- [ ] `update` : Mise à jour
+- [ ] `destroy` : Suppression avec réordonnement auto
+- [ ] `publish` / `unpublish` : Actions rapides
+- [ ] `move_up` / `move_down` : Réordonnement unitaire
+- [ ] `reorder` : Réordonnement batch (POST avec array de IDs)
+
+**Policy Pundit** (`app/policies/admin_panel/homepage_carousel_policy.rb`) :
+- [ ] Hérite de `AdminPanel::BasePolicy`
+- [ ] Permissions : level >= 40 (ORGANIZER+)
+- [ ] Mêmes méthodes que Announcement
+
+**Vues AdminPanel** :
+- [ ] `index.html.erb` :
+  - Breadcrumb
+  - Header avec titre + bouton "Nouveau slide"
+  - Grid responsive (2-3 colonnes desktop)
+  - Card par slide avec :
+    - Image preview (thumbnail)
+    - Titre + sous-titre
+    - Badge position
+    - Badge statut
+    - Actions (drag handle, éditer, publier/dépublier, supprimer)
+  - Zone drag & drop (Stimulus + SortableJS)
+  - Message si aucun slide
+- [ ] `show.html.erb` : Aperçu complet avec image hero
+- [ ] `new.html.erb` + `edit.html.erb` : Formulaire
+- [ ] `_form.html.erb` :
+  - Champs : titre, sous-titre, image (required), lien URL, dates
+  - Preview image (si uploadée)
+  - Validation : image requise
+
+**Stimulus Controller** (`app/javascript/controllers/sortable_controller.js`) :
+- [ ] Gestion drag & drop avec SortableJS
+- [ ] Envoi POST `/admin-panel/homepage-carousels/reorder` avec array IDs
+- [ ] Feedback visuel (loading, success)
+
+**Tests** :
+- [ ] Tests modèle (position, réordonnement)
+- [ ] Tests contrôleur (CRUD, reorder, move_up/down)
+- [ ] Tests permissions
+- [ ] Tests Stimulus (drag & drop)
 
 #### Affichage Public
-- [x] Partial `app/views/pages/_announcement_banner.html.erb` : Bootstrap 5 carousel, `HomepageCarousel.active.ordered`, variant 1200×675 (16:9), pas de caption (texte dans l’image), indicateurs et contrôles si > 1 slide
-- [x] Intégration dans `pages/index.html.erb` ; fallback hero banner si aucun slide actif
+- [ ] Partial `app/views/pages/_carousel.html.erb`
+  - Bootstrap 5 carousel
+  - Auto-play (5sec)
+  - Pause on hover
+  - Dots + prev/next
+  - Captions (titre + sous-titre)
+
+- [ ] Intégration `pages/index.html.erb`
+  - Remplacer ou compléter hero banner actuel
 
 #### Tests
-- [x] Request spec : GET index (admin, organizer, non connecté), GET new
-- [x] Policy spec : `AdminPanel::HomepageCarouselPolicy`
-- [ ] Request spec : CRUD complet, publish/unpublish, move_up/move_down, reorder (lacune couverture, voir `docs/05-testing/rspec/coverage-gaps.md`)
-- [ ] Model spec : optionnel (validations, scopes)
+- [ ] Tests modèle (validations, scopes, position)
+- [ ] Tests contrôleur (CRUD, reorder, permissions)
+- [ ] Tests vues (carousel fonctionnel)
 
 ---
 
@@ -827,9 +808,8 @@ Chaque ressource nécessite :
 - `sortable_controller.js` : Drag & drop réordonnement (si pas gem)
 
 ### Active Storage Variants
-- **Hero** (si image hero dédiée) : `resize_to_fill: [1600, 550]` (ratio 32/11) — hero uniquement.
-- **Bannière annonces** (HomepageCarousel) : `resize_to_fill: [1200, 675]` (16:9) ; optionnel variant léger `resize_to_limit: [800, 450]`.
-- **HomepageAnnouncement** (annonces éditoriales) : variant au choix selon usage (ex. 800×450 ou carte plus petite).
+- Carrousel hero : `resize_to_limit: [1920, 600]` (ratio 3.2:1)
+- Annonces : `resize_to_limit: [800, 400]` (ratio 2:1)
 - Galerie thumbnails : `resize_to_limit: [400, 300]` (ratio 4:3)
 - Témoignages avatar : `resize_to_limit: [100, 100]` (carré)
 
@@ -839,13 +819,13 @@ Chaque ressource nécessite :
 
 | Élément | Temps Estimé | Priorité |
 |---------|--------------|----------|
-| Annonces (HomepageAnnouncement) | 4-6h | 🟢 P1 |
-| Adaptation bannière annonces (HomepageCarousel) | 2-4h | 🟢 P1 |
+| Annonces | 4-6h | 🟢 P1 |
+| Carrousel | 6-8h | 🟢 P1 |
 | Galerie | 4-6h | 🟡 P2 |
 | Activités | 2-3h | 🟡 P2 |
 | Témoignages | 6-8h | 🔵 P3 |
 | Hero amélioré | 2-3h | 🔵 P3 |
-| **TOTAL Sprint 1** | **6-10h** | |
+| **TOTAL Sprint 1** | **10-14h** | |
 | **TOTAL Sprint 2** | **6-9h** | |
 | **TOTAL Sprint 3** | **8-11h** | |
 | **TOTAL GLOBAL** | **24-34h** | |
@@ -855,9 +835,9 @@ Chaque ressource nécessite :
 ## 🎯 Critères de Succès
 
 ### Sprint 1
-- [ ] Bénévoles peuvent créer/modifier annonces (HomepageAnnouncement) sans développeur
-- ✅ Bénévoles peuvent gérer les slides (HomepageCarousel) ; bannière 16:9 affichée sous le hero (implémenté)
-- [ ] Contenu apparaît sur homepage immédiatement après publication
+- ✅ Bénévoles peuvent créer/modifier annonces sans développeur
+- ✅ Bénévoles peuvent gérer carrousel hero (ajout/suppression/réordonnement)
+- ✅ Contenu apparaît sur homepage immédiatement après publication
 
 ### Sprint 2
 - ✅ Galerie photos événements passés visible
@@ -878,4 +858,4 @@ Chaque ressource nécessite :
 
 ---
 
-**Dernière mise à jour** : 2026-03-09 — À jour avec l’implémentation actuelle : hero fixe, bannière annonces 16:9, Prochains rendez-vous (2 cartes), hiérarchie Hero → Bannière → Prochains RDV → À propos → Pourquoi → Chiffres. Référence carousel : [homepage-carousel.md](./homepage-carousel.md).
+**Dernière mise à jour** : 2025-01-30 (Complété avec TOUS les détails de gestion admin)

@@ -10,7 +10,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
 
   describe 'GET /admin-panel/inventory' do
     context 'when user is admin' do
-      before { login_user admin_user }
+      before { sign_in admin_user }
 
       it 'returns success' do
         get admin_panel_inventory_path
@@ -18,16 +18,16 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
       end
 
       it 'assigns @low_stock' do
-        variant = create(:product_variant, is_active: true)
-        variant.inventory.update!(stock_qty: 5, reserved_qty: 0)
+        variant = create(:product_variant)
+        inventory = create(:inventory, product_variant: variant, stock_qty: 5, reserved_qty: 0)
 
         get admin_panel_inventory_path
         expect(assigns(:low_stock)).to be_present
       end
 
       it 'assigns @out_of_stock' do
-        variant = create(:product_variant, is_active: true)
-        variant.inventory.update!(stock_qty: 0, reserved_qty: 0)
+        variant = create(:product_variant)
+        inventory = create(:inventory, product_variant: variant, stock_qty: 0, reserved_qty: 0)
 
         get admin_panel_inventory_path
         expect(assigns(:out_of_stock)).to be_present
@@ -35,7 +35,8 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
 
       it 'assigns @movements' do
         variant = create(:product_variant)
-        create(:inventory_movement, inventory: variant.inventory)
+        inventory = create(:inventory, product_variant: variant)
+        create(:inventory_movement, inventory: inventory)
 
         get admin_panel_inventory_path
         expect(assigns(:movements)).to be_present
@@ -43,7 +44,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
     end
 
     context 'when user is organizer (level 40)' do
-      before { login_user organizer_user }
+      before { sign_in organizer_user }
 
       it 'redirects or denies access' do
         get admin_panel_inventory_path
@@ -61,7 +62,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
 
   describe 'GET /admin-panel/inventory/transfers' do
     context 'when user is admin' do
-      before { login_user admin_user }
+      before { sign_in admin_user }
 
       it 'returns success' do
         get admin_panel_inventory_transfers_path
@@ -70,7 +71,8 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
 
       it 'assigns @movements with pagination' do
         variant = create(:product_variant)
-        create_list(:inventory_movement, 5, inventory: variant.inventory)
+        inventory = create(:inventory, product_variant: variant)
+        create_list(:inventory_movement, 5, inventory: inventory)
 
         get admin_panel_inventory_transfers_path
         expect(assigns(:movements)).to be_present
@@ -79,8 +81,9 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
 
       it 'filters movements by reason' do
         variant = create(:product_variant)
-        create(:inventory_movement, inventory: variant.inventory, reason: 'adjustment')
-        create(:inventory_movement, inventory: variant.inventory, reason: 'purchase')
+        inventory = create(:inventory, product_variant: variant)
+        create(:inventory_movement, inventory: inventory, reason: 'adjustment')
+        create(:inventory_movement, inventory: inventory, reason: 'purchase')
 
         get admin_panel_inventory_transfers_path, params: { q: { reason_cont: 'adjustment' } }
         movements = assigns(:movements)
@@ -89,7 +92,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
     end
 
     context 'when user is organizer (level 40)' do
-      before { login_user organizer_user }
+      before { sign_in organizer_user }
 
       it 'redirects or denies access' do
         get admin_panel_inventory_transfers_path
@@ -101,10 +104,10 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
   describe 'PATCH /admin-panel/inventory/adjust_stock' do
     let(:product) { create(:product) }
     let(:variant) { create(:product_variant, product: product) }
-    let!(:inventory) { variant.inventory.tap { |i| i.update!(stock_qty: 10) } }
+    let!(:inventory) { create(:inventory, product_variant: variant, stock_qty: 10) }
 
     context 'when user is admin' do
-      before { login_user admin_user }
+      before { sign_in admin_user }
 
       it 'adjusts stock successfully' do
         expect {
@@ -145,7 +148,7 @@ RSpec.describe 'AdminPanel::InventoryController', type: :request do
     end
 
     context 'when user is organizer (level 40)' do
-      before { login_user organizer_user }
+      before { sign_in organizer_user }
 
       it 'redirects or denies access' do
         patch '/admin-panel/inventory/adjust_stock', params: {

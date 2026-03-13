@@ -92,7 +92,7 @@ GEM
       ruby2_keywords (>= 0.0.2)
     ast (2.4.3)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1219.0)
+    aws-partitions (1.1214.0)
     aws-sdk-core (3.242.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
@@ -148,7 +148,7 @@ GEM
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
-    devise (5.0.2)
+    devise (5.0.1)
       bcrypt (~> 3.0)
       orm_adapter (~> 0.1)
       railties (>= 7.0)
@@ -158,7 +158,7 @@ GEM
     dotenv (3.2.0)
     drb (2.2.3)
     ed25519 (1.4.0)
-    erb (6.0.2)
+    erb (6.0.1)
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
@@ -174,8 +174,8 @@ GEM
     ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
     ffi (1.17.3-x86_64-linux-musl)
-    formtastic (6.0.0)
-      actionpack (>= 7.2.0)
+    formtastic (5.0.0)
+      actionpack (>= 6.0.0)
     formtastic_i18n (0.7.0)
     fugit (1.12.1)
       et-orbi (~> 1.4)
@@ -268,8 +268,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.2)
-      drb (~> 2.0)
+    minitest (6.0.1)
       prism (~> 1.5)
     mission_control-jobs (1.1.0)
       actioncable (>= 7.1)
@@ -313,12 +312,11 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
-    pagy (43.3.0)
+    pagy (43.2.9)
       json
-      uri
       yaml
     parallel (1.27.0)
-    parser (3.3.10.2)
+    parser (3.3.10.1)
       ast (~> 2.4.1)
       racc
     pg (1.6.3)
@@ -380,8 +378,8 @@ GEM
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.7.0)
-      loofah (~> 2.25)
+    rails-html-sanitizer (1.6.2)
+      loofah (~> 2.21)
       nokogiri (>= 1.15.7, != 1.16.7, != 1.16.6, != 1.16.5, != 1.16.4, != 1.16.3, != 1.16.2, != 1.16.1, != 1.16.0.rc1, != 1.16.0)
     railties (8.1.2)
       actionpack (= 8.1.2)
@@ -424,7 +422,7 @@ GEM
     rspec-mocks (3.13.7)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
-    rspec-rails (8.0.3)
+    rspec-rails (8.0.2)
       actionpack (>= 7.2)
       activesupport (>= 7.2)
       railties (>= 7.2)
@@ -471,7 +469,7 @@ GEM
       rubyzip (>= 3.2.2)
     rubyzip (3.2.2)
     securerandom (0.4.1)
-    selenium-webdriver (4.41.0)
+    selenium-webdriver (4.40.0)
       base64 (~> 0.2)
       logger (~> 1.4)
       rexml (~> 3.2, >= 3.2.5)
@@ -486,7 +484,7 @@ GEM
       activejob (>= 7.2)
       activerecord (>= 7.2)
       railties (>= 7.2)
-    solid_queue (1.3.2)
+    solid_queue (1.3.1)
       activejob (>= 7.1)
       activerecord (>= 7.1)
       concurrent-ruby (>= 1.3.1)
@@ -524,10 +522,11 @@ GEM
     useragent (0.16.11)
     warden (1.2.9)
       rack (>= 2.0.9)
-    web-console (4.3.0)
-      actionview (>= 8.0.0)
+    web-console (4.2.1)
+      actionview (>= 6.0.0)
+      activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
-      railties (>= 8.0.0)
+      railties (>= 6.0.0)
     websocket (1.2.11)
     websocket-driver (0.8.0)
       base64
@@ -538,7 +537,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yaml (0.4.0)
-    zeitwerk (2.7.5)
+    zeitwerk (2.7.4)
 
 PLATFORMS
   aarch64-linux
@@ -579,7 +578,7 @@ DEPENDENCIES
   pundit
   rack-attack
   rack-cors
-  rails (~> 8.1.0)
+  rails (~> 8.1.1)
   rails-controller-testing
   rqrcode (~> 2.2)
   rspec-rails

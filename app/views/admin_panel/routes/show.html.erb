@@ -135,7 +135,7 @@
                       <%= link_to event.title, admin_panel_event_path(event), class: "text-decoration-none" %>
                     </td>
                     <td>
-                      <%= render "shared/event_status_badge", record: event %>
+                      <span class="badge bg-secondary"><%= event.status %></span>
                     </td>
                     <td>
                       <%= event.start_at&.strftime("%d/%m/%Y à %H:%M") || "-" %>

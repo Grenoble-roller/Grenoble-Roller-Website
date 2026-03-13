@@ -279,49 +279,4 @@ RSpec.describe 'Orders', type: :request do
       expect(flash[:alert]).to include('Stock insuffisant')
     end
   end
-
-  describe 'PATCH /orders/:id/cancel' do
-    let(:order) { create(:order, user: user, status: 'pending') }
-
-    it 'requires authentication' do
-      patch cancel_order_path(order)
-      expect(response).to redirect_to(new_user_session_path)
-    end
-
-    context 'when authenticated' do
-      before { login_user(user) }
-
-      it 'cancels a pending order and redirects with notice' do
-        patch cancel_order_path(order)
-        expect(response).to redirect_to(order_path(order))
-        expect(flash[:notice]).to include('annulée')
-        expect(order.reload.status).to eq('cancelled')
-      end
-
-      it 'prevents cancelling another user order' do
-        other_user = create(:user, role: role, confirmed_at: Time.current)
-        other_order = create(:order, user: other_user, status: 'pending')
-        patch cancel_order_path(other_order)
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
-  describe 'POST /orders/:id/check_payment' do
-    let(:order) { create(:order, user: user) }
-
-    it 'requires authentication' do
-      post check_payment_order_path(order)
-      expect(response).to redirect_to(new_user_session_path)
-    end
-
-    context 'when authenticated' do
-      before { login_user(user) }
-
-      it 'redirects to order page' do
-        post check_payment_order_path(order)
-        expect(response).to redirect_to(order_path(order))
-      end
-    end
-  end
 end

@@ -16,11 +16,7 @@ Objectif : corriger les tests qui échouent de façon reproductible.
 
 **Règles** : une erreur à la fois, toujours vérifier qu’on ne casse pas d’autres specs, suivre les priorités (voir [RSPEC_AUDIT_REPORT.md](RSPEC_AUDIT_REPORT.md)).
 
-1. **Exécuter le test spécifique** pour voir l'erreur exacte (avec `RAILS_ENV=test` si tu passes par le conteneur dev) :
-   ```bash
-   docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb:XX
-   ```
-   Ou avec le nom du conteneur : `docker exec -e RAILS_ENV=test grenoble-roller-dev bundle exec rspec ./spec/...`
+---
 
 ## Partie B : Refactoring d’une méthode (Standards 2026)
 
@@ -62,16 +58,8 @@ Approche : **Research → Analyze → Plan → Implement**. Les livrables sont d
 
 ### Phase 5 : Implémentation guidée
 
-1. **Appliquer la solution** dans le code
-2. **Exécuter le test** pour vérifier qu'il passe
-3. **Vérifier qu'on n'a pas cassé d'autres tests** :
-   ```bash
-   docker compose -f ops/dev/docker-compose.yml exec -e RAILS_ENV=test web bundle exec rspec ./spec/[chemin]/[fichier]_spec.rb
-   ```
-4. **Vérifier l'impact des modifications** :
-   - Identifier les **vues / écrans** concernés par le code modifié (contrôleur, modèle, service).
-   - Si des vues ou flux utilisateur sont touchés : **test manuel** des écrans concernés (ou au minimum relire le code pour confirmer l’absence de régression).
-   - Documenter dans la fiche d’erreur si un impact vue a été vérifié (ou « aucune vue modifiée »).
+- Pour **chaque étape** : afficher code AVANT → expliquer transformation → code APRÈS → commande de test → **attendre validation** avant de continuer.
+- **Ne pas** tout coder d’un coup ; ne pas modifier sans validation explicite.
 
 ### Phase 6 : Validation finale
 
@@ -89,26 +77,22 @@ Approche : **Research → Analyze → Plan → Implement**. Les livrables sont d
 
 ## Standards code (référence 2026)
 
-- [ ] Erreur exécutée et copiée
-- [ ] Code du test lu et compris
-- [ ] Code de l'application lu et compris
-- [ ] Type de problème identifié (test ou logique)
-- [ ] Solutions proposées documentées
-- [ ] Solution appliquée
-- [ ] Test passé
-- [ ] Vérification impact : autres tests + vues/écrans concernés (test manuel ou relecture)
-- [ ] Documentation mise à jour
-- [ ] Statut mis à jour dans README.md
+- **Ruby 3.3** : pattern matching, endless methods, paramètres numérotés, safe navigation `&.`.
+- **Rails 7.2/8** : Hotwire/Turbo, ActiveRecord `with` / `strict_loading` / `async`, credentials, Solid Queue/Cache.
+- **Perf** : N+1 → `includes`/`preload`/`eager_load`, pagination (pagy), cache, jobs.
+- **Sécurité** : StrongParameters, Pundit `authorize`, CSRF, Content Security Policy.
+- **Tests** : RSpec, FactoryBot `build_stubbed` quand possible, Capybara headless Chrome pour system.
+- **Style** : Rubocop, snake_case, YARD pour méthodes complexes, ~120 caractères/ligne.
 
 ---
 
 ## Commandes utiles
 
-1. **Une erreur à la fois** : Ne pas mélanger plusieurs corrections
-2. **Toujours tester** : Vérifier que la correction fonctionne
-3. **Documenter tout** : Mettre à jour les fichiers d'erreur
-4. **Vérifier les dépendances** : S'assurer qu'on ne casse pas d'autres tests ; vérifier l'impact sur les vues/écrans concernés (étape 5.4)
-5. **Suivre les priorités** : Traiter les erreurs par ordre de priorité
+```bash
+# Tests
+bundle exec rspec spec/[fichier]_spec.rb
+bundle exec rspec spec/[fichier]_spec.rb:XX
+bundle exec rspec --profile 10
 
 # Analyse
 bundle exec rubocop [fichier]

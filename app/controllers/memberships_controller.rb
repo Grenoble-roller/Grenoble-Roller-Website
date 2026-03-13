@@ -158,17 +158,19 @@ class MembershipsController < ApplicationController
       # Vérifier si l'enfant a déjà utilisé son essai gratuit (pour le renouvellement ou si l'enfant existe déjà)
       @child_has_used_trial = false
       if @old_membership
-        # Cet enfant (même identité que l'ancienne adhésion) a-t-il déjà utilisé son essai gratuit ?
-        child_ids = current_user.memberships.children
-          .where(
-            child_first_name: @old_membership.child_first_name,
-            child_last_name: @old_membership.child_last_name,
-            child_date_of_birth: @old_membership.child_date_of_birth
-          )
-          .select(:id)
-        @child_has_used_trial = current_user.attendances.active
-          .where(child_membership_id: child_ids, free_trial_used: true)
-          .exists?
+        # Vérifier si cet enfant a une adhésion trial qui a été utilisée pour une inscription
+        trial_membership = current_user.memberships.children
+          .where(child_first_name: @old_membership.child_first_name,
+                 child_last_name: @old_membership.child_last_name,
+                 child_date_of_birth: @old_membership.child_date_of_birth,
+                 status: :trial)
+          .first
+        if trial_membership
+          @child_has_used_trial = current_user.attendances.where(
+            child_membership_id: trial_membership.id,
+            free_trial_used: true
+          ).exists?
+        end
       elsif @membership&.child_first_name.present? && @membership&.child_last_name.present? && @membership&.child_date_of_birth.present?
         # Pour un enfant pré-rempli, vérifier s'il existe déjà une adhésion trial utilisée
         existing_trial_membership = current_user.memberships.children
@@ -245,20 +247,6 @@ class MembershipsController < ApplicationController
     if params[:renew_from].present?
       old_membership = current_user.memberships.find_by(id: params[:renew_from])
       if old_membership && old_membership.is_child_membership? && old_membership.expired?
-        # Bloquer si ce même enfant a déjà une adhésion pour la saison courante (avant d'appeler renew_child_membership_from_form)
-        current_season = Membership.current_season_name
-        existing_membership = current_user.memberships.children
-          .where(season: current_season)
-          .where(status: [ Membership.statuses[:active], Membership.statuses[:pending], Membership.statuses[:trial] ])
-          .find_by(
-            child_first_name: old_membership.child_first_name,
-            child_last_name: old_membership.child_last_name,
-            child_date_of_birth: old_membership.child_date_of_birth
-          )
-        if existing_membership
-          redirect_to membership_path(existing_membership), notice: "Une adhésion existe déjà pour #{old_membership.child_full_name} pour cette saison."
-          return
-        end
         membership_params = params[:membership] || params
         # Utiliser la catégorie du formulaire (peut être différente de l'ancienne)
         renew_child_membership_from_form(old_membership, membership_params)

@@ -42,6 +42,23 @@ module Initiations
         end
       end
 
+      # Priorité liste d'attente (même logique que events) : convertir si notifié, sinon annuler après inscription
+      waitlist_entry = @initiation.waitlist_entries.active.find_by(
+        user: current_user,
+        child_membership_id: child_membership_id
+      )
+
+      # Log de la tentative d'inscription
+      Rails.logger.info("Tentative d'inscription - User: #{current_user.id}, Initiation: #{@initiation.id}, Child: #{child_membership_id}, Volunteer: #{is_volunteer}")
+      Rails.logger.info("Params use_free_trial: #{params[:use_free_trial].inspect}, tous les params: #{params.inspect}")
+
+      # #region agent log
+      personal_active_now_count = current_user.memberships.personal.active_now.count
+      free_trial_used_parent = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+      _log_payload = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_is_member", message: "create params", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, child_membership_id: child_membership_id, personal_active_now_count: personal_active_now_count, free_trial_used_parent: free_trial_used_parent, params_use_free_trial: params[:use_free_trial].inspect } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload.to_json) }
+      # #endregion
+
       # Construction de l'attendance (hors transaction pour permettre les redirections)
       attendance = @initiation.attendances.build(user: current_user)
       attendance.status = "registered"
@@ -142,6 +159,7 @@ module Initiations
         # IMPORTANT : Cette vérification doit être faite AVANT de permettre l'inscription
         # même si allow_non_member_discovery est activé
         free_trial_already_used = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+
         if free_trial_already_used
           # L'essai gratuit a déjà été utilisé : l'utilisateur ne peut plus s'inscrire sans adhésion
           # même si allow_non_member_discovery est activé
@@ -156,9 +174,12 @@ module Initiations
             redirect_to initiation_path(@initiation), alert: "Les places pour non-adhérents sont complètes. Adhérez à l'association pour continuer."
             return
           end
-          # Règle : une seule initiation pour un non-adhérent (doc "une seule initiation gratuitement")
-          # Place découverte = même droit qu'essai gratuit → compter comme utilisation
-          attendance.free_trial_used = true
+          # Les non-adhérents peuvent s'inscrire dans les places découverte (pas besoin d'essai gratuit)
+          # L'essai gratuit n'est utilisé que si explicitement demandé
+          if params[:use_free_trial] == "1"
+            # L'essai gratuit n'a pas encore été utilisé (vérifié plus haut)
+            attendance.free_trial_used = true
+          end
         else
           # Option non activée : comportement classique - adhésion ou essai gratuit requis
           use_free_trial = params[:use_free_trial].present? && (params[:use_free_trial] == "1" || params[:use_free_trial] == true)
@@ -176,6 +197,11 @@ module Initiations
           end
         end
       end
+
+      # #region agent log
+      _log_payload2 = { timestamp: Time.current.to_f, location: "attendances_controller.rb:create:before_save", message: "attendance built", hypothesisId: "H4", sessionId: "debug-session", data: { user_id: current_user.id, is_member: is_member, parent_is_member: parent_is_member, child_membership_id: child_membership_id, attendance_free_trial_used: attendance.free_trial_used } }
+      File.open(Rails.root.join(".cursor/debug.log"), "a") { |f| f.puts(_log_payload2.to_json) }
+      # #endregion
 
       # Protection contre race condition : transaction avec lock pessimiste lors du save
       if attendance.save

@@ -71,7 +71,7 @@ fr:
       password_too_long: "est trop long (maximum %{count} caractères)"
       password_blank: "ne peut pas être vide"
       password_confirmation: "ne correspond pas au mot de passe"
-      email_invalid: "doit être une adresse valide avec un domaine complet (ex. nom@domaine.fr)"
+      email_invalid: "n'est pas valide"
       email_taken: "a déjà été pris"
       email_blank: "ne peut pas être vide"
       current_password_invalid: "n'est pas valide"

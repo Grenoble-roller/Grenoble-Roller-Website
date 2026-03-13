@@ -14,9 +14,9 @@ class RegistrationsController < Devise::RegistrationsController
       return
     end
 
-    # Même règle que Devise (config.email_regexp) pour cohérence inscription / check AJAX
-    unless email.match?(Devise.email_regexp)
-      render json: { valid: false, message: "Format d'email invalide (ex. nom@domaine.fr)" }, status: :unprocessable_entity
+    # Vérifier le format email
+    unless email.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+      render json: { valid: false, message: "Format d'email invalide" }, status: :unprocessable_entity
       return
     end
 
