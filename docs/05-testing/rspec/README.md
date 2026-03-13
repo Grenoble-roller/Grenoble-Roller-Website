@@ -3,6 +3,9 @@
 - **Méthodologie** : [METHODE.md](METHODE.md)
 - **Audit des échecs** : [spec-failures-audit.md](spec-failures-audit.md)
 - **Template fiche d’erreur** : [errors/TEMPLATE.md](errors/TEMPLATE.md)
+- **Plan RSpec & refactoring** : [PLAN.md](PLAN.md)
+- **Rapport d'audit** : [RSPEC_AUDIT_REPORT.md](RSPEC_AUDIT_REPORT.md)
+- **Templates refactoring** : [refactoring/](refactoring/)
 
 ## Fiches d’erreur (errors/)
 
