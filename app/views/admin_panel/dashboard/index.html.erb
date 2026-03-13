@@ -266,7 +266,7 @@
                           when 'cancelled' then 'danger'
                           else 'secondary'
                         end %>">
-                          <%= human_status(:order, order.status) %>
+                          <%= order.status %>
                         </span>
                       </td>
                       <td data-label="Date"><%= order.created_at.strftime('%d/%m/%Y %H:%M') %></td>

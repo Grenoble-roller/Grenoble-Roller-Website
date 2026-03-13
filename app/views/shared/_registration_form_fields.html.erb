@@ -415,14 +415,6 @@
 <% if show_free_trial_parent || show_free_trial_children %>
   <%# Style initial : afficher si parent peut utiliser OU si enfant trial/pending disponible %>
   <% initial_display = show_free_trial_parent || (show_free_trial_children && (child_memberships.any? { |m| m.trial? } || child_memberships.any? { |m| m.pending? })) %>
-  <%# #region agent log %>
-  <script>
-  (function(){
-    var d = { parent_has_trial: <%= parent_has_trial ? 'true' : 'false' %>, show_free_trial_parent: <%= show_free_trial_parent ? 'true' : 'false' %>, show_free_trial_children: <%= show_free_trial_children ? 'true' : 'false' %>, initial_display: <%= initial_display ? 'true' : 'false' %>, parent_has_active_membership: <%= parent_has_active_membership ? 'true' : 'false' %> };
-    fetch('http://localhost:7243/ingest/94c53c2f-6b7a-4b92-88eb-c7fa4ab7fef0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'_registration_form_fields.html.erb:free_trial_container',message:'essai gratuit display vars',data:d,timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(function(){});
-  })();
-  </script>
-  <%# #endregion %>
   <div class="mb-3 form-check" id="free_trial_container<%= prefix_id %>" style="<%= initial_display ? '' : 'display: none;' %>">
     <%= check_box_tag :use_free_trial, "1", false, { 
         class: "form-check-input", 
@@ -472,9 +464,6 @@
         
         const selectedChildId = childSelect ? parseInt(childSelect.value) : null;
         const selectedChild = trialChildrenData<%= prefix_id %>.find(c => c.id === selectedChildId);
-        // #region agent log
-        fetch('http://localhost:7243/ingest/94c53c2f-6b7a-4b92-88eb-c7fa4ab7fef0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'updateFreeTrialDisplay:entry',message:'updateFreeTrialDisplay called',data:{selectedChildId:selectedChildId,parentCanUseTrial:<%= parent_has_trial ? 'true' : 'false' %>},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
-        // #endregion
         
         if (selectedChild) {
           // Un enfant est sélectionné dans le menu déroulant
@@ -544,10 +533,7 @@
             }
           }
         }
-        // #region agent log
-        var finalDisplay = freeTrialContainer ? freeTrialContainer.style.display : 'N/A';
-        fetch('http://localhost:7243/ingest/94c53c2f-6b7a-4b92-88eb-c7fa4ab7fef0',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'updateFreeTrialDisplay:after',message:'free_trial_container display after update',data:{finalDisplay:finalDisplay,selectedChildId:selectedChildId},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(function(){});
-        // #endregion
+        
         // Appeler toggleSubmitButton après chaque mise à jour de l'affichage
         toggleSubmitButton<%= prefix_id %>();
       }

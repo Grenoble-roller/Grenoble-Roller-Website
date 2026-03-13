@@ -103,8 +103,14 @@ export function validateField(field, isValid, errorMessage = '') {
   }
 }
 
-// Exposées sur window pour compatibilité avec les scripts inline (formulaires d'adhésion).
-// application.js les réexporte aussi après import.
+// Les fonctions sont exportées pour être importées dans application.js
+// Elles seront ensuite disponibles globalement via window.* dans application.js
+// Note: Les fonctions sont aussi disponibles directement via window pour compatibilité avec les scripts inline
+window.markHealthQuestionInvalid = markHealthQuestionInvalid;
+window.markHealthQuestionValid = markHealthQuestionValid;
+window.validateHealthQuestions = validateHealthQuestions;
+window.validateField = validateField;
+// Note: Les fonctions sont aussi disponibles directement via window pour compatibilité avec les scripts inline
 window.markHealthQuestionInvalid = markHealthQuestionInvalid;
 window.markHealthQuestionValid = markHealthQuestionValid;
 window.validateHealthQuestions = validateHealthQuestions;

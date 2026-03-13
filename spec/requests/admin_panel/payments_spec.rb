@@ -173,9 +173,9 @@ RSpec.describe 'AdminPanel::Payments', type: :request do
         login_user(admin_user)
       end
 
-      it 'redirects to admin panel root with alert' do
+      it 'redirects to admin panel initiations with alert' do
         delete admin_panel_payment_path(payment)
-        expect(response).to redirect_to(admin_panel_root_path)
+        expect(response).to redirect_to(admin_panel_initiations_path)
         expect(flash[:alert]).to include('pas autorisé')
       end
 

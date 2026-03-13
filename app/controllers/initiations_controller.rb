@@ -76,13 +76,6 @@ class InitiationsController < ApplicationController
         end
         @can_register = can_register?
         @can_register_child = can_register_child?
-        # Waitlist for initiations is members only: adult active or at least one child with active membership (not trial/pending)
-        @can_join_initiation_waitlist = if user_signed_in?
-          current_user.memberships.active_now.where(is_child_membership: false).exists? ||
-            current_user.memberships.where(is_child_membership: true).where(status: Membership.statuses[:active]).exists?
-        else
-          false
-        end
       end
 
       format.ics do

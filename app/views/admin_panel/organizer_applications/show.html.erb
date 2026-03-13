@@ -40,7 +40,7 @@
                  else "bg-secondary"
                end %>
             <span class="badge <%= badge_class %>">
-              <%= human_status(:organizer_application, @organizer_application.status) %>
+              <%= @organizer_application.status == "pending" ? "En attente" : @organizer_application.status == "approved" ? "Approuvée" : "Refusée" %>
             </span>
           </dd>
 

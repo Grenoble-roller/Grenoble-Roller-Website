@@ -72,29 +72,6 @@ RSpec.describe WaitlistEntry, type: :model do
       end
     end
 
-    context 'when parent non-adherent joins initiation waitlist without use_free_trial' do
-      it 'creates pending attendance with free_trial_used true (one initiation max for non-adherent)' do
-        # Règle métier : une seule initiation pour un non-adhérent (doc "une seule initiation gratuitement")
-        # Inscription en liste d'attente sans cocher "place gratuite" → à la conversion, compte quand même comme l'unique initiation
-        fill_event_to_capacity(initiation, 2)
-
-        waitlist_entry = create(:waitlist_entry,
-          user: user,
-          event: initiation,
-          child_membership_id: nil,
-          use_free_trial: false
-        )
-
-        expect { waitlist_entry.notify! }.to change { Attendance.count }.by(1)
-
-        attendance = Attendance.last
-        expect(attendance.free_trial_used).to be true
-        expect(attendance.child_membership_id).to be_nil
-        expect(attendance.status).to eq("pending")
-        expect(waitlist_entry.reload.status).to eq("notified")
-      end
-    end
-
     context 'when parent has used free trial but child has not' do
       it 'allows child to use free trial independently' do
         # Créer une attendance avec essai gratuit utilisé pour le PARENT
@@ -131,23 +108,6 @@ RSpec.describe WaitlistEntry, type: :model do
   end
 
   describe '#convert_to_attendance!' do
-    it 'after conversion from waitlist without use_free_trial, parent non-adherent has free_trial_used true' do
-      fill_event_to_capacity(initiation, 2)
-
-      waitlist_entry = create(:waitlist_entry,
-        user: user,
-        event: initiation,
-        child_membership_id: nil,
-        use_free_trial: false
-      )
-      waitlist_entry.notify!
-      pending_attendance = Attendance.last
-      expect(pending_attendance.free_trial_used).to be true
-
-      expect { waitlist_entry.convert_to_attendance! }.to change { pending_attendance.reload.status }.from("pending").to("registered")
-      expect(pending_attendance.free_trial_used).to be true
-    end
-
     it 'converts pending attendance to registered when child uses free trial' do
       # Remplir l'initiation
       fill_event_to_capacity(initiation, 2)

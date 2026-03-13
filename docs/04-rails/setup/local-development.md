@@ -43,8 +43,6 @@ This will:
 - Expose the app on http://localhost:3000
 - Expose the database on localhost:5434
 
-**Équivalence avec `bin/dev`** : En dev Docker, tu as exactement la même stack qu’avec `bin/dev` en local : un processus **Rails server** (port 3000) + un processus **CSS watcher** (`npm run watch:css`). La seule différence est que Postgres et MinIO tournent dans des conteneurs au lieu de ta machine. Si tu préfères tout en local (Ruby, Node, Postgres installés), tu peux utiliser `bin/dev` à la place.
-
 ### 4. Install Dependencies and Initialize Database
 
 ```bash
@@ -78,9 +76,9 @@ docker compose -f ops/dev/docker-compose.yml run --rm \
 
 After running `db:seed`, you can log in with:
 
-- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX12345678`
-- **Admin**: `admin@roller.com` / `admin12345678`
-- **Test Users**: 50 users créés par le seed / `password12345678` (mot de passe minimum 12 caractères)
+- **Super Admin**: `T3rorX@hotmail.fr` / `T3rorX123`
+- **Admin**: `admin@roller.com` / `admin123`
+- **Test Users**: `client1@example.com` to `client5@example.com` / `password123`
 
 ## Development Workflow
 

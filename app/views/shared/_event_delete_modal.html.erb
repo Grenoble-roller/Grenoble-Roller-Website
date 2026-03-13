@@ -1,11 +1,30 @@
-<%# Partial partagé pour le modal de suppression d'un événement (réutilise le layout générique) %>
+<%# Partial partagé pour le modal de suppression d'un événement %>
 <%# Variables attendues: event (peut être Event ou Event::Initiation) %>
 
 <% if policy(event).destroy? %>
-  <%= render "shared/confirm_destroy_modal",
-      modal_id: "confirmDeleteModalShow",
-      title: "Supprimer #{event.is_a?(Event::Initiation) ? "l'initiation" : "l'événement"}",
-      message: "Cette action est définitive. Souhaitez-vous supprimer #{content_tag(:strong, event.title)} ?".html_safe,
-      destroy_path: event_path_for(event) %>
+  <div class="modal fade" id="confirmDeleteModalShow" tabindex="-1" aria-labelledby="confirmDeleteModalShowLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h5" id="confirmDeleteModalShowLabel">
+            Supprimer <%= event.is_a?(Event::Initiation) ? "l'initiation" : "l'événement" %>
+          </h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            Cette action est définitive. Souhaitez-vous supprimer
+            <strong><%= event.title %></strong> ?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+          <%= button_to event_path_for(event), method: :delete, form: { data: { turbo: true } }, class: "btn btn-danger" do %>
+            <i class="bi bi-trash me-2" aria-hidden="true"></i>Oui, supprimer
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 <% end %>
 

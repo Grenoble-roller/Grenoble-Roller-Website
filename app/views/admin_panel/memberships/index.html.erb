@@ -19,7 +19,7 @@
           class: "btn btn-sm #{params[:scope].blank? ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
       <%= link_to "Actives", admin_panel_memberships_path(scope: "active"), 
           class: "btn btn-sm #{params[:scope] == 'active' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
-      <%= link_to t("statuses.membership.pending"), admin_panel_memberships_path(scope: "pending"), 
+      <%= link_to "En attente", admin_panel_memberships_path(scope: "pending"), 
           class: "btn btn-sm #{params[:scope] == 'pending' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
       <%= link_to "Expirées", admin_panel_memberships_path(scope: "expired"), 
           class: "btn btn-sm #{params[:scope] == 'expired' ? 'btn-liquid-primary' : 'btn-outline-liquid-primary'}" %>
@@ -46,10 +46,10 @@
         <%= f.select :status_eq,
             options_for_select([
               ["Tous", ""],
-              [t("statuses.membership.pending"), "pending"],
-              [t("statuses.membership.active"), "active"],
-              [t("statuses.membership.expired"), "expired"],
-              [t("statuses.membership.trial"), "trial"]
+              ["En attente", "pending"],
+              ["Active", "active"],
+              ["Expirée", "expired"],
+              ["Essai", "trial"]
             ], params.dig(:q, :status_eq)),
             {},
             { class: "form-select form-control-liquid" } %>
@@ -112,15 +112,18 @@
                   <%= membership.category == "standard" ? "Standard" : "FFRS" %>
                 </td>
                 <td data-label="Statut">
-                  <span class="badge bg-<%= case membership.status
-                    when "active" then "success"
-                    when "pending" then "warning"
-                    when "expired" then "danger"
-                    when "trial" then "secondary"
-                    else "secondary"
-                  end %>">
-                    <%= human_status(:membership, membership.status) %>
-                  </span>
+                  <% case membership.status %>
+                  <% when "active" %>
+                    <span class="badge bg-success">Active</span>
+                  <% when "pending" %>
+                    <span class="badge bg-warning">En attente</span>
+                  <% when "expired" %>
+                    <span class="badge bg-danger">Expirée</span>
+                  <% when "trial" %>
+                    <span class="badge bg-secondary">Essai</span>
+                  <% else %>
+                    <span class="badge bg-secondary"><%= membership.status %></span>
+                  <% end %>
                 </td>
                 <td data-label="Saison"><%= membership.season || "-" %></td>
                 <td data-label="Montant">

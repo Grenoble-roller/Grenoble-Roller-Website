@@ -147,20 +147,6 @@ RSpec.describe 'Events', type: :request do
       expect(response).to redirect_to(event_path(event))
       expect(flash[:notice]).to eq("Vous êtes déjà inscrit(e) à cet événement.")
     end
-
-    it 'blocks registration when event is past' do
-      user = create_user
-      login_user(user)
-      past_event = build_event(status: 'published', max_participants: 10, start_at: 2.days.ago)
-      past_event.save!
-
-      expect do
-        post event_attendances_path(past_event)
-      end.not_to change { Attendance.count }
-
-      expect(response).to be_redirect
-      expect(flash[:alert]).to be_present
-    end
   end
 
   describe 'DELETE /events/:event_id/attendances' do

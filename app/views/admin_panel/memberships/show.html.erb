@@ -57,15 +57,18 @@
 
           <dt class="col-sm-3">Statut</dt>
           <dd class="col-sm-9">
-            <span class="badge bg-<%= case @membership.status
-              when "active" then "success"
-              when "pending" then "warning"
-              when "expired" then "danger"
-              when "trial" then "secondary"
-              else "secondary"
-            end %>">
-              <%= human_status(:membership, @membership.status) %>
-            </span>
+            <% case @membership.status %>
+            <% when "active" %>
+              <span class="badge bg-success">Active</span>
+            <% when "pending" %>
+              <span class="badge bg-warning">En attente</span>
+            <% when "expired" %>
+              <span class="badge bg-danger">Expirée</span>
+            <% when "trial" %>
+              <span class="badge bg-secondary">Essai</span>
+            <% else %>
+              <span class="badge bg-secondary"><%= @membership.status %></span>
+            <% end %>
           </dd>
 
           <dt class="col-sm-3">Saison</dt>
@@ -224,17 +227,11 @@
           <% end %>
         <% end %>
         <%= link_to "Modifier", edit_admin_panel_membership_path(@membership), class: "btn btn-liquid-primary w-100 mb-2" %>
-        <button type="button" class="btn btn-outline-danger w-100" data-bs-toggle="modal" data-bs-target="#confirmDeleteMembershipModal" aria-label="Supprimer cette adhésion">
-          <i class="bi bi-trash me-2" aria-hidden="true"></i>Supprimer
-        </button>
+        <%= button_to "Supprimer", admin_panel_membership_path(@membership), method: :delete, 
+            class: "btn btn-outline-danger w-100",
+            data: { confirm: "Êtes-vous sûr de vouloir supprimer cette adhésion ?" } %>
       </div>
     </div>
-
-    <%= render "shared/confirm_destroy_modal",
-        modal_id: "confirmDeleteMembershipModal",
-        title: "Supprimer l'adhésion",
-        message: "Cette action est définitive. Souhaitez-vous supprimer cette adhésion ?",
-        destroy_path: admin_panel_membership_path(@membership) %>
 
     <!-- Informations système -->
     <div class="card card-liquid rounded-liquid shadow-liquid mt-4">

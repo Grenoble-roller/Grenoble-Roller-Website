@@ -16,21 +16,6 @@ RSpec.describe 'Initiations', type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('Initiation Débutant')
     end
-
-    it 'includes canceled initiations in the list for all users (like events)' do
-      build_event(
-        type: 'Event::Initiation',
-        status: 'canceled',
-        title: 'Initiation annulée - Pluie',
-        max_participants: 30,
-        allow_non_member_discovery: false
-      ).save!
-
-      get initiations_path
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include('Initiation annulée - Pluie')
-    end
   end
 
   describe 'GET /initiations/:id' do

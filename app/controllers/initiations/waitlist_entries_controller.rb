@@ -7,16 +7,9 @@ module Initiations
 
     # POST /initiations/:initiation_id/waitlist_entries
     def create
+      authorize @initiation, :join_waitlist? # Utiliser la policy spécifique pour la liste d'attente
+
       child_membership_id = params[:child_membership_id].presence
-      Thread.current[:initiation_waitlist_child_membership_id] = child_membership_id
-      begin
-        authorize @initiation, :join_waitlist?
-      rescue Pundit::NotAuthorizedError
-        redirect_to initiation_path(@initiation), alert: "La liste d'attente des initiations est réservée aux adhérents."
-        return
-      ensure
-        Thread.current[:initiation_waitlist_child_membership_id] = nil
-      end
       needs_equipment = params[:needs_equipment] == "1"
       roller_size = params[:roller_size].presence
       wants_reminder = params[:wants_reminder].present? ? params[:wants_reminder] == "1" : false

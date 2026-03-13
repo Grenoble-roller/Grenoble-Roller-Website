@@ -22,12 +22,10 @@ class InitiationParticipantsReportJob < ApplicationJob
     end
 
     # Vérifier que l'initiation a bien lieu aujourd'hui (sécurité supplémentaire)
-    # Bypass en dev/test : FORCE_INITIATION_REPORT=true pour envoyer même si pas le jour J
     today_start = Time.zone.now.beginning_of_day
     today_end = today_start.end_of_day
-    force_report = ActiveModel::Type::Boolean.new.cast(ENV["FORCE_INITIATION_REPORT"])
 
-    unless force_report || initiation.start_at.between?(today_start, today_end)
+    unless initiation.start_at.between?(today_start, today_end)
       Rails.logger.warn("[InitiationParticipantsReportJob] Initiation ##{initiation_id} n'a pas lieu aujourd'hui (start_at: #{initiation.start_at}), email non envoyé")
       return
     end
@@ -39,13 +37,7 @@ class InitiationParticipantsReportJob < ApplicationJob
     end
 
     begin
-      # Envoi à contact@ (bureau)
       EventMailer.initiation_participants_report(initiation).deliver_later
-      # Envoi à chaque bénévole inscrit (mail matériel + liste des présents)
-      initiation.attendances.active.where(is_volunteer: true).includes(:user).find_each do |attendance|
-        next unless attendance.user&.email.present?
-        EventMailer.initiation_participants_report(initiation, recipient_email: attendance.user.email).deliver_later
-      end
       # Marquer comme envoyé pour éviter les doublons (utiliser update_column pour éviter les callbacks)
       initiation.update_column(:participants_report_sent_at, Time.zone.now)
       Rails.logger.info("[InitiationParticipantsReportJob] Email de rapport enqueued pour initiation ##{initiation.id} (#{initiation.title})")

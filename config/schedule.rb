@@ -32,6 +32,7 @@ every 1.day, at: "9:00 am" do
 end
 
 # Remettre les rollers en stock après les initiations terminées (tous les jours à 2h du matin)
-every 1.day, at: "2:00 am" do
-  runner "ReturnRollerStockJob.perform_now"
-end
+# DÉSACTIVÉ : Le retour de matériel se fait maintenant manuellement via le bouton "Matériel rendu" dans la page Présences
+# every 1.day, at: "2:00 am" do
+#   runner "ReturnRollerStockJob.perform_now"
+# end

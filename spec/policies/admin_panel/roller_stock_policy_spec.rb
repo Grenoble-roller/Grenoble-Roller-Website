@@ -81,18 +81,4 @@ RSpec.describe AdminPanel::RollerStockPolicy do
       it { expect(policy.destroy?).to be(false) }
     end
   end
-
-  describe '#return_all?' do
-    context 'when user is admin (level 60)' do
-      let(:user) { create(:user, role: admin_role) }
-
-      it { expect(policy.return_all?).to be(true) }
-    end
-
-    context 'when user is organizer (level 40)' do
-      let(:user) { create(:user, role: organizer_role) }
-
-      it { expect(policy.return_all?).to be(false) }
-    end
-  end
 end

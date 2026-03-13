@@ -337,7 +337,7 @@
         </div>
       <% end %>
       
-      <!-- Bouton d'inscription (affiché seulement si l'événement n'est pas passé et qu'on peut s'inscrire) -->
+      <!-- Bouton d'inscription (affiché seulement si on peut vraiment s'inscrire) -->
       <% 
         # Calculer si on peut vraiment s'inscrire (adulte ou enfant disponible)
         can_register_adult = @can_register && !@user_attendance&.persisted?
@@ -345,15 +345,9 @@
         can_register_any_child = @can_register_child && current_user.memberships.where(is_child_membership: true)
           .where(status: [Membership.statuses[:active], Membership.statuses[:trial], Membership.statuses[:pending]])
           .where.not(id: @child_attendances.map(&:child_membership_id).compact).exists?
-        show_register_button = !@initiation.past? && (can_register_adult || can_register_any_child) && !@initiation.full?
+        show_register_button = (can_register_adult || can_register_any_child) && !@initiation.full?
       %>
-      <% if @initiation.past? %>
-        <div class="alert alert-secondary mb-4" role="alert">
-          <i class="bi bi-calendar-x me-2" aria-hidden="true"></i>
-          <strong>Cet événement est terminé</strong>
-          <p class="mb-0">Les inscriptions sont closes.</p>
-        </div>
-      <% elsif show_register_button %>
+      <% if show_register_button %>
         <div class="primary-action">
           <button type="button" 
                   class="btn btn-liquid-primary btn-lg w-100" 
@@ -363,7 +357,7 @@
             <i class="bi bi-calendar-plus me-2" aria-hidden="true"></i>Inscription
           </button>
         </div>
-      <% elsif !user_signed_in? && !@initiation.past? %>
+      <% elsif !user_signed_in? %>
         <div class="alert alert-info mb-4" role="alert">
           <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
           <strong>Connexion requise</strong>
@@ -374,13 +368,14 @@
             <% end %>
           </div>
         </div>
-      <% elsif @initiation.full? && !@initiation.past? %>
+      <% elsif @initiation.full? %>
         <div class="alert alert-warning mb-4" role="alert">
           <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
           <strong>Cette séance est complète</strong>
-          <% if user_signed_in? && @can_join_initiation_waitlist %>
-            <p class="mb-0">Toutes les places sont prises. Rejoignez la liste d'attente pour être notifié(e) si une place se libère.</p>
+          <p class="mb-0">Toutes les places sont prises. Rejoignez la liste d'attente pour être notifié(e) si une place se libère.</p>
+          <% if user_signed_in? %>
             <div class="mt-3 d-flex flex-wrap gap-2">
+              <%# Bouton pour rejoindre la liste d'attente : toujours disponible %>
               <button type="button" 
                       class="btn btn-liquid-primary" 
                       data-bs-toggle="modal" 
@@ -388,6 +383,8 @@
                       aria-label="Rejoindre la liste d'attente">
                 <i class="bi bi-person-plus me-2" aria-hidden="true"></i>Rejoindre la liste d'attente
               </button>
+              
+              <%# Bouton pour inscrire un enfant si disponible %>
               <% has_available_children = @can_register_child && current_user.memberships.where(is_child_membership: true)
                   .where(status: [Membership.statuses[:active], Membership.statuses[:trial], Membership.statuses[:pending]])
                   .where.not(id: @child_attendances.map(&:child_membership_id).compact).exists? %>
@@ -401,15 +398,6 @@
                 </button>
               <% end %>
             </div>
-          <% elsif user_signed_in? && !@can_join_initiation_waitlist %>
-            <p class="mb-0">La liste d'attente est réservée aux adhérents. Adhérez pour être notifié(e) si une place se libère.</p>
-            <div class="mt-3">
-              <%= link_to new_membership_path(type: 'adult'), class: "btn btn-primary" do %>
-                <i class="bi bi-person-plus me-2" aria-hidden="true"></i>Adhérer maintenant
-              <% end %>
-            </div>
-          <% else %>
-            <p class="mb-0">Toutes les places sont prises. Rejoignez la liste d'attente pour être notifié(e) si une place se libère.</p>
           <% end %>
         </div>
       <% elsif user_signed_in? && !current_user.memberships.active_now.exists? && current_user.attendances.active.where(free_trial_used: true).exists? %>
@@ -500,8 +488,8 @@
   </div>
 <% end %>
 
-<!-- Modal pour rejoindre la liste d'attente (adhérents uniquement) -->
-<% if user_signed_in? && @initiation.full? && @can_join_initiation_waitlist %>
+<!-- Modal pour rejoindre la liste d'attente -->
+<% if user_signed_in? && @initiation.full? %>
   <div class="modal fade" id="joinWaitlistModalShowInitiation" tabindex="-1" aria-labelledby="joinWaitlistModalShowInitiationLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">

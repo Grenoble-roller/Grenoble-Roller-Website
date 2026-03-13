@@ -37,18 +37,7 @@ class Order < ApplicationRecord
 
     order_items.includes(variant: :inventory).each do |item|
       variant = item.variant
-      next unless variant
-
-      # Créer l'inventaire si absent (variantes anciennes ou migration)
-      unless variant.inventory
-        Inventory.create!(
-          product_variant_id: variant.id,
-          stock_qty: variant.stock_qty.to_i,
-          reserved_qty: 0
-        )
-        variant.reload
-      end
-      next unless variant.inventory
+      next unless variant&.inventory
 
       variant.inventory.reserve_stock(item.quantity, id, user)
     end
@@ -80,8 +69,6 @@ class Order < ApplicationRecord
         variant.inventory.move_stock(-item.quantity, "order_fulfilled", id.to_s, user)
         # Libérer la réservation (reserved_qty)
         variant.inventory.release_stock(item.quantity, id, user)
-        # Synchroniser variant.stock_qty avec l'inventaire pour cohérence admin / boutique
-        variant.update_column(:stock_qty, variant.inventory.reload.stock_qty)
       end
 
     when "cancelled", "refunded"

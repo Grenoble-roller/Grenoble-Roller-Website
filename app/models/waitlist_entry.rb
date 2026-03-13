@@ -88,15 +88,6 @@ class WaitlistEntry < ApplicationRecord
 
     # Créer une inscription "pending" pour verrouiller la place
     attendance = build_pending_attendance
-
-    # Ne pas créer d'attendance si l'enfant a déjà utilisé son essai gratuit (contrainte unique + règle métier)
-    if attendance.free_trial_used && attendance.child_membership_id.present?
-      if user.attendances.active.where(free_trial_used: true, child_membership_id: attendance.child_membership_id).exists?
-        Rails.logger.warn("WaitlistEntry #{id} notify! skipped: child #{attendance.child_membership_id} has already used free trial")
-        return false
-      end
-    end
-
     bypass_validations_if_initiation(attendance)
 
     if attendance.save(validate: false) # Sauvegarder sans validation pour éviter les erreurs d'autorisation
@@ -252,14 +243,7 @@ class WaitlistEntry < ApplicationRecord
   private
 
   # Construire l'attendance pending pour verrouiller la place
-  # Règle : pour un non-adhérent parent en initiation, toute place (avec ou sans case "essai gratuit") compte comme son unique initiation → free_trial_used = true
   def build_pending_attendance
-    free_trial_used = if event.is_a?(Event::Initiation) && child_membership_id.nil? &&
-                         !user.memberships.active_now.where(is_child_membership: false).exists?
-      true
-    else
-      use_free_trial || false
-    end
     event.attendances.build(
       user: user,
       child_membership_id: child_membership_id,
@@ -267,7 +251,7 @@ class WaitlistEntry < ApplicationRecord
       wants_reminder: wants_reminder || false,
       needs_equipment: needs_equipment || false,
       roller_size: roller_size,
-      free_trial_used: free_trial_used
+      free_trial_used: use_free_trial || false
     )
   end
 

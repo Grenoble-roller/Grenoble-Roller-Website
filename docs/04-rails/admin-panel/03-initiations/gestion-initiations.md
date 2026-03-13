@@ -12,12 +12,6 @@ Gestion complète des initiations : création, participants, bénévoles, liste 
 
 **Fichier original** : `app/admin/event/initiations.rb` (ActiveAdmin) - ⚠️ Conservé pour référence
 
-### Visibilité par statut (liste et fiche publiques)
-
-- **Publiées** et **annulées** : visibles par tous (utilisateurs connectés ou non, comme pour les événements). Les initiations annulées restent affichées pour communiquer (pluie, gymnase indisponible, etc.).
-- **Rejetées** : exclues de toutes les listes publiques (même pour modérateurs/admins) ; restent en BDD mais ne sont pas affichées.
-- **Brouillon (draft)** : visibles uniquement par le créateur et les modérateurs/admins.
-
 ---
 
 ## 🎮 Controller

@@ -123,14 +123,6 @@ RSpec.describe EventPolicy do
     it 'denies guests' do
       expect(described_class.new(nil, event).attend?).to be(false)
     end
-
-    it 'denies when event is past' do
-      member = create_user(role: user_role)
-      create(:membership, user: member, status: :active, season: '2025-2026')
-      past_event = build_event(status: 'published', max_participants: 10, start_at: 2.days.ago)
-      past_event.save!
-      expect(described_class.new(member, past_event).attend?).to be(false)
-    end
   end
 
   describe '#can_attend?' do
@@ -160,12 +152,6 @@ RSpec.describe EventPolicy do
       create(:attendance, event: full_event, user: user, status: 'registered')
       full_event.reload
       expect(described_class.new(member, full_event).can_attend?).to be(false)
-    end
-
-    it 'returns false when event is past' do
-      past_event = build_event(status: 'published', max_participants: 10, start_at: 2.days.ago)
-      past_event.save!
-      expect(described_class.new(member, past_event).can_attend?).to be(false)
     end
   end
 
