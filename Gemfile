@@ -30,7 +30,7 @@ gem "rack-cors" # CORS pour applications mobiles
 gem "table_print"
 
 # Pagination
-gem "pagy", "~> 43.0"
+gem "pagy", "~> 43.3"
 
 # Excel export (XLSX)
 gem "rubyXL", "~> 3.4"
