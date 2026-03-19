@@ -51,7 +51,7 @@ gem "mission_control-jobs"
 gem "bootsnap", require: false
 
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", "~> 2.10", require: false
+gem "kamal", "~> 2.11", require: false
 
 # Cron jobs management
 gem "whenever", require: false
