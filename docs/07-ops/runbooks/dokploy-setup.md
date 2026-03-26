@@ -81,7 +81,7 @@ Les secrets Rails chiffrés vivent dans `config/credentials*.yml.enc` et nécess
 |---------------------|----------------------------|-----------------|
 | `DATABASE_URL` | [`config/database.yml`](../../../config/database.yml) (`production`) | **Secret** (contient user + mot de passe). Host/port doivent viser le **service Postgres** de l’environnement. |
 | `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Si pas seulement `DATABASE_URL` | Mot de passe = **secret** ; le reste peut être non secret selon politique. |
-| `RAILS_ENV` | En Compose staging/prod : `production` | Non secret ; **identique** sur les deux stacks Compose actuels (Rails « production » même pour staging Docker). |
+| `RAILS_ENV` | **Staging** : `staging` (charge `config/environments/staging.rb`, HelloAsso sandbox, bucket Active Storage distinct) ; **production** : `production`. | Non secret. |
 | `APP_ENV`, `DEPLOY_ENV` | Staging vs prod sémantique, CORS ([`config/initializers/cors.rb`](../../../config/initializers/cors.rb)) | Non secret : ex. `staging` / `production`. |
 | `MAILER_HOST`, `MAILER_PROTOCOL` | Liens dans les emails ([`config/environments/production.rb`](../../../config/environments/production.rb)) | Non secret : domaine public (ex. `grenoble-roller.org`, URL staging). |
 | `PORT` | Puma (souvent `3000` dans l’image) | Non secret ; aligner avec ce que Dokploy attend derrière Traefik. |
@@ -112,7 +112,7 @@ Pour éviter la duplication et simplifier l’exploitation:
 
 Règle pratique : conserver dans la doc uniquement la **structure des clés** et des placeholders, jamais les valeurs.
 
-*Point d’attention* : dans [`config/storage.yml`](../../../config/storage.yml), le bucket est `grenoble-roller-<%= Rails.env %>`. Avec `RAILS_ENV=production` pour **staging et prod** en Docker, le **nom de bucket** est le même (`grenoble-roller-production`). Pour **isoler** staging et prod sur MinIO, prévoir soit **deux instances** MinIO, soit **surcharge** (credentials / évolution config) — *à trancher avec §5.1 / choix infra*.
+*Point d’attention* : dans [`config/storage.yml`](../../../config/storage.yml), le bucket est `grenoble-roller-<%= Rails.env %>`. Avec **`RAILS_ENV=staging`** sur l’environnement de préprod, le bucket est **`grenoble-roller-staging`** (distinct de `grenoble-roller-production`). Créer le bucket côté MinIO si besoin. Ancien modèle `RAILS_ENV=production` + `APP_ENV=staging` partageait le même nom de bucket que la prod — à éviter pour l’isolation.
 
 ### 3.4 `RAILS_MASTER_KEY` — rôle et bonnes pratiques
 

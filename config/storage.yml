@@ -7,7 +7,7 @@ local:
   root: <%= Rails.root.join("storage") %>
 
 # MinIO configuration (S3-compatible for dev/staging/prod)
-# En Docker dev : utiliser les variables d'environnement (MINIO_*). Sinon : credentials Rails.
+# In Docker dev prefer MINIO_* env vars; otherwise fall back to Rails credentials.
 minio:
   service: S3
   access_key_id: <%= ENV["MINIO_ACCESS_KEY_ID"].presence || Rails.application.credentials.dig(:minio, :access_key_id) %>

@@ -1,7 +1,7 @@
 # Configuration pour hashid-rails
 # Obfusque les IDs numériques dans les URLs pour améliorer la sécurité
 Hashid::Rails.configure do |config|
-  # Utiliser une clé secrète depuis les credentials Rails ou une valeur par défaut
+  # Secret salt from Rails credentials or a default derived from secret_key_base
   config.salt = Rails.application.credentials.dig(:hashid, :salt) || Rails.application.secret_key_base[0..31]
 
   # Longueur minimale du hash (6 caractères par défaut)

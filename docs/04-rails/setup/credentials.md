@@ -134,7 +134,7 @@ hashid:
 4. **Use environment-specific credentials**
    - Development: local `master.key`
    - Production: set via `RAILS_MASTER_KEY` environment variable
-   - Staging: separate credentials file
+   - Staging: same `config/credentials.yml.enc` + `RAILS_MASTER_KEY` unless you add `config/credentials/staging.yml.enc` (optional). With `RAILS_ENV=staging`, Rails still loads the default encrypted file if no per-env file exists. Store **HelloAsso sandbox** client id/secret and **Turnstile** test keys in that file (or override Turnstile via `TURNSTILE_SECRET_KEY` / `TURNSTILE_SITE_KEY` in Dokploy). HelloAsso API mode is driven by `HelloassoService` (sandbox when `Rails.env.staging?` or `APP_ENV=staging`).
 
 ## Docker Environment
 
