@@ -97,8 +97,8 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Expose port (default 3000, can be overridden via PORT env var)
+# Expose port (default 3000; Puma reads PORT from the environment — see config/puma.rb)
 EXPOSE 3000
-# Use PORT environment variable if set, otherwise default to 3000
-# For staging/production with Thruster, set PORT=80 and use ./bin/thrust
-CMD sh -c 'PORT=${PORT:-3000} ./bin/rails server -b 0.0.0.0 -p $PORT'
+# Exec-form CMD so the entrypoint receives ./bin/rails server … and can run db:prepare at boot.
+# Do not wrap in sh -c; set PORT in the runtime environment (e.g. Dokploy: PORT=3000).
+CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

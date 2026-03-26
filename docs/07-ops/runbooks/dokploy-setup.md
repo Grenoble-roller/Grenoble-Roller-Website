@@ -1,9 +1,9 @@
 ---
 title: "Déploiement Dokploy (staging & production)"
 status: "active"
-version: "1.2"
+version: "1.3"
 created: "2026-03-26"
-updated: "2026-03-27"
+updated: "2026-03-26"
 authors: ["FlowTech Lab"]
 tags: ["dokploy", "deployment", "docker", "staging", "production"]
 ---
@@ -137,6 +137,14 @@ Dokploy propose typiquement : **Dockerfile**, Railpack, Nixpacks, Heroku Buildpa
 
 *À valider sur l’UI Dokploy* : chemin du Dockerfile, arguments de build (`BUILD_ID`, etc.). **Build & images (Q3–Q4)** : tout **interne** à Dokploy (serveur de build + déploiement), sans registre externe.
 
+### 4.1 Migrations au démarrage du conteneur web (entrypoint + `CMD`)
+
+- **Comportement nominal** : le conteneur web utilise [`bin/docker-entrypoint`](../../../bin/docker-entrypoint) comme `ENTRYPOINT` et un `CMD` en **forme exec** `["./bin/rails", "server", "-b", "0.0.0.0"]` (sans `sh -c`). L’entrypoint détecte `./bin/rails` + `server` et exécute `db:prepare` (avec repli `db:migrate` en cas d’échec) **avant** de lancer Puma. Éviter un `CMD` shell-form : sinon l’entrypoint ne voit pas la bonne forme d’arguments et les migrations ne partent pas au boot.
+- **Port** : définir **`PORT`** dans l’environnement Dokploy (ex. `3000`) ; Puma lit `ENV["PORT"]` ([`config/puma.rb`](../../../config/puma.rb)). Ne pas compter sur une substitution de port dans une ligne `sh -c` pour le flux nominal.
+- **Run Command (Dokploy)** : **optionnel** pour le démarrage habituel — réservé aux cas exceptionnels (debug, one-shot manuel du type `bin/rails` + `db:prepare`). Ce n’est **pas** le flux nominal de démarrage de l’application.
+
+**Vérification après déploiement (staging)** : dans les logs du conteneur au boot, présence de `Preparing database...` ; la home ne doit pas échouer pour une table manquante si `DATABASE_URL` est correcte ; le port exposé correspond à `PORT` (ex. healthcheck / Traefik vers `:3000` si `PORT=3000`).
+
 ---
 
 ## 5. Écarts modèle actuel ↔ Dokploy (à traiter)
@@ -148,7 +156,7 @@ Dokploy propose typiquement : **Dockerfile**, Railpack, Nixpacks, Heroku Buildpa
 | **MinIO / S3** | Service MinIO dans Compose | **Retenu (Q6)** : service MinIO/S3-compatible interne par environnement, endpoint interne pour Rails, console non publique par défaut |
 | **TLS / domaine** | Caddy + Let’s Encrypt en prod | **Proxy / certificats Dokploy** (Traefik) — voir §7 *Réponses* : prod `grenoble-roller.org` ; staging URL Traefik par défaut **ou** sous-domaine dédié |
 | **Secrets** | `.env`, `RAILS_MASTER_KEY`, `config/master.key` (montage prod) | **Secrets Dokploy** + variables par environnement — inventaire **§3.3** et **`RAILS_MASTER_KEY`** **§3.4** |
-| **Migrations** | `docker exec … bin/rails db:migrate` dans `deploy.sh` | **Commande post-déploiement** Dokploy, job one-shot, ou hook CI |
+| **Migrations** | `docker exec … bin/rails db:migrate` dans `deploy.sh` | **Nominal** : `db:prepare` au boot du conteneur web via [`bin/docker-entrypoint`](../../../bin/docker-entrypoint) ; **Run Command** Dokploy ou job one-shot **optionnels** (exception / CI) |
 | **Backups DB** | Scripts `ops/lib/database/` | Politique Dokploy / cron hôte / service externe |
 | **Jobs planifiés** | Whenever → fichier + Supercronic dans l’image ; install via `deploy.sh` | **Même image** (un process Supercronic ?) ou **worker** séparé, ou **cron Dokploy** appelant une commande |
 | **Solid Queue** | `SOLID_QUEUE_IN_PUMA=true` dans Compose | Conserver **in-process** dans Puma ou **process dédié** (scale horizontal) ? |
@@ -183,7 +191,7 @@ Dans [`ops/staging/docker-compose.yml`](../../../ops/staging/docker-compose.yml)
 2. **Secrets** : URL complète ou mot de passe **uniquement** dans les secrets Dokploy — pas dans le dépôt ; voir [credentials.md](../../04-rails/setup/credentials.md).
 3. **Ne pas exposer** PostgreSQL sur le réseau public si une alternative réseau interne existe.
 4. **Version** : décision d’exécution Dokploy en **PostgreSQL 18** (montée de version anticipée), avec validation en staging avant production.
-5. **Migrations** : une fois `DATABASE_URL` fixée, documenter **qui** exécute `rails db:migrate` et **quand** (lien avec §6 point 5 et ligne « Migrations » du tableau §5).
+5. **Migrations** : une fois `DATABASE_URL` fixée, le **flux nominal** est `db:prepare` au boot du conteneur web (**§4.1**) ; compléter si besoin avec des migrations manuelles / CI (lien avec §6 point 5 et ligne « Migrations » du tableau §5).
 6. **Sauvegardes** : politique (fréquence, rétention, test de restauration) — croise la question RGPD / backups (checklist §7).
 
 ### Ce qu’il reste à écrire dans ce runbook (après exploration Dokploy)
@@ -206,7 +214,7 @@ Pour chaque ligne, cocher une option quand elle est **validée en conditions ré
 2. **Base de données** : **retenu Q5 = option B** (un Postgres interne par environnement), version **18** sur Dokploy (objectif : préparer l’upgrade ; Compose historique en 16) ; **persistance** et **snapshots** à définir — détails **§5.1**.
 3. **Stockage fichiers (Active Storage)** : **retenu Q6** = service S3-compatible interne par environnement (MinIO), endpoint interne consommé par Rails ; console non exposée publiquement par défaut.
 4. **Variables d’environnement minimales** : tableau **§3.3** (et **`RAILS_MASTER_KEY`** **§3.4**) ; compléter après premier déploiement **sans commiter de secrets** (placeholders + [credentials.md](../../04-rails/setup/credentials.md)).
-5. **Migrations** : **qui** les exécute et **quand** (avant trafic, avec verrou court, rollback si échec).
+5. **Migrations** : **nominal** — `db:prepare` au démarrage du conteneur web (**§4.1**) ; pour les changements sensibles, procédure habituelle (staging d’abord, verrou court, rollback si échec — voir scripts / backup DB).
 6. **Cron / Whenever** : soit **deux conteneurs** (web + scheduler), soit **entrypoint** qui lance Puma + Supercronic, soit tâches externes — impact sur le `Dockerfile` / `CMD` actuel.
 7. **Rollback** : stratégie Dokploy (redéploiement image précédente) + **restauration DB** si migration appliquée (process à documenter, comme [rollback côté scripts](../../../ops/lib/deployment/rollback.sh)).
 8. **Observabilité** : logs, alertes — au-delà des métriques optionnelles actuelles (`PROMETHEUS_PUSHGATEWAY` dans `*.env`).
