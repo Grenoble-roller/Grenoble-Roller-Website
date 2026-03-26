@@ -1,7 +1,7 @@
 ---
 title: "Déploiement Dokploy (staging & production)"
 status: "active"
-version: "0.7"
+version: "1.2"
 created: "2026-03-26"
 updated: "2026-03-27"
 authors: ["FlowTech Lab"]
@@ -63,7 +63,7 @@ Sur Dokploy, le fonctionnement observé est : **un projet** peut contenir **plus
 
 | Compose | Service | Image / rôle | Dépend de | Notes pour Dokploy |
 |---------|---------|--------------|-----------|-------------------|
-| **Staging** | `db` | `postgres:16-alpine` | — | Postgres **16** ; volume données ; health `pg_isready`. |
+| **Staging** | `db` | `postgres:16-alpine` | — | Référence Compose actuelle en Postgres **16** ; sur Dokploy, la décision de déploiement est de partir en **PostgreSQL 18** pour préparer l’upgrade. |
 | **Staging** | `minio` | `minio/minio` | — | API **9000**, console **9001** (interne en Compose). |
 | **Staging** | `web` | build `Dockerfile` | `db`, `minio` | App Rails ; `env_file` `.env` possible. |
 | **Production** | `db` | idem staging | — | Idem ; pas de port publié vers l’hôte. |
@@ -94,6 +94,23 @@ Les secrets Rails chiffrés vivent dans `config/credentials*.yml.enc` et nécess
 | `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` | Conteneur **MinIO** (serveur), pas Rails directement | **Secrets** du service MinIO. |
 
 **Déjà dans les credentials chiffrés** (via `Rails.application.credentials.dig(...)` — pas à dupliquer en clair dans le repo) : notamment **SMTP** (`user_name`, `password`, `address`, `port`, `domain` dans [`production.rb`](../../../config/environments/production.rb)), et les clés **MinIO** si tu **ne** passes **pas** par `MINIO_*` en ENV. Référence : [credentials.md](../../04-rails/setup/credentials.md).
+
+### 3.3.1 Répartition recommandée : Credentials Rails vs Dokploy
+
+Pour éviter la duplication et simplifier l’exploitation:
+
+- **Dokploy Secrets/Environment (priorité runtime)** :
+  - `RAILS_MASTER_KEY`
+  - `DATABASE_URL`
+  - `MINIO_ACCESS_KEY_ID`, `MINIO_SECRET_ACCESS_KEY`, `MINIO_ENDPOINT` (prioritaires dans [`config/storage.yml`](../../../config/storage.yml))
+  - `TURNSTILE_SECRET_KEY` (optionnel, fallback possible si absent dans credentials)
+- **Rails credentials chiffrés (`credentials.yml.enc`)** :
+  - `helloasso.*`
+  - `smtp.*`
+  - `hashid.salt`
+  - `turnstile.*` si pas de surcharge ENV
+
+Règle pratique : conserver dans la doc uniquement la **structure des clés** et des placeholders, jamais les valeurs.
 
 *Point d’attention* : dans [`config/storage.yml`](../../../config/storage.yml), le bucket est `grenoble-roller-<%= Rails.env %>`. Avec `RAILS_ENV=production` pour **staging et prod** en Docker, le **nom de bucket** est le même (`grenoble-roller-production`). Pour **isoler** staging et prod sur MinIO, prévoir soit **deux instances** MinIO, soit **surcharge** (credentials / évolution config) — *à trancher avec §5.1 / choix infra*.
 
@@ -127,8 +144,8 @@ Dokploy propose typiquement : **Dockerfile**, Railpack, Nixpacks, Heroku Buildpa
 | Sujet | Aujourd’hui (Compose + scripts) | Sur Dokploy (à décider) |
 |-------|----------------------------------|-------------------------|
 | **Code / build** | `git pull` + build sur le serveur VPS | **Build exécuté dans Dokploy** sur l’hôte (Dockerfile), déclenché par webhook / déploiement depuis la branche **`staging`** ou **`main`** — pas d’image poussée depuis une CI externe (Q3) |
-| **PostgreSQL** | Service dans le même Compose | DB **managée** Dokploy, **conteneur Postgres** séparé, ou **externe** ? |
-| **MinIO / S3** | Service MinIO dans Compose | Service Dokploy dédié, **S3 externe**, ou MinIO sur un autre stack ? |
+| **PostgreSQL** | Service dans le même Compose | **Retenu (Q5)** : Postgres interne Dokploy, **1 service DB par environnement** (staging/prod), réseau interne uniquement |
+| **MinIO / S3** | Service MinIO dans Compose | **Retenu (Q6)** : service MinIO/S3-compatible interne par environnement, endpoint interne pour Rails, console non publique par défaut |
 | **TLS / domaine** | Caddy + Let’s Encrypt en prod | **Proxy / certificats Dokploy** (Traefik) — voir §7 *Réponses* : prod `grenoble-roller.org` ; staging URL Traefik par défaut **ou** sous-domaine dédié |
 | **Secrets** | `.env`, `RAILS_MASTER_KEY`, `config/master.key` (montage prod) | **Secrets Dokploy** + variables par environnement — inventaire **§3.3** et **`RAILS_MASTER_KEY`** **§3.4** |
 | **Migrations** | `docker exec … bin/rails db:migrate` dans `deploy.sh` | **Commande post-déploiement** Dokploy, job one-shot, ou hook CI |
@@ -147,7 +164,7 @@ La checklist parle de « même host » : l’important n’est pas l’OS sous-j
 
 Dans [`ops/staging/docker-compose.yml`](../../../ops/staging/docker-compose.yml) et [`ops/production/docker-compose.yml`](../../../ops/production/docker-compose.yml) :
 
-- Service Postgres **16** (`postgres:16-alpine`), hostname de service **`db`**, port **5432** interne.
+- Service Postgres **16** (`postgres:16-alpine`), hostname de service **`db`**, port **5432** interne (référence Compose).
 - Exemple d’URL côté app : `postgresql://postgres:postgres@db:5432/grenoble_roller_production` (mot de passe à remplacer en prod par des secrets forts).
 - En **production** Compose, le port Postgres **n’est pas publié** vers l’hôte (accès réseau Docker uniquement) — bon réflexe à conserver.
 
@@ -165,7 +182,7 @@ Dans [`ops/staging/docker-compose.yml`](../../../ops/staging/docker-compose.yml)
 1. **Staging et production** : au minimum **bases et utilisateurs distincts** ; de préférence **isolation** forte (option B ou D avec deux instances / deux URLs).
 2. **Secrets** : URL complète ou mot de passe **uniquement** dans les secrets Dokploy — pas dans le dépôt ; voir [credentials.md](../../04-rails/setup/credentials.md).
 3. **Ne pas exposer** PostgreSQL sur le réseau public si une alternative réseau interne existe.
-4. **Version** : viser **PostgreSQL 16** comme dans les Compose pour limiter les écarts.
+4. **Version** : décision d’exécution Dokploy en **PostgreSQL 18** (montée de version anticipée), avec validation en staging avant production.
 5. **Migrations** : une fois `DATABASE_URL` fixée, documenter **qui** exécute `rails db:migrate` et **quand** (lien avec §6 point 5 et ligne « Migrations » du tableau §5).
 6. **Sauvegardes** : politique (fréquence, rétention, test de restauration) — croise la question RGPD / backups (checklist §7).
 
@@ -186,8 +203,8 @@ Pour chaque ligne, cocher une option quand elle est **validée en conditions ré
 **Build & images (Q3–Q4)** : **sur l’infra Dokploy** (build + déploiement selon les besoins) — pas de CI externe ni de registre d’images externe (Docker Hub, GHCR) dans le flux nominal.
 
 1. **Un projet Dokploy par environnement** (staging + prod) **vs** un seul projet avec deux “environments” — **retenu** : **deux apps** (ou deux projets) avec **une branche chacune** (`staging` / `main`), confirmé Q2.
-2. **Base de données** : Postgres version **16** (alignement [`docker-compose`](../../../ops/staging/docker-compose.yml)) ; **persistance** et **snapshots** à définir — arbitrage détaillé **§5.1** (options A–D, bonnes pratiques).
-3. **Stockage fichiers (Active Storage)** : conserver une **API S3-compatible** ; choisir **MinIO** vs **cloud S3** vs autre.
+2. **Base de données** : **retenu Q5 = option B** (un Postgres interne par environnement), version **18** sur Dokploy (objectif : préparer l’upgrade ; Compose historique en 16) ; **persistance** et **snapshots** à définir — détails **§5.1**.
+3. **Stockage fichiers (Active Storage)** : **retenu Q6** = service S3-compatible interne par environnement (MinIO), endpoint interne consommé par Rails ; console non exposée publiquement par défaut.
 4. **Variables d’environnement minimales** : tableau **§3.3** (et **`RAILS_MASTER_KEY`** **§3.4**) ; compléter après premier déploiement **sans commiter de secrets** (placeholders + [credentials.md](../../04-rails/setup/credentials.md)).
 5. **Migrations** : **qui** les exécute et **quand** (avant trafic, avec verrou court, rollback si échec).
 6. **Cron / Whenever** : soit **deux conteneurs** (web + scheduler), soit **entrypoint** qui lance Puma + Supercronic, soit tâches externes — impact sur le `Dockerfile` / `CMD` actuel.
@@ -222,6 +239,10 @@ Ce n’est pas seulement « même machine ou pas » : voir **§5.1** (options A�
 | 2 | Branche Git par environnement | **Oui** : **une app Dokploy par environnement**, chacune liée au dépôt sur **`staging`** (pré-prod) ou **`main`** (production). |
 | 3 | Build sur serveur Dokploy vs CI externe + registry | **Build directement dans Dokploy** (sur l’hôte). Pas de flux « CI GitHub Actions → push image → pull » pour le déploiement nominal. |
 | 4 | Stockage des images (« registry ») | **Uniquement en interne** : Dokploy fournit l’infra de **build** et de **déploiement** selon les besoins ; **pas** de registre externe (Docker Hub, GHCR, etc.) dans le flux prévu. |
+| 5 | Postgres (topologie) | **Validé = option B (section §5.1)** : Postgres interne Dokploy, 1 service DB par environnement (staging/prod), réseau interne. |
+| 6 | MinIO / S3 (service et exposition) | **Validé** : endpoint S3 interne uniquement pour Rails ; service MinIO/S3-compatible par environnement ; console non exposée publiquement par défaut. |
+| 7 | CORS / host / SSL / mailer | **Validé** : Traefik termine TLS ; `MAILER_HOST` par env ; `MAILER_PROTOCOL=https` ; `APP_ENV`/`DEPLOY_ENV` alignés ; `RAILS_FORCE_SSL=true` (au minimum prod). |
+| 8 | Webhooks externes | **Validé** : pas de webhook métier entrant dédié (`/webhooks/...`) identifié actuellement ; surveiller uniquement URLs de retour publiques et webhook technique Dokploy/Git. |
 
 *Note DNS* : le domaine prod utilise un tiret (`grenoble-roller.org`) ; le sous-domaine d’exemple cité pour le staging (`grenobleroller.org`) n’en a pas — vérifier en configuration DNS / certificat qu’on utilise bien le **bon nom de zone** (éventuellement `staging.grenoble-roller.org` pour rester aligné avec la prod).
 
@@ -229,10 +250,10 @@ Ce n’est pas seulement « même machine ou pas » : voir **§5.1** (options A�
 - [x] Branche Git par environnement : `staging` / `main` confirmé ?
 - [x] Build sur **le serveur Dokploy** ou **CI externe** + push image vers registry ?
 - [x] **Où sont stockées les images Docker après le build ?** → **Interne Dokploy** uniquement (build + déploiement gérés par la plateforme, pas de registre externe — Q4).
-- [ ] **Postgres** : option **§5.1** choisie ; **hostname** + **`DATABASE_URL`** (documentés ici en non-sensible) — réseau interne de préférence, pas d’exposition publique 5432 si évitable ?
-- [ ] MinIO : besoin de la **console** exposée ou uniquement endpoint S3 pour Rails ?
-- [ ] **CORS / host** Rails : `config.hosts`, `MAILER_HOST`, `RAILS_FORCE_SSL` selon le proxy Dokploy ?
-- [ ] **Webhooks** Git (HelloAsso, etc.) : URLs à mettre à jour après bascule ?
+- [x] **Postgres** : option **§5.1** choisie = **B** (1 service DB interne par environnement) ; **hostname** + **`DATABASE_URL`** restent à documenter en non-sensible après création des services.
+- [x] MinIO : endpoint S3 interne uniquement pour Rails ; service MinIO/S3-compatible par environnement ; console non exposée publiquement par défaut.
+- [x] **CORS / host** Rails : Traefik en terminaison TLS ; `MAILER_HOST` par env ; `MAILER_PROTOCOL=https` ; `APP_ENV`/`DEPLOY_ENV` alignés ; `RAILS_FORCE_SSL=true` (au moins prod).
+- [x] **Webhooks** : pas de webhook métier entrant dédié identifié actuellement ; vérifier seulement les URLs de retour publiques et le webhook technique Dokploy/Git.
 - [ ] **Plan de bascule** depuis l’infra actuelle (DNS, coupure, double run) ?
 - [ ] **RGPD / sauvegardes** : où sont stockées les backups et qui y accède ?
 
@@ -240,13 +261,114 @@ Ce n’est pas seulement « même machine ou pas » : voir **§5.1** (options A�
 
 ## 8. Prochaines étapes (à cocher)
 
-- [ ] Créer l’application Dokploy **staging** (Dockerfile, env, secrets).
-- [ ] Brancher **Postgres** + variables `DATABASE_URL`.
-- [ ] Brancher **S3-compatible** (MinIO ou autre) + variables Rails Active Storage.
-- [ ] Premier déploiement + **`db:migrate`** + smoke test (`/up`, parcours critique).
-- [ ] Reproduire pour **production** avec secrets distincts.
-- [ ] Documenter ici les **captures / valeurs non sensibles** (ports, labels, commandes exactes).
-- [ ] Si le choix est structurant (abandon Compose sur VPS pour la prod), envisager un **ADR** dans `docs/10-decisions-and-changelog/` ou `docs/03-architecture/adr/`.
+- [x] Créer les templates d’environnement Dokploy dans [`ops/dokploy/env/`](../../../ops/dokploy/env/) : [`staging.env.example`](../../../ops/dokploy/env/staging.env.example), [`production.env.example`](../../../ops/dokploy/env/production.env.example).
+- [ ] Configurer l’application **staging** dans Dokploy (Dockerfile, branche `staging`, domaine, variables, secrets).
+- [ ] Configurer le service **Postgres staging** et renseigner `DATABASE_URL` en secret.
+- [ ] Configurer le service **MinIO staging** et renseigner `MINIO_*` (`MINIO_ENDPOINT` interne).
+- [ ] Exécuter le premier déploiement réel **staging** sur Dokploy + `db:migrate` + smoke test.
+- [ ] Configurer l’application **production** Dokploy (branche `main`, domaine prod, secrets prod).
+- [ ] Activer blue/green zero-downtime en production avec healthcheck + rollback automatique (Dokploy Swarm settings).
+- [ ] Configurer les backups Dokploy natifs : DB backup + volume backup vers destination S3 (hybride local + externe selon politique).
+
+### 8.1 Procédure Dokploy native (sans scripts custom)
+
+1. **Deploy staging** (UI Dokploy) puis vérifier:
+   - `https://<staging-domain>/up` retourne 200
+   - parcours critiques (auth, checkout, upload) OK
+2. **Migrations**:
+   - définir la commande de migration en post-deploy Dokploy (ou job one-shot lié à l’app)
+   - éviter les migrations destructives non testées en staging
+3. **Production blue/green**:
+   - configurer Health Check + Update Config (FailureAction=`rollback`, Order=`start-first`)
+   - prébuild du slot inactif, switch, puis validation
+4. **Backups**:
+   - DB: configurer backups natifs Dokploy (cron + destination S3)
+   - volumes MinIO: utiliser la fonctionnalité Volume Backups Dokploy (named volumes uniquement)
+
+### 8.2 Dry run recommandé (sur cette branche)
+
+- [ ] Créer app **staging** Dokploy avec source Git (`staging`) et Build Type `Dockerfile`.
+- [ ] Ajouter secrets minimaux: `RAILS_MASTER_KEY`, `DATABASE_URL`, `MINIO_ACCESS_KEY_ID`, `MINIO_SECRET_ACCESS_KEY`.
+- [ ] Déployer et vérifier `/up`, `/health`, un login, un upload.
+- [ ] Configurer Health Check/Update Config (rollback automatique) et déclencher un redeploy test.
+- [ ] Configurer un backup DB manuel + restore de test sur DB staging.
+- [ ] Configurer un volume backup MinIO de test + restore de test.
+
+### 8.3 Journal d’exécution reproductible (à compléter pendant le dry run)
+
+Renseigner cette section **au fil de l’eau** pendant l’exécution réelle, pour que la procédure soit rejouable sans dépendre de la mémoire.
+
+#### A. Métadonnées de session
+
+- Date/heure:
+- Exécutant:
+- Serveur Dokploy:
+- Version Dokploy (si visible):
+- Branche testée:
+
+#### B. Paramètres exacts utilisés (non sensibles)
+
+| Élément | Staging | Production |
+|---------|---------|------------|
+| Nom app Dokploy | `<à remplir>` | `<à remplir>` |
+| Source type | `Git Provider` | `Git Provider` |
+| Build type | `Dockerfile` | `Dockerfile` |
+| Branche | `staging` | `main` |
+| Build path | `<à remplir>` | `<à remplir>` |
+| Dockerfile path | `<à remplir>` | `<à remplir>` |
+| Domaine | `<à remplir>` | `grenoble-roller.org` |
+| Port container | `3000` | `3000` |
+
+#### C. Services et réseau internes
+
+| Service | Nom Dokploy | Hostname interne utilisé par l’app | Notes |
+|---------|-------------|-------------------------------------|-------|
+| Postgres staging | `<à remplir>` | `<à remplir>` | |
+| MinIO staging | `<à remplir>` | `<à remplir>` | |
+| Postgres production | `<à remplir>` | `<à remplir>` | |
+| MinIO production | `<à remplir>` | `<à remplir>` | |
+
+#### D. Variables/Secrets appliqués (sans valeurs sensibles)
+
+Cocher ce qui est configuré dans Dokploy (UI) :
+
+- [ ] `RAILS_MASTER_KEY` (secret)
+- [ ] `DATABASE_URL` (secret)
+- [ ] `MINIO_ACCESS_KEY_ID` (secret)
+- [ ] `MINIO_SECRET_ACCESS_KEY` (secret)
+- [ ] `MINIO_ENDPOINT`
+- [ ] `APP_ENV`
+- [ ] `DEPLOY_ENV`
+- [ ] `MAILER_HOST`
+- [ ] `MAILER_PROTOCOL`
+- [ ] `RAILS_FORCE_SSL`
+
+#### E. Déploiement et validations
+
+| Étape | Résultat | Preuve (capture/log) |
+|------|----------|----------------------|
+| Deploy staging déclenché | `<OK/KO>` | `<lien/capture>` |
+| `/up` = 200 | `<OK/KO>` | `<lien/capture>` |
+| `/health` = 200 | `<OK/KO>` | `<lien/capture>` |
+| Login test | `<OK/KO>` | `<lien/capture>` |
+| Upload test | `<OK/KO>` | `<lien/capture>` |
+| Migration exécutée | `<OK/KO>` | `<commande / log>` |
+| Redeploy test rollback | `<OK/KO>` | `<lien/capture>` |
+
+#### F. Backups et restore (Dokploy natif)
+
+| Contrôle | Résultat | Détails |
+|----------|----------|---------|
+| Backup DB configuré (cron + destination) | `<OK/KO>` | `<à remplir>` |
+| Restore DB test (staging) | `<OK/KO>` | `<à remplir>` |
+| Volume backup MinIO configuré | `<OK/KO>` | `<à remplir>` |
+| Restore volume MinIO test | `<OK/KO>` | `<à remplir>` |
+
+#### G. Écarts / actions de suivi
+
+- Écart #1:
+- Écart #2:
+- Action décidée:
 
 ---
 
@@ -270,3 +392,7 @@ Ce n’est pas seulement « même machine ou pas » : voir **§5.1** (options A�
 | 2026-03-27 | Q4 : images et déploiement **internes** à Dokploy (pas Docker Hub / GHCR) |
 | 2026-03-27 | §5.1 : Postgres / réseau / `DATABASE_URL` — options A–D, bonnes pratiques, lien checklist Q5 |
 | 2026-03-27 | §3.1–3.4 : environnements Dokploy, services hors `web`, `ENV` vs credentials, `RAILS_MASTER_KEY` |
+| 2026-03-27 | Q5–Q8 validées dans le runbook (Postgres, MinIO, SSL/host, webhooks) |
+| 2026-03-27 | Nettoyage approche scripts custom ; passage en procédure 100% Dokploy native + checklist dry run |
+| 2026-03-27 | Ajout section reproductible `§8.3` (journal d’exécution dry run, preuves, paramètres, suivi) |
+| 2026-03-26 | Décision d’exécution Dokploy en PostgreSQL 18 (upgrade anticipée), tout en gardant Compose 16 comme référence historique |
