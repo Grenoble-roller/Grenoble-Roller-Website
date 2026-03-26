@@ -70,7 +70,8 @@ Ce dossier structure la **documentation vivante** du monolithe Ruby on Rails. El
 ## Déploiement
 - **Développement** : `04-rails/setup/local-development.md` ou `07-ops/runbooks/local-setup.md`
 - **Staging** : `07-ops/runbooks/staging-setup.md`
-- **Production** : À venir
+- **Production** : `07-ops/runbooks/production-setup.md`, `07-ops/deploy-vps.md`
+- **Dokploy (staging / prod, doc vivante)** : `07-ops/runbooks/dokploy-setup.md`
 
 ## Qualité & sécurité
 - Qualité: RuboCop Rails Omakase, Brakeman.
@@ -94,6 +95,7 @@ Ce dossier structure la **documentation vivante** du monolithe Ruby on Rails. El
 - ✅ `04-rails/setup/emails-recapitulatif.md` - Récapitulatif complet de tous les emails
 - ✅ `07-ops/runbooks/staging-setup.md` - Guide d'installation staging
 - ✅ `07-ops/runbooks/production-setup.md` - Guide d'installation production
+- 🔄 `07-ops/runbooks/dokploy-setup.md` - Déploiement Dokploy (doc vivante, décisions & questions)
 
 ### Architecture
 - ✅ `03-architecture/domain/models.md` - Modèles de domaine (Phase 1 + Phase 2)

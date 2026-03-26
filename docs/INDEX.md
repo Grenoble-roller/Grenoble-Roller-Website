@@ -20,7 +20,7 @@ Projet: **Grenoble Roller** — Rails 8, phase production, fin de debug (specs, 
 | **Tests & RSpec** | [05-testing/](05-testing/), [05-testing/rspec/METHODE.md](05-testing/rspec/METHODE.md) | Stratégie, méthodologie correction erreurs |
 | **Audit specs** | [05-testing/rspec/spec-failures-audit.md](05-testing/rspec/spec-failures-audit.md) | Échecs connus (InitiationParticipantsReportJob, 429, etc.) |
 | Événements & initiations | [06-events/](06-events/) | Waitlist, essai gratuit, stock rollers |
-| **Ops & runbooks** | [07-ops/runbooks/](07-ops/runbooks/) | Setup local, staging, production, troubleshooting |
+| **Ops & runbooks** | [07-ops/runbooks/](07-ops/runbooks/) | Setup local, staging, production, [Dokploy](07-ops/runbooks/dokploy-setup.md), troubleshooting |
 | Sécurité & conformité | [08-security-privacy/](08-security-privacy/) | RGPD, accessibilité, pages légales |
 | Produit | [09-product/](09-product/) | UX, backlog, HelloAsso |
 | Décisions & changelog | [10-decisions-and-changelog/](10-decisions-and-changelog/) | ADR, changelog |
