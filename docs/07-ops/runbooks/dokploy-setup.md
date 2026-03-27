@@ -117,7 +117,7 @@ Pour éviter la duplication et simplifier l’exploitation:
 
 Règle pratique : conserver dans la doc uniquement la **structure des clés** et des placeholders, jamais les valeurs.
 
-*Point d’attention* : dans [`config/storage.yml`](../../../config/storage.yml), le bucket est `grenoble-roller-<%= Rails.env %>`. Avec **`RAILS_ENV=staging`** sur l’environnement de préprod, le bucket est **`grenoble-roller-staging`** (distinct de `grenoble-roller-production`). Créer le bucket côté MinIO si besoin. Ancien modèle `RAILS_ENV=production` + `APP_ENV=staging` partageait le même nom de bucket que la prod — à éviter pour l’isolation.
+*Point d’attention* : dans [`config/storage.yml`](../../../config/storage.yml), le bucket est `grenoble-roller-<%= Rails.env %>`. Avec **`RAILS_ENV=staging`** sur l’environnement de préprod, le bucket est **`grenoble-roller-staging`** (distinct de `grenoble-roller-production`). **Automatisation idempotente** : après déploiement (ou une fois les `MINIO_*` renseignés), exécuter `bundle exec rake minio:ensure_bucket` dans le conteneur Rails — crée le bucket s’il manque, sinon ne fait rien (voir [`lib/tasks/minio.rake`](../../../lib/tasks/minio.rake)). Ne pas l’appeler au boot Puma : préférer un hook de déploiement ou une étape manuelle après migration. Ancien modèle `RAILS_ENV=production` + `APP_ENV=staging` partageait le même nom de bucket que la prod — à éviter pour l’isolation.
 
 ### 3.4 `RAILS_MASTER_KEY` — rôle et bonnes pratiques
 
