@@ -41,6 +41,13 @@ if credentials_ok && defined?(HelloassoService)
   else
     puts "[OK] helloasso: organization_slug present"
   end
+
+  puts "--- HelloAsso diagnostic (no secrets) ---"
+  HelloassoService.diagnostic_summary.each do |key, value|
+    puts "  #{key}: #{value}"
+  end
+  puts "  (Sandbox checkout pages use api.helloasso-sandbox.com; live uses api.helloasso.com / www.helloasso.com.)"
+  puts "---"
 elsif !credentials_ok
   puts "[SKIP] helloasso: credentials decrypt failed"
 else

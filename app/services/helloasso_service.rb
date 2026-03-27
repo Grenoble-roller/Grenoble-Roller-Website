@@ -89,6 +89,22 @@ class HelloassoService
       production? ? HELLOASSO_PRODUCTION_API_BASE_URL : HELLOASSO_SANDBOX_API_BASE_URL
     end
 
+    # Non-secret fields for ops / script/verify_runtime_config.rb (checkout URLs follow the API host).
+    def diagnostic_summary
+      {
+        resolved_api_environment: environment,
+        api_base_url: api_base_url,
+        oauth_token_url: oauth_token_url,
+        credentials_environment: config[:environment].to_s.presence || "(unset)",
+        rails_env: Rails.env.to_s,
+        app_env: ENV["APP_ENV"].presence || "(unset)",
+        deploy_env: ENV["DEPLOY_ENV"].presence || "(unset)",
+        production_helloasso_deploy: production_helloasso_deploy?,
+        env_helloasso_use_sandbox: ENV["HELLOASSO_USE_SANDBOX"].presence || "(unset)",
+        env_helloasso_use_production: ENV["HELLOASSO_USE_PRODUCTION"].presence || "(unset)"
+      }
+    end
+
     # ---- Payload helpers (no network) -------------------------------------------
 
     # Builds the JSON payload (Ruby Hash) to initialize a HelloAsso checkout.
