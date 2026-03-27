@@ -134,7 +134,9 @@ hashid:
 4. **Use environment-specific credentials**
    - Development: local `master.key`
    - Production: set via `RAILS_MASTER_KEY` environment variable
-   - Staging: same `config/credentials.yml.enc` + `RAILS_MASTER_KEY` unless you add `config/credentials/staging.yml.enc` (optional). With `RAILS_ENV=staging`, Rails still loads the default encrypted file if no per-env file exists. Store **HelloAsso sandbox** client id/secret and **Turnstile** test keys in that file (or override Turnstile via `TURNSTILE_SECRET_KEY` / `TURNSTILE_SITE_KEY` in Dokploy). HelloAsso API mode is driven by `HelloassoService` (sandbox when `Rails.env.staging?` or `APP_ENV=staging`).
+   - **Staging (same repo, default `credentials.yml.enc`)** : même fichier chiffré et souvent la **même** `RAILS_MASTER_KEY` sur Dokploy staging et prod → les clés **`turnstile`** lues par Rails sont **les mêmes** que pour la production (un seul bloc `turnstile:` dans le fichier). C’est cohérent si le site Cloudflare Turnstile autorise **plusieurs noms d’hôte** (ex. domaine prod + domaine staging). Pour des clés **différentes** par environnement, surcharge via **`TURNSTILE_SITE_KEY`** / **`TURNSTILE_SECRET_KEY`** dans Dokploy (même priorité ENV que pour MinIO dans [`config/storage.yml`](../../../config/storage.yml)).
+   - **HelloAsso** : en staging, utiliser les identifiants **sandbox** dans les credentials ; le mode API (sandbox vs production) est imposé par [`HelloassoService`](../../../app/services/helloasso_service.rb) (`Rails.env.staging?`, `APP_ENV=staging`, etc.), pas par un fichier credentials séparé.
+   - Optionnel : `config/credentials/staging.yml.enc` si tu sépares vraiment les secrets par environnement (hors scope par défaut du projet).
 
 ## Docker Environment
 

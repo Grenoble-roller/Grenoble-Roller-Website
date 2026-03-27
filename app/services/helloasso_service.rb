@@ -19,12 +19,13 @@ class HelloassoService
     end
 
     # Resolves which HelloAsso API environment to use (sandbox vs production)
-    # - Staging (RAILS_ENV=staging, or APP_ENV/DEPLOY_ENV=staging, or legacy flowtech-lab host) → sandbox API
-    # - Rails production (non-staging) → HelloAsso production API
-    # - Dev/test → sandbox by default unless helloasso.environment is set in credentials
+    # Safe default: HelloAsso **sandbox** unless production is explicit (deploy flags, credentials helloasso.environment: production, or HELLOASSO_USE_PRODUCTION).
+    # In RAILS_ENV=production, we do *not* assume live API from Rails alone — avoids staging containers misconfigured as production.
     def environment
-      # Always sandbox when Rails.env is staging (do not rely on APP_ENV alone)
       return "sandbox" if Rails.env.staging?
+
+      return "sandbox" if ENV["HELLOASSO_USE_SANDBOX"] == "true"
+      return "production" if ENV["HELLOASSO_USE_PRODUCTION"] == "true"
 
       is_staging = ENV["APP_ENV"] == "staging" ||
                    ENV["DEPLOY_ENV"] == "staging" ||
@@ -32,9 +33,22 @@ class HelloassoService
 
       return "sandbox" if is_staging
 
-      return "production" if Rails.env.production?
+      if Rails.env.production?
+        return "production" if production_helloasso_deploy? || config[:environment].to_s == "production"
+        return "sandbox"
+      end
 
       config[:environment].presence || "sandbox"
+    end
+
+    # True when Dokploy / ops marks this container as real production (HelloAsso live API).
+    def production_helloasso_deploy?
+      return true if ENV["HELLOASSO_USE_PRODUCTION"] == "true"
+      return false if ENV["APP_ENV"] == "staging" || ENV["DEPLOY_ENV"] == "staging"
+      return true if ENV["DEPLOY_ENV"] == "production"
+      return true if ENV["APP_ENV"] == "production" && ENV["DEPLOY_ENV"] != "staging"
+
+      false
     end
 
     def sandbox?

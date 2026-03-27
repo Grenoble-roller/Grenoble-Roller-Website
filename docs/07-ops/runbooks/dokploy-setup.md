@@ -82,7 +82,8 @@ Les secrets Rails chiffrés vivent dans `config/credentials*.yml.enc` et nécess
 | `DATABASE_URL` | [`config/database.yml`](../../../config/database.yml) (`production`) | **Secret** (contient user + mot de passe). Host/port doivent viser le **service Postgres** de l’environnement. |
 | `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Si pas seulement `DATABASE_URL` | Mot de passe = **secret** ; le reste peut être non secret selon politique. |
 | `RAILS_ENV` | **Staging** : `staging` (charge `config/environments/staging.rb`, HelloAsso sandbox, bucket Active Storage distinct) ; **production** : `production`. | Non secret. |
-| `APP_ENV`, `DEPLOY_ENV` | Staging vs prod sémantique, CORS ([`config/initializers/cors.rb`](../../../config/initializers/cors.rb)) | Non secret : ex. `staging` / `production`. |
+| `APP_ENV`, `DEPLOY_ENV` | Staging vs prod sémantique, CORS ([`config/initializers/cors.rb`](../../../config/initializers/cors.rb)), résolution HelloAsso sandbox vs API live ([`HelloassoService`](../../../app/services/helloasso_service.rb)) | Non secret : ex. `staging` / `production`. |
+| `HELLOASSO_USE_SANDBOX`, `HELLOASSO_USE_PRODUCTION` | Forcent l’API HelloAsso sandbox ou production (optionnel ; voir §3.3.1 HelloAsso) | Rare. |
 | `MAILER_HOST`, `MAILER_PROTOCOL` | Liens dans les emails ([`config/environments/production.rb`](../../../config/environments/production.rb)) | Non secret : domaine public (ex. `grenoble-roller.org`, URL staging). |
 | `PORT` | Puma (souvent `3000` dans l’image) | Non secret ; aligner avec ce que Dokploy attend derrière Traefik. |
 | `TZ` | Fuseau | Ex. `Europe/Paris`. |
@@ -109,6 +110,10 @@ Pour éviter la duplication et simplifier l’exploitation:
   - `smtp.*`
   - `hashid.salt`
   - `turnstile.*` si pas de surcharge ENV
+
+**Turnstile (staging vs prod)** : si staging et production utilisent le **même** `credentials.yml.enc` déchiffré avec la **même** `RAILS_MASTER_KEY`, le bloc **`turnstile`** est **le même** pour les deux — donc **mêmes clés Cloudflare** que la prod, sauf surcharge par **`TURNSTILE_SITE_KEY`** / **`TURNSTILE_SECRET_KEY`** différentes par environnement Dokploy. Côté Cloudflare, ajouter le domaine staging aux **noms d’hôte autorisés** du site Turnstile (ou site dédié test). Détail : [credentials.md](../../04-rails/setup/credentials.md) (section *Use environment-specific credentials*).
+
+**HelloAsso (sandbox vs prod)** : avec un même fichier credentials où `helloasso.environment` vaut **`sandbox`** (ou est absent), l’app appelle l’API **sandbox** tant que le déploiement n’est pas **explicitement** prod (`DEPLOY_ENV=production` avec `APP_ENV=production`, ou `HELLOASSO_USE_PRODUCTION=true`, ou `helloasso.environment: production` dans les credentials). **`RAILS_ENV=staging`** force le sandbox. Les overrides optionnels sont **`HELLOASSO_USE_SANDBOX=true`** et **`HELLOASSO_USE_PRODUCTION=true`** (voir [`HelloassoService`](../../../app/services/helloasso_service.rb)). En **`RAILS_ENV=production`**, l’API live n’est **pas** déduite seulement de Rails : le défaut reste sandbox si rien n’indique la prod — évite les conteneurs mal configurés.
 
 Règle pratique : conserver dans la doc uniquement la **structure des clés** et des placeholders, jamais les valeurs.
 
