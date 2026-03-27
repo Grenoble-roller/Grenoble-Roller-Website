@@ -6,14 +6,39 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# If running the rails server then create or migrate existing database
+# If running the rails server, choose a DB boot strategy.
 # Match explicit exec-form CMD: $1=./bin/rails $2=server (additional args e.g. -b may follow).
 if [ "${1:-}" = "./bin/rails" ] && [ "${2:-}" = "server" ]; then
-  echo "Preparing database..."
-  ./bin/rails db:prepare || {
-    echo "Warning: db:prepare failed, trying db:migrate..."
-    ./bin/rails db:migrate || echo "Warning: db:migrate also failed, continuing anyway..."
-  }
+  DB_BOOT_TASK="${DB_BOOT_TASK:-}"
+  if [ -z "$DB_BOOT_TASK" ]; then
+    # Safe default: production-like deploys should NOT auto-seed on first boot.
+    if [ "${RAILS_ENV:-}" = "production" ] || [ "${APP_ENV:-}" = "production" ] || [ "${DEPLOY_ENV:-}" = "production" ]; then
+      DB_BOOT_TASK="migrate"
+    else
+      DB_BOOT_TASK="prepare"
+    fi
+  fi
+
+  case "$DB_BOOT_TASK" in
+    none)
+      echo "Skipping DB boot task (DB_BOOT_TASK=none)"
+      ;;
+    migrate)
+      echo "Running DB migration bootstrap (DB_BOOT_TASK=migrate)..."
+      ./bin/rails db:migrate || echo "Warning: db:migrate failed, continuing anyway..."
+      ;;
+    prepare)
+      echo "Preparing database (DB_BOOT_TASK=prepare)..."
+      ./bin/rails db:prepare || {
+        echo "Warning: db:prepare failed, trying db:migrate..."
+        ./bin/rails db:migrate || echo "Warning: db:migrate also failed, continuing anyway..."
+      }
+      ;;
+    *)
+      echo "Warning: unknown DB_BOOT_TASK='$DB_BOOT_TASK' (expected: prepare|migrate|none). Falling back to db:migrate."
+      ./bin/rails db:migrate || echo "Warning: db:migrate failed, continuing anyway..."
+      ;;
+  esac
 fi
 
 # Force CSS rebuild in development environment on startup
