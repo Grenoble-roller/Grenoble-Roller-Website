@@ -222,7 +222,6 @@ module AdminPanel
         :currency,
         :stock_qty,
         :is_active,
-        :image_url,
         images: []  # Images multiples
       )
     end

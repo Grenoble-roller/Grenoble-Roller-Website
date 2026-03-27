@@ -8,7 +8,7 @@
   <article class="card card-event card-liquid rounded-liquid shadow-liquid h-100">
     <div class="card-event-image">
       <% if initiation.cover_image.attached? %>
-        <%= image_tag(rails_representation_path(initiation.cover_image_card), alt: initiation.title, loading: 'lazy', class: 'w-100 h-100 object-fit-cover') %>
+        <%= image_tag(rails_representation_path(initiation.cover_image_square), alt: initiation.title, loading: 'lazy', class: 'w-100 h-100 object-fit-cover') %>
       <% end %>
       <span class="card-event-date badge badge-liquid-primary">
         <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>

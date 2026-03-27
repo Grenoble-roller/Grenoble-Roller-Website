@@ -2518,7 +2518,8 @@
   .card-event-image {
     position: relative;
     overflow: hidden;
-    height: 200px;
+    aspect-ratio: 1 / 1;
+    height: auto;
     border-radius: 0.5rem 0.5rem 0 0; /* Coins arrondis en haut */
   }
   

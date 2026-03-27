@@ -176,7 +176,7 @@
                     <td data-label="Titre">
                       <div class="d-flex align-items-center">
                         <% if event.cover_image.attached? %>
-                          <%= image_tag event.cover_image_card, class: "rounded me-2", style: "width: 40px; height: 20px; object-fit: cover;", alt: event.title %>
+                          <%= image_tag event.cover_image_square, class: "rounded me-2", style: "width: 40px; height: 40px; object-fit: cover;", alt: event.title %>
                         <% end %>
                         <span class="fw-semibold"><%= event.title %></span>
                       </div>

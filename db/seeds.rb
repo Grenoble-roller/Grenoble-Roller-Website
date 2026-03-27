@@ -121,6 +121,7 @@ end
 
 # Helper pour créer un ProductVariant avec image (contourne la validation)
 def create_variant_with_image(product:, sku:, price_cents:, stock_qty:, currency: "EUR", is_active: true, image_url: nil, **attrs)
+  attrs = attrs.except(:image_url)
   # Créer le variant avec is_active: false temporairement pour éviter la validation d'image
   variant = ProductVariant.new(
     product: product,
@@ -129,7 +130,6 @@ def create_variant_with_image(product:, sku:, price_cents:, stock_qty:, currency
     stock_qty: stock_qty,
     currency: currency,
     is_active: false, # Temporairement false
-    image_url: image_url,
     **attrs
   )
   variant.save!(validate: false) # Sauvegarder sans validation pour pouvoir attacher l'image

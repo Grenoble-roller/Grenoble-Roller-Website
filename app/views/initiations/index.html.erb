@@ -180,7 +180,7 @@
                     <td data-label="Titre">
                       <div class="d-flex align-items-center">
                         <% if initiation.cover_image.attached? %>
-                          <%= image_tag initiation.cover_image_card, class: "rounded me-2", style: "width: 40px; height: 20px; object-fit: cover;", alt: initiation.title %>
+                          <%= image_tag initiation.cover_image_square, class: "rounded me-2", style: "width: 40px; height: 40px; object-fit: cover;", alt: initiation.title %>
                         <% end %>
                         <span class="fw-semibold"><%= initiation.title %></span>
                       </div>

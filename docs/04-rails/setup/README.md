@@ -21,6 +21,7 @@
 
 ### Storage & Assets
 - **[`active-storage-minio-setup.md`](active-storage-minio-setup.md)** - Configuration Active Storage avec MinIO
+- **[`image-formats-and-variants.md`](image-formats-and-variants.md)** - Référence pivot des formats (`master/square/banner/story`) et migration `image_url`
 - **[`active-storage-image-optimization.md`](active-storage-image-optimization.md)** - Optimisation des images
 
 ### Références Techniques

@@ -123,12 +123,9 @@
           <div class="mb-3">
             <%= f.label :images, "Images", class: "form-label" %>
             <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
-            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
-          </div>
-
-          <div class="mb-3">
-            <%= f.label :image_url, "OU URL image", class: "form-label" %>
-            <%= f.url_field :image_url, class: "form-control", placeholder: "https://..." %>
+            <div class="form-text">
+              Import recommandé : master 4:5, sujet centré. Le site recadre en square 1:1 côté boutique.
+            </div>
           </div>
 
           <div class="d-flex justify-content-between mt-4">

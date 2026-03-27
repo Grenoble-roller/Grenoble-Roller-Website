@@ -148,8 +148,9 @@
                 required: @carousel.new_record?,
                 data: { carousel_form_target: "fileInput" } %>
             <div class="form-text">
-              Bannière annonces 16:9 (recommandé 1920×1080 ; le site affiche en 1200×675). Contenu centré, idéalement &lt; 20 % de texte dans l’image.<br>
-              Formats : JPG, PNG, WebP. L’aperçu ci-dessous affiche le rendu réel avant publication.
+              Import recommandé : visuel <strong>master 4:5</strong> (ex. 1080×1350), contenu centré, texte loin des bords.<br>
+              Le site affiche ce slide en <strong>banner 16:9</strong> (1200×675). Formats : JPG, PNG, WebP.
+              L’aperçu ci-dessous simule le rendu ; après enregistrement, la variante serveur 16:9 est appliquée.
             </div>
           </div>
 
@@ -170,7 +171,7 @@
         <div class="card-body p-0">
           <div class="carousel-form-ratio-preview rounded overflow-hidden position-relative" style="aspect-ratio: 16/9; background: #eee;">
             <% if @carousel.image.attached? %>
-              <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675]),
+              <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675], format: :webp, saver: { quality: 85 }),
                   data: { carousel_form_target: "ratioPreview" },
                   class: "w-100 h-100 position-absolute top-0 start-0",
                   style: "object-fit: cover; object-position: center;" %>

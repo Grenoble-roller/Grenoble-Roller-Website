@@ -1,31 +1,54 @@
 module ProductsHelper
-  # Helper pour obtenir l'URL de l'image d'un produit (Active Storage ou URL string)
-  def product_image_url(product)
-    return url_for(product.image) if product&.image&.attached?
-    return product.image_url if product&.image_url.present?
+  def product_primary_image(product)
+    return nil unless product
+    return product.image if product.image.attached?
+
     nil
   end
 
-  # Helper pour obtenir l'URL de l'image d'une variante (Active Storage ou URL ou fallback produit)
+  def variant_primary_image(variant)
+    return nil unless variant
+    return variant.images.first if variant.images.attached?
+
+    product_primary_image(variant.product)
+  end
+
+  # Canonical storefront variant (square 1:1).
+  def square_image_variant(attachment, size: 800, quality: 82)
+    return nil unless attachment.respond_to?(:attached?) && attachment.attached?
+
+    attachment.variant(
+      resize_to_fill: [ size, size ],
+      format: :webp,
+      saver: { quality: quality }
+    )
+  end
+
+  # Helper pour obtenir l'URL de l'image d'un produit (Active Storage)
+  def product_image_url(product)
+    image = product_primary_image(product)
+    return url_for(square_image_variant(image, size: 800)) if image
+
+    nil
+  end
+
+  # Helper pour obtenir l'URL de l'image d'une variante (fallback produit si nécessaire)
   def variant_image_url(variant)
-    # ProductVariant utilise has_many_attached :images (pluriel)
-    return url_for(variant.images.first) if variant&.images&.attached?
-    return variant.image_url if variant&.image_url.present?
-    product_image_url(variant.product) if variant.product
+    image = variant_primary_image(variant)
+    return url_for(square_image_variant(image, size: 800)) if image
+
+    nil
   end
 
   # Helper pour obtenir l'objet image (pour image_tag direct)
   def product_image_tag(product)
-    return product.image if product&.image&.attached?
-    return product.image_url if product&.image_url.present?
-    nil
+    image = product_primary_image(product)
+    square_image_variant(image, size: 800) if image
   end
 
   def variant_image_tag(variant)
-    # ProductVariant utilise has_many_attached :images (pluriel)
-    return variant.images.first if variant&.images&.attached?
-    return variant.image_url if variant&.image_url.present?
-    product_image_tag(variant.product) if variant.product
+    image = variant_primary_image(variant)
+    square_image_variant(image, size: 800) if image
   end
 
   # Calculer le stock disponible d'une variante

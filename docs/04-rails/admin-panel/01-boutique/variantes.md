@@ -55,6 +55,8 @@ end
 - [x] Ajouter validation `image_present`
 - [x] Ajouter relation `has_one :inventory`
 - [x] Ajouter callback `after_create :create_inventory_record`
+- [x] Supprimer champ `image_url` des formulaires admin variantes
+- [x] Retirer `image_url` des params autorisés du controller
 
 ---
 
@@ -220,6 +222,7 @@ end
 - [x] Créer partial `_grid_row.html.erb`
 - [x] Créer vue `bulk_edit.html.erb` (route créée, vue à compléter si nécessaire)
 - [x] Adapter formulaires pour `has_many_attached :images`
+- [x] Formulaires alignés : upload master conseillé, rendu boutique square 1:1
 
 ---
 

@@ -1,7 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["dropZone", "fileInput", "previewGrid", "previewContainer"]
+  static targets = [
+    "dropZone",
+    "fileInput",
+    "previewGrid",
+    "previewContainer",
+    "masterImage",
+    "masterPlaceholder",
+    "squareImage",
+    "squarePlaceholder"
+  ]
   static values = { 
     maxSize: Number,
     acceptedTypes: String
@@ -167,6 +176,28 @@ export default class extends Controller {
 
     if (this.hasPreviewContainerTarget) {
       this.previewContainerTarget.appendChild(previewItem)
+    }
+
+    this.updateCanonicalPreviews(imageUrl)
+  }
+
+  updateCanonicalPreviews(imageUrl) {
+    if (this.hasMasterImageTarget) {
+      this.masterImageTarget.src = imageUrl
+      this.masterImageTarget.classList.remove("d-none")
+      this.masterImageTarget.style.display = "block"
+    }
+    if (this.hasMasterPlaceholderTarget) {
+      this.masterPlaceholderTarget.style.display = "none"
+    }
+
+    if (this.hasSquareImageTarget) {
+      this.squareImageTarget.src = imageUrl
+      this.squareImageTarget.classList.remove("d-none")
+      this.squareImageTarget.style.display = "block"
+    }
+    if (this.hasSquarePlaceholderTarget) {
+      this.squarePlaceholderTarget.style.display = "none"
     }
   }
 

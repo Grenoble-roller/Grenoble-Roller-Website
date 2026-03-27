@@ -4,7 +4,7 @@ ActiveAdmin.register Product do
   includes :category
 
   permit_params :category_id, :name, :slug, :description, :price_cents,
-                :currency, :stock_qty, :is_active, :image_url, :image
+                :currency, :stock_qty, :is_active, :image
 
   scope :all, default: true
   scope("Actifs") { |products| products.where(is_active: true) }
@@ -68,8 +68,6 @@ ActiveAdmin.register Product do
       row :image do |product|
         if product.image.attached?
           image_tag(product.image.variant(resize_to_limit: [ 300, 300 ]), style: "border-radius: 8px; max-width: 300px;")
-        elsif product.image_url.present?
-          image_tag(product.image_url, height: 150, style: "border-radius: 8px;")
         else
           status_tag("Aucune image", class: "warning")
         end
@@ -147,8 +145,6 @@ ActiveAdmin.register Product do
       f.input :is_active,
               hint: "Désactiver pour masquer le produit et toutes ses variantes sur le site"
       f.input :image, as: :file, hint: "Upload une image (recommandé)"
-      f.input :image_url,
-              hint: "Ou utilisez une URL (déprécié, pour transition)"
     end
 
     f.actions

@@ -29,7 +29,11 @@
           <% carousels.each_with_index do |carousel, index| %>
             <div class="carousel-item <%= 'active' if index == 0 %>">
               <% if carousel.image.attached? %>
-                <% image_variant = carousel.image.variant(resize_to_fill: [1200, 675]) %>
+                <% image_variant = carousel.image.variant(
+                    resize_to_fill: [1200, 675],
+                    format: :webp,
+                    saver: { quality: 85 }
+                  ) %>
                 <% if carousel.link_url.present? %>
                   <%= link_to carousel.link_url,
                       class: "d-block w-100 h-100 announcement-banner-link",

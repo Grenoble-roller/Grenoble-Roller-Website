@@ -97,7 +97,9 @@
           <div class="mb-3">
             <%= f.label :images, "Images", class: "form-label" %>
             <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
-            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
+            <div class="form-text">
+              Import recommandé : master 4:5, sujet centré. Le site recadre en square 1:1 côté boutique.
+            </div>
             <% if @variant.images.attached? %>
               <div class="mt-2">
                 <% @variant.images.each do |image| %>
@@ -134,11 +136,6 @@
               </div>
             </div>
           <% end %>
-
-          <div class="mb-3">
-            <%= f.label :image_url, "OU URL image", class: "form-label" %>
-            <%= f.url_field :image_url, class: "form-control", placeholder: "https://..." %>
-          </div>
 
           <div class="d-flex justify-content-between mt-4">
             <%= link_to "Annuler", admin_panel_product_path(@product), class: "btn btn-outline-secondary" %>
