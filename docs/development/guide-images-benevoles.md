@@ -2,7 +2,7 @@
 
 ## Règle simple
 
-- Préparer une image **master 4:5** (ex. 1080×1350).
+- Le site accepte plusieurs **ratios** : **16:9** (paysage) et **4:5** (portrait type réseaux) sont les plus adaptés ; d’autres formats passent aussi (recadrage automatique).
 - Garder le sujet et les éléments importants au **centre**.
 - Éviter le texte collé aux bords (safe zone).
 

@@ -11,7 +11,7 @@ Ce document est la source de vérité pour :
 
 | Nom | Ratio | Usage |
 |------|-------|-------|
-| `master` | 4:5 | Upload source bénévole (ex. 1080×1350), conservé en storage |
+| `master` | — | Fichier source uploadé (ex. **16:9** ou **4:5**), conservé en storage ; d’autres ratios sont acceptés |
 | `square` | 1:1 | Cartes/listes et boutique (grille + détail par défaut) |
 | `banner` | 16:9 | Hero Event + carrousel homepage |
 | `story` | 9:16 | Canal social (doc/export V1, variant serveur uniquement si Phase B validée) |
@@ -37,6 +37,7 @@ Pattern à appliquer dans les formulaires image :
 ## Livraison formats
 
 - Upload accepté : JPG, PNG, WebP.
+- Ratios sources côté bénévolat : **16:9** et **4:5** sont compatibles ; d’autres ratios passent aussi (recadrage centré pour les variants `square` / `banner`).
 - Livraison côté site : variants en **WebP** quand possible.
 - Le blob `master` original reste conservé.
 

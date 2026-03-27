@@ -279,8 +279,8 @@
                 data: { media_preview_target: "fileInput" } %>
             <div class="form-text">
               <i class="bi bi-info-circle me-1"></i>
-              <strong>Obligatoire</strong> - Importez un visuel <strong>master 4:5</strong> (ex. 1080×1350), sujet centré, texte loin des bords.
-              Le site génère ensuite <strong>square 1:1</strong> (cartes/listes) et <strong>banner 16:9</strong> (hero).
+              <strong>Obligatoire</strong> pour une nouvelle annonce (une image est requise). Formats : JPG, PNG, WebP.
+              <strong>Ratios compatibles</strong> : 16:9 (paysage) ou 4:5 (portrait) ; d’autres ratios fonctionnent aussi. Le site génère les dérivés <strong>carré 1:1</strong> (listes) et <strong>bannière 16:9</strong> (bandeau) — privilégiez un sujet centré, texte loin des bords.
             </div>
           </div>
 
@@ -440,7 +440,7 @@
               <%= f.file_field :map_image, accept: "image/*", class: "form-control" %>
               <div class="form-text">
                 <i class="bi bi-info-circle me-1"></i>
-                Image de la carte du parcours (optionnel)
+                Optionnel. JPG, PNG ou WebP — ratio libre ; privilégiez une carte lisible.
               </div>
             </div>
             

@@ -98,7 +98,7 @@
             <%= f.label :images, "Images", class: "form-label" %>
             <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
             <div class="form-text">
-              Import recommandé : master 4:5, sujet centré. Le site recadre en square 1:1 côté boutique.
+              Formats : JPG, PNG, WebP. Ratios compatibles : 16:9 ou 4:5 (recommandés) ; le site recadre en carré 1:1 côté boutique. Sujet centré.
             </div>
             <% if @variant.images.attached? %>
               <div class="mt-2">
