@@ -145,6 +145,15 @@ Dokploy propose typiquement : **Dockerfile**, Railpack, Nixpacks, Heroku Buildpa
 
 **Vérification après déploiement (staging)** : dans les logs du conteneur au boot, présence de `Preparing database...` ; la home ne doit pas échouer pour une table manquante si `DATABASE_URL` est correcte ; le port exposé correspond à `PORT` (ex. healthcheck / Traefik vers `:3000` si `PORT=3000`).
 
+**Vérifier credentials + services sans afficher les secrets** (à lancer **dans le conteneur web Rails**, pas Postgres ni un front Nixpacks) :
+
+```bash
+cd /rails
+./bin/verify-runtime-config
+```
+
+Le script contrôle le déchiffrement des credentials, HelloAsso, MinIO, Turnstile, SMTP, et la connexion DB. Pour ne pas tester la DB (ex. hors réseau interne) : `SKIP_DB_CHECK=1 ./bin/verify-runtime-config`. Voir [`bin/verify-runtime-config`](../../../bin/verify-runtime-config) et [`script/verify_runtime_config.rb`](../../../script/verify_runtime_config.rb).
+
 ---
 
 ## 5. Écarts modèle actuel ↔ Dokploy (à traiter)
