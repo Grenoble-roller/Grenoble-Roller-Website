@@ -20,7 +20,7 @@ Référence unique pour le **carousel de la page d’accueil** : bannière annon
 |--------|--------|
 | Ratio UI | **16:9** (fixe) |
 | Image affichée | `resize_to_fill: [1200, 675]` |
-| Upload recommandé | **master 4:5** (ex. 1080×1350) |
+| Upload | **16:9** ou **4:5** (recommandés) ; voir aussi [`guide-images-benevoles.md`](./guide-images-benevoles.md) et la page site `/guide-images` |
 | Hauteur max visuelle | Largeur limitée à `min(100%, calc(55vh * 16/9))` → marges latérales sur grands écrans, ratio toujours 16:9 |
 | Autoplay | 6 s (`data-bs-interval="6000"`), pause au survol/focus |
 | Accessibilité | `aria-label="Annonces importantes"` ; flèches + indicateurs ; pas de caption overlay |

@@ -49,6 +49,12 @@ Objectif de sortie : aucune branche d’affichage produit ne dépend de `image_u
 2. **Data** : backfill des URLs historiques vers Active Storage (`rake images:backfill_legacy_urls`).
 3. **Code** : fallback `image_url` supprimé des vues/helpers.
 
+## Tutoriel bénévoles (résumé)
+
+- Page publique : `/guide-images` (schéma + bonnes pratiques).
+- Doc courte : [`docs/development/guide-images-benevoles.md`](../../development/guide-images-benevoles.md).
+- Fiche SVG : `/guides/image-upload-reference.svg`.
+
 ## Références code
 
 - Event variants : `app/models/event.rb`

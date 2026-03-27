@@ -1,4 +1,9 @@
-# Guide images bénévoles (site + réseaux)
+# Tutoriel images bénévoles (site + réseaux)
+
+## Page publique
+
+- **Guide détaillé (site)** : `/guide-images` — ouvre le tutoriel avec la **fiche visuelle** (référence rapide) et les rappels.
+- **Fichier SVG** (téléchargeable, imprimable) : `/guides/image-upload-reference.svg` — même contenu que la grande illustration de la page.
 
 ## Règle simple
 
@@ -22,6 +27,15 @@
 - Utiliser des visuels contrastés et lisibles.
 - Limiter le texte intégré à l’image.
 - Tester rapidement l’image sur mobile avant publication.
+
+## Bonnes pratiques UX (rappel)
+
+Aligné avec les usages courants des formulaires d’upload (voir aussi la page `/guide-images`) :
+
+- **Consignes** visibles avant l’envoi : formats, taille max, ratios possibles.
+- **Prévisualisation** quand le formulaire la propose.
+- **Messages d’erreur** explicites si le fichier est refusé (type, poids).
+- **Remplacement** de fichier clair sans perdre le contexte.
 
 ## Référence technique
 

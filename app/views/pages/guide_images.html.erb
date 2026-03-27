@@ -1,0 +1,81 @@
+<% content_for :title, "Guide images et formats - Grenoble Roller" %>
+<% content_for :description, "Formats acceptés, ratios 16:9 et 4:5, zone sûre et aperçus : tout pour préparer vos visuels pour le site." %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-xl-9">
+        <header class="text-center mb-4">
+          <h1 class="display-5 fw-bold mb-2">
+            <i class="bi bi-image text-liquid-primary me-2" aria-hidden="true"></i>
+            Guide images et formats
+          </h1>
+          <p class="lead text-muted mb-0">
+            Pour les bénévoles : préparer des fichiers compatibles avec les randos, initiations, carrousel et boutique.
+          </p>
+        </header>
+
+        <div class="card card-liquid border-0 shadow-sm mb-4 overflow-hidden">
+          <div class="card-body p-0 bg-light">
+            <figure class="mb-0 text-center p-3">
+              <%= image_tag "/guides/image-upload-reference.svg",
+                  alt: "Schéma : formats JPG PNG WebP, ratios 16:9 et 4:5, zone sûre au centre, dérivés carré et bannière",
+                  class: "img-fluid rounded",
+                  style: "max-height: 640px; width: auto;",
+                  loading: "eager" %>
+              <figcaption class="small text-muted mt-2 px-2">
+                Référence visuelle téléchargeable :
+                <%= link_to "image-upload-reference.svg", "/guides/image-upload-reference.svg", download: "grenoble-roller-guide-images.svg", class: "link-info" %>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card card-liquid h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h2 class="h5 fw-bold"><i class="bi bi-check2-circle text-success me-2" aria-hidden="true"></i>Règle simple</h2>
+                <ul class="mb-0">
+                  <li>Formats : <strong>JPG</strong>, <strong>PNG</strong>, <strong>WebP</strong>.</li>
+                  <li>Ratios : <strong>16:9</strong> (paysage) et <strong>4:5</strong> (portrait) sont les plus adaptés ; d’autres formats passent aussi (recadrage centré).</li>
+                  <li>Placer le sujet et le texte important au <strong>centre</strong> (safe zone).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card card-liquid h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h2 class="h5 fw-bold"><i class="bi bi-layout-split text-primary me-2" aria-hidden="true"></i>Ce que fait le site</h2>
+                <ul class="mb-0">
+                  <li>Listes et cartes : recadrage <strong>carré 1:1</strong>.</li>
+                  <li>Bandeau (hero événement, carrousel) : <strong>bannière 16:9</strong>.</li>
+                  <li>Boutique : affichage principalement en <strong>carré</strong> à partir de votre fichier.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-liquid border-0 shadow-sm mt-4">
+          <div class="card-body">
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-lightbulb text-warning me-2" aria-hidden="true"></i>Bonnes pratiques (rappel)</h2>
+            <p class="mb-2">Cohérentes avec les recommandations courantes d’interfaces d’upload :</p>
+            <ul class="mb-0">
+              <li><strong>Consignes visibles</strong> avant l’envoi (formats, taille max, ratios possibles).</li>
+              <li><strong>Prévisualisation</strong> quand le formulaire la propose — vérifier le cadrage.</li>
+              <li><strong>Contraste</strong> et texte court dans l’image pour rester lisible sur mobile.</li>
+              <li>Tester mentalement le <strong>recadrage carré</strong> : ce qui est sur les bords peut disparaître.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="text-muted small mt-4 mb-0 text-center">
+          Contributeurs : matrice technique et variants dans le dépôt,
+          <code class="small">docs/04-rails/setup/image-formats-and-variants.md</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

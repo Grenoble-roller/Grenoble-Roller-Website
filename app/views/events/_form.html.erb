@@ -271,7 +271,10 @@
           </div>
 
           <div class="col-12">
-            <%= f.label :cover_image, "Image de couverture", class: "form-label" %>
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-1">
+              <%= f.label :cover_image, "Image de couverture", class: "form-label mb-0" %>
+              <%= render "shared/image_upload_help_link" %>
+            </div>
             <%= f.file_field :cover_image,
                 accept: "image/*",
                 class: "form-control form-control-liquid",
