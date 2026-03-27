@@ -6,26 +6,39 @@
     <div class="row justify-content-center">
       <div class="col-lg-10 col-xl-9">
         <header class="text-center mb-4">
-          <h1 class="display-5 fw-bold mb-2">
-            <i class="bi bi-image text-liquid-primary me-2" aria-hidden="true"></i>
-            Guide images et formats
-          </h1>
+          <h1 class="display-5 fw-bold mb-2">Guide images et formats</h1>
           <p class="lead text-muted mb-0">
             Pour les bénévoles : préparer des fichiers compatibles avec les randos, initiations, carrousel et boutique.
           </p>
         </header>
 
         <div class="card card-liquid border-0 shadow-sm mb-4 overflow-hidden">
-          <div class="card-body p-0 bg-light">
-            <figure class="mb-0 text-center p-3">
-              <%= image_tag "/guides/image-upload-reference.svg",
-                  alt: "Schéma : formats JPG PNG WebP, ratios 16:9 et 4:5, zone sûre au centre, dérivés carré et bannière",
-                  class: "img-fluid rounded",
-                  style: "max-height: 640px; width: auto;",
-                  loading: "eager" %>
-              <figcaption class="small text-muted mt-2 px-2">
-                Référence visuelle téléchargeable :
-                <%= link_to "image-upload-reference.svg", "/guides/image-upload-reference.svg", download: "grenoble-roller-guide-images.svg", class: "link-info" %>
+          <div class="card-body p-0">
+            <figure class="mb-0 text-center p-3" id="guide-images-schematic">
+              <p id="guide-images-schematic-desc" class="small text-muted text-start mb-3">
+                Schéma récapitulatif : formats JPG, PNG, WebP ; ratios 16:9 et 4:5 ; zone sûre au centre ;
+                dérivés affichés sur le site (carré 1:1 et bannière 16:9).
+                <strong class="d-block mt-2">Événements et initiations :</strong>
+                la même image est utilisée en <strong>carré 1:1</strong> (cartes, listes, miniatures) et en <strong>bannière 16:9</strong> (bandeau en haut de la page de détail), pas uniquement en carré.
+              </p>
+              <%= link_to "/guides/image-upload-reference.svg",
+                  class: "guide-images-schematic-link d-inline-block rounded",
+                  download: "grenoble-roller-guide-images.svg",
+                  title: "Télécharger le schéma (fichier SVG)",
+                  aria: { label: "Télécharger le schéma récapitulatif au format SVG", describedby: "guide-images-schematic-desc" } do %>
+                <%= image_tag "/guides/image-upload-reference.svg",
+                    alt: "",
+                    class: "img-fluid rounded border",
+                    style: "max-height: 640px; width: auto;",
+                    loading: "eager" %>
+              <% end %>
+              <figcaption class="small mt-3 px-2">
+                <%= link_to "/guides/image-upload-reference.svg",
+                    download: "grenoble-roller-guide-images.svg",
+                    class: "btn btn-sm btn-outline-primary" do %>
+                  <i class="bi bi-download me-1" aria-hidden="true"></i>
+                  Télécharger le schéma (SVG)
+                <% end %>
               </figcaption>
             </figure>
           </div>
@@ -49,9 +62,9 @@
               <div class="card-body">
                 <h2 class="h5 fw-bold"><i class="bi bi-layout-split text-primary me-2" aria-hidden="true"></i>Ce que fait le site</h2>
                 <ul class="mb-0">
-                  <li>Listes et cartes : recadrage <strong>carré 1:1</strong>.</li>
-                  <li>Bandeau (hero événement, carrousel) : <strong>bannière 16:9</strong>.</li>
-                  <li>Boutique : affichage principalement en <strong>carré</strong> à partir de votre fichier.</li>
+                  <li><strong>Événements / initiations :</strong> <strong>carré 1:1</strong> en liste et sur les cartes ; <strong>bannière 16:9</strong> sur la page de détail (hero).</li>
+                  <li><strong>Carrousel d’accueil :</strong> <strong>16:9</strong>.</li>
+                  <li><strong>Boutique :</strong> affichage principalement en <strong>carré 1:1</strong>.</li>
                 </ul>
               </div>
             </div>
@@ -73,7 +86,7 @@
 
         <p class="text-muted small mt-4 mb-0 text-center">
           Contributeurs : matrice technique et variants dans le dépôt,
-          <code class="small">docs/04-rails/setup/image-formats-and-variants.md</code>.
+          <code class="small px-1 rounded text-body-secondary bg-body-secondary">docs/04-rails/setup/image-formats-and-variants.md</code>.
         </p>
       </div>
     </div>

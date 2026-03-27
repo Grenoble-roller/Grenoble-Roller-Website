@@ -13,8 +13,9 @@
 
 ## Ce que fait le site
 
-- Cartes / listings / boutique : recadrage **square 1:1**.
-- Hero événement + carrousel annonces : recadrage **banner 16:9**.
+- **Événements / initiations :** une seule image source → **carré 1:1** sur les cartes et listes, **bannière 16:9** sur la page de détail (hero en tête de page).
+- **Carrousel d’accueil :** **banner 16:9**.
+- **Boutique :** recadrage **square 1:1** (grille / fiche).
 
 ## Réseaux sociaux
 
