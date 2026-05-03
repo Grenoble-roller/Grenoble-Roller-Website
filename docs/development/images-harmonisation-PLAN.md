@@ -4,31 +4,31 @@ overview: Vocabulaire canonique (master/square/banner/story) ; upload unique mas
 todos:
   - id: audit-image-usage
     content: Cartographier usages Event/Initiation/Carousel/Product/Variant, code paths preview, fallback image_url.
-    status: pending
+    status: done
   - id: refactor-event-variants
-    content: API variants square (1:1) + banner (16:9) ; alias rétrocompat uniquement si nécessaires (pas multiplier les noms).
-    status: pending
+    content: "Format unique 16:9 — cover_image_square passe à 800×450, cover_image_thumb à 400×225 ; cover_image_banner conservé 1200×675 ; alias legacy maintenus."
+    status: done
   - id: refactor-shop-variants
-    content: square pour grille + détail par défaut ; pipeline Active Storage ; pas de 4:5 sauf opt-in éditorial futur explicite.
-    status: pending
+    content: "square_image_variant (ProductsHelper) génère désormais 800×450 (16:9) ; CSS card-product-image-wrapper → aspect-ratio 16/9 + object-fit cover."
+    status: done
   - id: preview-admin-pattern
-    content: Généraliser double preview (contain master + cover par surface) events/boutique ; Stimulus partagé ou réplication contrôlée.
-    status: pending
+    content: "Double preview généralisé — contain master + 16:9 cover — dans events/_form, initiations/_form, admin_panel/products/_image_upload. Labels mis à jour (\"Aperçu 16:9\")."
+    status: done
   - id: webp-delivery-strategy
     content: Standard livraison WebP (variants/format) sans perte du blob master en storage ; doc + vérif config ImageProcessing.
     status: pending
   - id: update-forms-guidelines
-    content: Cohérence textes admin (upload = master ; rendu = square/banner) + safe zone ; vocabulare canonique dans les hints.
-    status: pending
+    content: "Labels formulaires mis à jour (\"Aperçu 16:9 (carte)\", \"Aperçu 16:9 (rendu site)\") ; guide-images-benevoles.md et pivot mis à jour."
+    status: done
   - id: legacy-image-url
     content: Phase 1 masquer image_url UI → Phase 2 backfill/migration → Phase 3 suppression fallback ; critères de fin documentés.
     status: pending
   - id: refresh-documentation
-    content: Doc pivot unique + satellites courts (liens depuis pivot uniquement pour ratios/noms) ; pas de tables dupliquées contradictoires.
-    status: pending
+    content: "Pivot image-formats-and-variants.md reécrit (format unique 16:9) ; active-storage-image-optimization.md mis à jour ; guide-images-benevoles.md mis à jour."
+    status: done
   - id: align-carousel-form-copy-preview
     content: Copy carrousel alignée master + banner ; lien vers stratégie preview globale.
-    status: pending
+    status: done
   - id: verify-and-test
     content: QA surfaces matrice + preview admin + absence régression image_url phases + specs/lints.
     status: pending

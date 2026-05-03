@@ -66,7 +66,7 @@
     <div class="row g-4 align-items-stretch flex-column flex-lg-row">
       <!-- Image principale -->
       <div class="col-12 col-lg-5">
-        <div class="card-product-image-wrapper product-show-image-wrapper" style="aspect-ratio: 1 / 1; max-height: 600px;">
+        <div class="card-product-image-wrapper product-show-image-wrapper" style="aspect-ratio: 16 / 9;">
           <% product_image = product_image_tag(@product) %>
           <div class="card-product-image" 
                style="<%= 'cursor: pointer;' if product_image %>"
@@ -76,7 +76,7 @@
                  aria-label="Agrandir l'image de <%= @product.name %>"
                <% end %>>
             <% if product_image %>
-              <%= image_tag product_image, alt: @product.name, loading: "eager", decoding: "async", style: "object-fit: contain;", data: { product_show_target: "productImage" } %>
+              <%= image_tag product_image, alt: @product.name, loading: "eager", decoding: "async", style: "object-fit: cover; object-position: center;", data: { product_show_target: "productImage" } %>
             <% else %>
               <div class="d-flex align-items-center justify-content-center h-100 bg-light">
                 <i class="bi bi-image fs-1 text-muted" aria-hidden="true"></i>

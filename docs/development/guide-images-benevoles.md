@@ -5,38 +5,56 @@
 - **Guide détaillé (site)** : `/guide-images` — ouvre le tutoriel avec la **fiche visuelle** (référence rapide) et les rappels.
 - **Fichier SVG** (téléchargeable, imprimable) : `/guides/image-upload-reference.svg` — même contenu que la grande illustration de la page.
 
+---
+
 ## Règle simple
 
-- Le site accepte plusieurs **ratios** : **16:9** (paysage) et **4:5** (portrait type réseaux) sont les plus adaptés ; d’autres formats passent aussi (recadrage automatique).
-- Garder le sujet et les éléments importants au **centre**.
-- Éviter le texte collé aux bords (safe zone).
+> **Format unique : 16:9 centré** sur toutes les surfaces du site (décision mai 2026).
+
+- Garder le sujet et les éléments importants au **centre** (safe zone).
+- Éviter le texte collé aux bords.
+- Le site recadre automatiquement : une image 4:5 ou autre ratio fonctionne, le centre sera conservé.
+
+---
 
 ## Ce que fait le site
 
-- **Événements / initiations :** une seule image source → **carré 1:1** sur les cartes et listes, **bannière 16:9** sur la page de détail (hero en tête de page).
-- **Carrousel d’accueil :** **banner 16:9**.
-- **Boutique :** recadrage **square 1:1** (grille / fiche).
+| Surface | Rendu |
+|---------|-------|
+| Événements / initiations — cartes et listes | **16:9** (`cover`, centré) |
+| Événements / initiations — page de détail (hero) | **16:9** (`cover`, centré) |
+| Carrousel d'accueil | **16:9** (`cover`, centré) |
+| Boutique — grille et fiche produit | **16:9** (`cover`, centré) |
+
+---
 
 ## Réseaux sociaux
 
+Les réseaux ont leurs propres contraintes, indépendantes du site :
+
 - Feed Instagram : 4:5 ou 1:1.
 - Story / Reel : 9:16.
-- Facebook / partage : le réseau peut recadrer autour de ~1.91:1 même si l’UI du site est en 16:9.
+- Facebook / partage : le réseau peut recadrer autour de ~1.91:1 même si l'UI du site est en 16:9.
+
+---
 
 ## Conseils pratiques
 
 - Utiliser des visuels contrastés et lisibles.
-- Limiter le texte intégré à l’image.
-- Tester rapidement l’image sur mobile avant publication.
+- Limiter le texte intégré à l'image.
+- Tester rapidement l'image sur mobile avant publication.
+- La **prévisualisation 16:9** dans le formulaire d'upload montre exactement le rendu final sur le site.
+
+---
 
 ## Bonnes pratiques UX (rappel)
 
-Aligné avec les usages courants des formulaires d’upload (voir aussi la page `/guide-images`) :
-
-- **Consignes** visibles avant l’envoi : formats, taille max, ratios possibles.
-- **Prévisualisation** quand le formulaire la propose.
-- **Messages d’erreur** explicites si le fichier est refusé (type, poids).
+- **Consignes** visibles avant l'envoi : formats, taille max, ratio recommandé (16:9).
+- **Prévisualisation** : le formulaire affiche le master (fichier entier) + le rendu 16:9 simulé.
+- **Messages d'erreur** explicites si le fichier est refusé (type, poids).
 - **Remplacement** de fichier clair sans perdre le contexte.
+
+---
 
 ## Référence technique
 

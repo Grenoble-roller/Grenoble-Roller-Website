@@ -12,10 +12,10 @@ class Event < ApplicationRecord
   # Active Storage attachments
   has_one_attached :cover_image
 
-  # Canonical variants:
-  # - banner (16:9): large surfaces (hero, banners)
-  # - square (1:1): cards, lists, thumbnails
-  # Legacy aliases are kept for compatibility with existing views.
+  # Canonical variants — format unique 16:9 centré (décision bénévoles 2026-05)
+  # - banner (16:9, 1200×675) : hero, surfaces larges
+  # - square (16:9, 800×450)  : cartes, listes (nommé square pour compat appels existants)
+  # - thumb  (16:9, 400×225)  : miniatures
 
   def cover_image_banner
     return nil unless cover_image.attached?
@@ -24,15 +24,15 @@ class Event < ApplicationRecord
 
   def cover_image_square
     return nil unless cover_image.attached?
-    cover_image.variant(resize_to_fill: [ 800, 800 ], format: :webp, saver: { quality: 82 })
+    cover_image.variant(resize_to_fill: [ 800, 450 ], format: :webp, saver: { quality: 82 })
   end
 
   def cover_image_thumb
     return nil unless cover_image.attached?
-    cover_image.variant(resize_to_fill: [ 400, 400 ], format: :webp, saver: { quality: 75 })
+    cover_image.variant(resize_to_fill: [ 400, 225 ], format: :webp, saver: { quality: 75 })
   end
 
-  # Legacy aliases (kept to avoid broad regressions while migrating callers)
+  # Legacy aliases
   def cover_image_hero
     cover_image_banner
   end

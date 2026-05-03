@@ -13,12 +13,12 @@ module ProductsHelper
     product_primary_image(variant.product)
   end
 
-  # Canonical storefront variant (square 1:1).
+  # Canonical storefront variant (16:9, centré — format unique décision bénévoles 2026-05).
   def square_image_variant(attachment, size: 800, quality: 82)
     return nil unless attachment.respond_to?(:attached?) && attachment.attached?
 
     attachment.variant(
-      resize_to_fill: [ size, size ],
+      resize_to_fill: [ size, (size * 9.0 / 16).round ],
       format: :webp,
       saver: { quality: quality }
     )
