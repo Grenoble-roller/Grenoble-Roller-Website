@@ -40,6 +40,19 @@ if [ "${1:-}" = "./bin/rails" ] && [ "${2:-}" = "server" ]; then
       ;;
   esac
 
+  # Solid Queue in Puma needs DB tables. If they are missing (fresh DB, or an earlier boot where
+  # db:prepare/migrate failed silently), run migrations. Under `set -e`, use `if` so a non-zero
+  # exit from the check does not abort the script before db:migrate runs.
+  if [ "${SOLID_QUEUE_IN_PUMA:-}" = "true" ] && compgen -G "db/migrate/*solid_queue*" > /dev/null 2>&1; then
+    if [ "${RAILS_ENV:-}" = "production" ] || [ "${RAILS_ENV:-}" = "staging" ] || \
+       [ "${APP_ENV:-}" = "staging" ] || [ "${DEPLOY_ENV:-}" = "staging" ] || [ "${DEPLOY_ENV:-}" = "production" ]; then
+      if ! ./bin/rails runner 'exit(ActiveRecord::Base.connection.table_exists?(:solid_queue_processes) ? 0 : 1)'; then
+        echo "solid_queue_processes missing — running db:migrate..."
+        ./bin/rails db:migrate
+      fi
+    fi
+  fi
+
   # Auto-create S3 bucket if missing (production/staging only; no-op on disk storage)
   if [ "${RAILS_ENV}" == "production" ] || [ "${RAILS_ENV}" == "staging" ] || [ "${APP_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "production" ]; then
     echo "Ensuring S3 bucket exists..."
