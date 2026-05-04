@@ -39,6 +39,12 @@ if [ "${1:-}" = "./bin/rails" ] && [ "${2:-}" = "server" ]; then
       ./bin/rails db:migrate || echo "Warning: db:migrate failed, continuing anyway..."
       ;;
   esac
+
+  # Auto-create S3 bucket if missing (production/staging only; no-op on disk storage)
+  if [ "${RAILS_ENV}" == "production" ] || [ "${RAILS_ENV}" == "staging" ] || [ "${APP_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "production" ]; then
+    echo "Ensuring S3 bucket exists..."
+    bundle exec rake storage:ensure_bucket || echo "Warning: S3 bucket setup failed, continuing..."
+  fi
 fi
 
 # Force CSS rebuild in development environment on startup

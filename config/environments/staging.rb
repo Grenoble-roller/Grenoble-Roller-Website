@@ -21,8 +21,8 @@ Rails.application.configure do
   # Cache assets for far-future expiry since they are all digest stamped.
   config.public_file_server.headers = { "cache-control" => "public, max-age=#{1.year.to_i}" }
 
-  # Store uploaded files on MinIO (S3-compatible) - see config/storage.yml for options.
-  config.active_storage.service = :minio
+  # Store uploaded files on S3-compatible storage (SeaweedFS) - see config/storage.yml.
+  config.active_storage.service = :s3
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]

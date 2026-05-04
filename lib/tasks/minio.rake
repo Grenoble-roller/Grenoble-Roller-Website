@@ -1,48 +1,52 @@
 # frozen_string_literal: true
 
+# Kept for backward compatibility — delegates to storage:ensure_bucket.
+# Use `rake storage:ensure_bucket` directly.
 namespace :minio do
-  desc "Ensure Active Storage S3 bucket exists on MinIO (idempotent; no-op if :minio is not the configured service)"
+  task ensure_bucket: "storage:ensure_bucket"
+end
+
+namespace :storage do
+  desc "Ensure Active Storage S3 bucket exists (idempotent; skips if service is not S3-compatible)"
   task ensure_bucket: :environment do
-    unless Rails.application.config.active_storage.service.to_sym == :minio
-      puts "[minio:ensure_bucket] Skip: active_storage.service=#{Rails.application.config.active_storage.service.inspect} (expected :minio)"
+    service_name = Rails.application.config.active_storage.service
+    configs = Rails.application.config.active_storage.service_configurations
+    cfg = configs[service_name.to_s] || configs[service_name]
+
+    unless cfg && cfg["service"] == "S3"
+      puts "[storage:ensure_bucket] Skip: service=#{service_name.inspect} is not S3-compatible"
       next
     end
 
-    configs = Rails.application.config.active_storage.service_configurations
-    minio_cfg = configs["minio"] || configs[:minio]
-    unless minio_cfg
-      abort "[minio:ensure_bucket] Missing service configuration for :minio in active_storage.service_configurations"
-    end
+    bucket         = cfg["bucket"]
+    endpoint       = cfg["endpoint"]
+    access_key_id  = cfg["access_key_id"]
+    secret_key     = cfg["secret_access_key"]
+    region         = cfg["region"] || "us-east-1"
+    path_style     = cfg.fetch("force_path_style", true)
 
-    bucket = minio_cfg["bucket"] || minio_cfg[:bucket]
-    endpoint = minio_cfg["endpoint"] || minio_cfg[:endpoint]
-    access_key_id = minio_cfg["access_key_id"] || minio_cfg[:access_key_id]
-    secret_access_key = minio_cfg["secret_access_key"] || minio_cfg[:secret_access_key]
-    region = minio_cfg["region"] || minio_cfg[:region] || "us-east-1"
-    force_path_style = minio_cfg.fetch("force_path_style", minio_cfg.fetch(:force_path_style, true))
-
-    unless bucket.present? && endpoint.present? && access_key_id.present? && secret_access_key.present?
-      abort "[minio:ensure_bucket] Incomplete :minio config (bucket, endpoint, access_key_id, secret_access_key required)"
+    unless bucket.present? && endpoint.present? && access_key_id.present? && secret_key.present?
+      abort "[storage:ensure_bucket] Incomplete S3 config — bucket, endpoint, access_key_id, secret_access_key are required"
     end
 
     require "aws-sdk-s3"
 
     client = Aws::S3::Client.new(
-      endpoint: endpoint,
-      region: region,
-      access_key_id: access_key_id,
-      secret_access_key: secret_access_key,
-      force_path_style: force_path_style
+      endpoint:          endpoint,
+      region:            region,
+      access_key_id:     access_key_id,
+      secret_access_key: secret_key,
+      force_path_style:  path_style
     )
 
     begin
       client.head_bucket(bucket: bucket)
-      puts "[minio:ensure_bucket] OK — bucket already exists: #{bucket}"
+      puts "[storage:ensure_bucket] OK — bucket exists: #{bucket}"
     rescue Aws::S3::Errors::NotFound, Aws::S3::Errors::NoSuchBucket
       client.create_bucket(bucket: bucket)
-      puts "[minio:ensure_bucket] Created bucket: #{bucket}"
+      puts "[storage:ensure_bucket] Created bucket: #{bucket}"
     rescue Aws::S3::Errors::BucketAlreadyOwnedByYou, Aws::S3::Errors::BucketAlreadyExists
-      puts "[minio:ensure_bucket] OK — bucket already exists: #{bucket}"
+      puts "[storage:ensure_bucket] OK — bucket exists: #{bucket}"
     end
   end
 end
