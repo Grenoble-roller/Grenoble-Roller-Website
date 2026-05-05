@@ -27,6 +27,10 @@ class PagesController < ApplicationController
     @commercial_partners = Partner.active.order(:name)
   end
 
+  def guide_images
+    # Public tutoriel bénévoles : formats, ratios, zone sûre (voir aussi docs/development/guide-images-benevoles.md)
+  end
+
   def welcome
     # Page de bienvenue après inscription
     # Permettre l'accès même si l'utilisateur n'est pas connecté (après inscription, l'utilisateur n'est pas automatiquement connecté)

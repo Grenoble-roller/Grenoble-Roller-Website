@@ -164,10 +164,9 @@
                 <% inventory = variant&.inventory %>
                 <div class="cart-item mb-3 pb-3 <%= 'border-bottom' unless index == @order.order_items.count - 1 %>">
                   <div class="cart-item-image">
-                    <% if variant.product.image.attached? %>
-                      <%= image_tag variant.product.image, alt: variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
-                    <% elsif variant.product.image_url.present? %>
-                      <%= image_tag variant.product.image_url, alt: variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
+                    <% order_image = product_image_tag(variant.product) %>
+                    <% if order_image %>
+                      <%= image_tag order_image, alt: variant.product.name, loading: "lazy", class: "img-fluid", style: "width: 80px; height: 80px; object-fit: cover; border-radius: 4px;" %>
                     <% end %>
                   </div>
                   

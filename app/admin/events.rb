@@ -229,7 +229,7 @@ ActiveAdmin.register Event do
     f.inputs "Point de rendez-vous" do
       f.input :meeting_lat
       f.input :meeting_lng
-      f.input :cover_image, as: :file, hint: "Upload une image de couverture (1200x800 recommandé)"
+      f.input :cover_image, as: :file, hint: "Obligatoire pour la création — JPG, PNG, WebP. Ratios compatibles : 16:9 ou 4:5 ; le site génère carré 1:1 et bannière 16:9 (recadrage centré)."
     end
 
     f.actions

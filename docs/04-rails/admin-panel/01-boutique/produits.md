@@ -96,8 +96,8 @@ Le formulaire de création/édition de produits utilise maintenant une **structu
 
 - **Partial Upload Images** : `app/views/admin_panel/products/_image_upload.html.erb`
   - Zone drag & drop
-  - Preview des images
-  - Support URL image
+  - Preview master + preview square (1:1)
+  - Upload fichier uniquement (plus de champ `image_url` en édition)
 
 - **Partial Variantes** : `app/views/admin_panel/products/_variants_section.html.erb`
   - Sélection options avec preview
@@ -117,6 +117,7 @@ Le formulaire de création/édition de produits utilise maintenant une **structu
 ✅ Preview variants avant génération  
 ✅ Upload drag & drop avec preview  
 ✅ Design Liquid Glass appliqué
+✅ Alignement formats : upload master 4:5, rendu boutique square 1:1
 
 ---
 

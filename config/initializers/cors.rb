@@ -6,19 +6,27 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # Origines autorisées pour les applications mobiles et web
+    # Allowed origins for mobile and web apps
     origins do |origin, request|
-      # En développement, autoriser localhost
+      # Development: allow localhost
       if Rails.env.development?
         origin.nil? || origin.match?(/^https?:\/\/localhost(:\d+)?$/) ||
         origin.match?(/^https?:\/\/127\.0\.0\.1(:\d+)?$/) ||
         origin.match?(/^https?:\/\/.*\.flowtech-lab\.org$/)
-      # En staging, autoriser le domaine staging
-      elsif ENV["APP_ENV"] == "staging" || ENV["DEPLOY_ENV"] == "staging"
+      # Staging: RAILS_ENV=staging and/or APP_ENV/DEPLOY_ENV=staging
+      elsif ENV["APP_ENV"] == "staging" || ENV["DEPLOY_ENV"] == "staging" || Rails.env.staging?
+        staging_extra =
+          if ENV["STAGING_PUBLIC_DOMAIN"].present?
+            d = Regexp.escape(ENV["STAGING_PUBLIC_DOMAIN"].strip)
+            origin.match?(/^https?:\/\/([a-z0-9.-]+\.)?#{d}$/i)
+          else
+            false
+          end
         origin.nil? ||
         origin.match?(/^https?:\/\/.*\.flowtech-lab\.org$/) ||
-        origin.match?(/^https?:\/\/.*\.localhost(:\d+)?$/)
-      # En production, autoriser le domaine de production
+        origin.match?(/^https?:\/\/.*\.localhost(:\d+)?$/) ||
+        staging_extra
+      # Production: allow production domain
       else
         origin.nil? ||
         origin.match?(/^https?:\/\/.*\.grenoble-roller\.org$/) ||
@@ -26,11 +34,11 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       end
     end
 
-    # Ressources autorisées
+    # Allowed resources
     resource "*",
       headers: :any,
       methods: [ :get, :post, :put, :patch, :delete, :options, :head ],
-      credentials: true, # Permet l'envoi de cookies/credentials
-      expose: [ "Authorization", "X-Total-Count" ] # Headers exposés à l'application
+      credentials: true, # Allow cookies / credentials on cross-origin requests
+      expose: [ "Authorization", "X-Total-Count" ] # Headers exposed to the browser client
   end
 end

@@ -21,8 +21,8 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on MinIO (S3-compatible) - see config/storage.yml for options.
-  config.active_storage.service = :minio
+  # Store uploaded files on S3-compatible storage (SeaweedFS) - see config/storage.yml.
+  config.active_storage.service = :s3
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # nginx-proxy gère HTTPS, donc on active assume_ssl

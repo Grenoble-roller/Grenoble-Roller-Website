@@ -92,8 +92,7 @@ production:
     database: app_production_cable
     migrations_paths: db/cable_migrate
 
-# Staging utilise la même configuration que production
-# (RAILS_ENV=production en staging, mais on peut aussi utiliser RAILS_ENV=staging)
+# Staging : préférer RAILS_ENV=staging (voir config/environments/staging.rb, HelloAsso sandbox)
 staging:
   primary: &primary_staging
     <<: *default

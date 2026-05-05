@@ -69,7 +69,7 @@ RSpec.describe HomepageCarousel, type: :model do
       c1 = create(:homepage_carousel, position: 3, title: 'Third')
       c2 = create(:homepage_carousel, position: 1, title: 'First')
       c3 = create(:homepage_carousel, position: 2, title: 'Second')
-      expect(described_class.ordered.pluck(:id)).to eq([c2.id, c3.id, c1.id])
+      expect(described_class.ordered.pluck(:id)).to eq([ c2.id, c3.id, c1.id ])
     end
   end
 

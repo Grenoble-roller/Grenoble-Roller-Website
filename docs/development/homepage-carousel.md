@@ -18,9 +18,9 @@ Référence unique pour le **carousel de la page d’accueil** : bannière annon
 
 | Élément | Valeur |
 |--------|--------|
-| Ratio | **16:9** (fixe) |
+| Ratio UI | **16:9** (fixe) |
 | Image affichée | `resize_to_fill: [1200, 675]` |
-| Format conseillé bénévoles | 1920×1080 ou 1920×1005 |
+| Upload | **16:9** ou **4:5** (recommandés) ; voir aussi [`guide-images-benevoles.md`](./guide-images-benevoles.md) et la page site `/guide-images` |
 | Hauteur max visuelle | Largeur limitée à `min(100%, calc(55vh * 16/9))` → marges latérales sur grands écrans, ratio toujours 16:9 |
 | Autoplay | 6 s (`data-bs-interval="6000"`), pause au survol/focus |
 | Accessibilité | `aria-label="Annonces importantes"` ; flèches + indicateurs ; pas de caption overlay |
@@ -59,7 +59,10 @@ Dans `app/views/pages/index.html.erb` :
 - **Titre** : obligatoire (liste, breadcrumb, aria-label des indicateurs).
 - **Description** : optionnel, non affiché sur le site.
 - **Lien URL** : optionnel ; si présent, clic sur toute la slide ouvre le lien (nouvel onglet si URL externe).
-- **Image** : 16:9, aperçu en 1200×675 dans le formulaire.
+- **Image** : upload conseillé en master 4:5, rendu site en banner 16:9.
+- **Preview formulaire** : un aperçu master (`contain`) et un aperçu banner 16:9 (`cover`).
+  - Si image déjà enregistrée : variant serveur 1200×675.
+  - Si nouveau fichier non sauvegardé : preview locale blob (approximation visuelle avant variant serveur).
 - **Publication** : published_at, expires_at, case Publié ; publish/unpublish manuel possible.
 
 ---
@@ -68,3 +71,4 @@ Dans `app/views/pages/index.html.erb` :
 
 - [homepage-implementation-plan.md](./homepage-implementation-plan.md) — Plan global homepage (hero, bannière, ordre des sections, options abandonnées).
 - [homepage-reflection.md](./homepage-reflection.md) — Réflexion initiale et contexte bénévoles.
+- [`../04-rails/setup/image-formats-and-variants.md`](../04-rails/setup/image-formats-and-variants.md) — Référence pivot formats et variantes.

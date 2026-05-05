@@ -1,0 +1,94 @@
+<% content_for :title, "Guide images et formats - Grenoble Roller" %>
+<% content_for :description, "Formats acceptés, ratios 16:9 et 4:5, zone sûre et aperçus : tout pour préparer vos visuels pour le site." %>
+
+<section class="py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-xl-9">
+        <header class="text-center mb-4">
+          <h1 class="display-5 fw-bold mb-2">Guide images et formats</h1>
+          <p class="lead text-muted mb-0">
+            Pour les bénévoles : préparer des fichiers compatibles avec les randos, initiations, carrousel et boutique.
+          </p>
+        </header>
+
+        <div class="card card-liquid border-0 shadow-sm mb-4 overflow-hidden">
+          <div class="card-body p-0">
+            <figure class="mb-0 text-center p-3" id="guide-images-schematic">
+              <p id="guide-images-schematic-desc" class="small text-muted text-start mb-3">
+                Schéma récapitulatif : formats JPG, PNG, WebP ; ratios 16:9 et 4:5 ; zone sûre au centre ;
+                dérivés affichés sur le site (carré 1:1 et bannière 16:9).
+                <strong class="d-block mt-2">Événements et initiations :</strong>
+                la même image est utilisée en <strong>carré 1:1</strong> (cartes, listes, miniatures) et en <strong>bannière 16:9</strong> (bandeau en haut de la page de détail), pas uniquement en carré.
+              </p>
+              <%= link_to "/guides/image-upload-reference.svg",
+                  class: "guide-images-schematic-link d-inline-block rounded",
+                  download: "grenoble-roller-guide-images.svg",
+                  title: "Télécharger le schéma (fichier SVG)",
+                  aria: { label: "Télécharger le schéma récapitulatif au format SVG", describedby: "guide-images-schematic-desc" } do %>
+                <%= image_tag "/guides/image-upload-reference.svg",
+                    alt: "",
+                    class: "img-fluid rounded border",
+                    style: "max-height: 640px; width: auto;",
+                    loading: "eager" %>
+              <% end %>
+              <figcaption class="small mt-3 px-2">
+                <%= link_to "/guides/image-upload-reference.svg",
+                    download: "grenoble-roller-guide-images.svg",
+                    class: "btn btn-sm btn-outline-primary" do %>
+                  <i class="bi bi-download me-1" aria-hidden="true"></i>
+                  Télécharger le schéma (SVG)
+                <% end %>
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card card-liquid h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h2 class="h5 fw-bold"><i class="bi bi-check2-circle text-success me-2" aria-hidden="true"></i>Règle simple</h2>
+                <ul class="mb-0">
+                  <li>Formats : <strong>JPG</strong>, <strong>PNG</strong>, <strong>WebP</strong>.</li>
+                  <li>Ratios : <strong>16:9</strong> (paysage) et <strong>4:5</strong> (portrait) sont les plus adaptés ; d’autres formats passent aussi (recadrage centré).</li>
+                  <li>Placer le sujet et le texte important au <strong>centre</strong> (safe zone).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card card-liquid h-100 border-0 shadow-sm">
+              <div class="card-body">
+                <h2 class="h5 fw-bold"><i class="bi bi-layout-split text-primary me-2" aria-hidden="true"></i>Ce que fait le site</h2>
+                <ul class="mb-0">
+                  <li><strong>Événements / initiations :</strong> <strong>carré 1:1</strong> en liste et sur les cartes ; <strong>bannière 16:9</strong> sur la page de détail (hero).</li>
+                  <li><strong>Carrousel d’accueil :</strong> <strong>16:9</strong>.</li>
+                  <li><strong>Boutique :</strong> affichage principalement en <strong>carré 1:1</strong>.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-liquid border-0 shadow-sm mt-4">
+          <div class="card-body">
+            <h2 class="h5 fw-bold mb-3"><i class="bi bi-lightbulb text-warning me-2" aria-hidden="true"></i>Bonnes pratiques (rappel)</h2>
+            <p class="mb-2">Cohérentes avec les recommandations courantes d’interfaces d’upload :</p>
+            <ul class="mb-0">
+              <li><strong>Consignes visibles</strong> avant l’envoi (formats, taille max, ratios possibles).</li>
+              <li><strong>Prévisualisation</strong> quand le formulaire la propose — vérifier le cadrage.</li>
+              <li><strong>Contraste</strong> et texte court dans l’image pour rester lisible sur mobile.</li>
+              <li>Tester mentalement le <strong>recadrage carré</strong> : ce qui est sur les bords peut disparaître.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="text-muted small mt-4 mb-0 text-center">
+          Contributeurs : matrice technique et variants dans le dépôt,
+          <code class="small px-1 rounded text-body-secondary bg-body-secondary">docs/04-rails/setup/image-formats-and-variants.md</code>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
