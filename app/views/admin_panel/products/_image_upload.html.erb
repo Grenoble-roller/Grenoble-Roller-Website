@@ -31,8 +31,60 @@
       <i class="bi bi-upload me-2"></i>Sélectionner un fichier
     </button>
     <p class="text-muted small mt-3 mb-0">
-      Formats acceptés : JPG, PNG, WebP (max 5MB)
+      Formats : JPG, PNG, WebP (max 5MB). <strong>Ratios compatibles</strong> : 16:9 ou 4:5 (recommandés) ; d’autres ratios passent aussi. Le site affiche en <strong>carré 1:1</strong> (recadrage centré). Évitez le sujet et le texte important sur les bords.
     </p>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card border-0 bg-light h-100">
+        <div class="card-header bg-transparent">
+          <h6 class="mb-0">Aperçu master (fichier entier)</h6>
+        </div>
+        <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 220px;">
+          <% if product&.persisted? && product.image&.attached? %>
+            <%= image_tag product.image,
+                data: { image_upload_target: "masterImage" },
+                class: "img-fluid rounded",
+                style: "max-height: 200px; width: auto; object-fit: contain;" %>
+          <% else %>
+            <div data-image-upload-target="masterPlaceholder" class="text-muted small text-center">
+              <i class="bi bi-image me-1"></i>Aucune image sélectionnée
+            </div>
+            <img data-image-upload-target="masterImage"
+                class="img-fluid rounded d-none"
+                style="max-height: 200px; width: auto; object-fit: contain;"
+                alt="">
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card border-0 bg-light h-100">
+        <div class="card-header bg-transparent">
+          <h6 class="mb-0">Aperçu 16:9 (rendu site)</h6>
+        </div>
+        <div class="card-body p-0">
+          <div class="position-relative rounded overflow-hidden" style="aspect-ratio: 16 / 9; background: #eee;">
+            <% if product&.persisted? && product.image&.attached? %>
+              <%= image_tag product.image.variant(resize_to_fill: [800, 450], format: :webp, saver: { quality: 82 }),
+                  data: { image_upload_target: "squareImage" },
+                  class: "position-absolute top-0 start-0 w-100 h-100",
+                  style: "object-fit: cover; object-position: center;" %>
+            <% else %>
+              <div data-image-upload-target="squarePlaceholder" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                <span class="text-muted small">Prévisualisation 16:9</span>
+              </div>
+              <img data-image-upload-target="squareImage"
+                  class="position-absolute top-0 start-0 w-100 h-100 d-none"
+                  style="object-fit: cover; object-position: center;"
+                  alt="">
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Preview de l'image actuelle -->
@@ -40,10 +92,8 @@
     <div class="image-preview-current mb-4">
       <h6 class="mb-3">Image actuelle</h6>
       <div class="position-relative d-inline-block">
-        <%= image_tag product.image, 
-            class: "img-thumbnail",
-            style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
-        <button type="button" 
+        <%= image_tag product.image, class: "img-thumbnail", style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
+        <button type="button"
                 class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
                 data-action="click->image-upload#removeCurrentImage"
                 title="Supprimer l'image">

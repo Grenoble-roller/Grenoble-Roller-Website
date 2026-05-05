@@ -6,13 +6,58 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  echo "Preparing database..."
-  ./bin/rails db:prepare || {
-    echo "Warning: db:prepare failed, trying db:migrate..."
-    ./bin/rails db:migrate || echo "Warning: db:migrate also failed, continuing anyway..."
-  }
+# If running the rails server, choose a DB boot strategy.
+# Match explicit exec-form CMD: $1=./bin/rails $2=server (additional args e.g. -b may follow).
+if [ "${1:-}" = "./bin/rails" ] && [ "${2:-}" = "server" ]; then
+  DB_BOOT_TASK="${DB_BOOT_TASK:-}"
+  if [ -z "$DB_BOOT_TASK" ]; then
+    # Safe default: production-like deploys should NOT auto-seed on first boot.
+    if [ "${RAILS_ENV:-}" = "production" ] || [ "${APP_ENV:-}" = "production" ] || [ "${DEPLOY_ENV:-}" = "production" ]; then
+      DB_BOOT_TASK="migrate"
+    else
+      DB_BOOT_TASK="prepare"
+    fi
+  fi
+
+  case "$DB_BOOT_TASK" in
+    none)
+      echo "Skipping DB boot task (DB_BOOT_TASK=none)"
+      ;;
+    migrate)
+      echo "Running DB migration bootstrap (DB_BOOT_TASK=migrate)..."
+      ./bin/rails db:migrate || echo "Warning: db:migrate failed, continuing anyway..."
+      ;;
+    prepare)
+      echo "Preparing database (DB_BOOT_TASK=prepare)..."
+      ./bin/rails db:prepare || {
+        echo "Warning: db:prepare failed, trying db:migrate..."
+        ./bin/rails db:migrate || echo "Warning: db:migrate also failed, continuing anyway..."
+      }
+      ;;
+    *)
+      echo "Warning: unknown DB_BOOT_TASK='$DB_BOOT_TASK' (expected: prepare|migrate|none). Falling back to db:migrate."
+      ./bin/rails db:migrate || echo "Warning: db:migrate failed, continuing anyway..."
+      ;;
+  esac
+
+  # Solid Queue in Puma needs DB tables. If they are missing (fresh DB, or an earlier boot where
+  # db:prepare/migrate failed silently), run migrations. Under `set -e`, use `if` so a non-zero
+  # exit from the check does not abort the script before db:migrate runs.
+  if [ "${SOLID_QUEUE_IN_PUMA:-}" = "true" ] && compgen -G "db/migrate/*solid_queue*" > /dev/null 2>&1; then
+    if [ "${RAILS_ENV:-}" = "production" ] || [ "${RAILS_ENV:-}" = "staging" ] || \
+       [ "${APP_ENV:-}" = "staging" ] || [ "${DEPLOY_ENV:-}" = "staging" ] || [ "${DEPLOY_ENV:-}" = "production" ]; then
+      if ! ./bin/rails runner 'exit(ActiveRecord::Base.connection.table_exists?(:solid_queue_processes) ? 0 : 1)'; then
+        echo "solid_queue_processes missing — running db:migrate..."
+        ./bin/rails db:migrate
+      fi
+    fi
+  fi
+
+  # Auto-create S3 bucket if missing (production/staging only; no-op on disk storage)
+  if [ "${RAILS_ENV}" == "production" ] || [ "${RAILS_ENV}" == "staging" ] || [ "${APP_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "production" ]; then
+    echo "Ensuring S3 bucket exists..."
+    bundle exec rake storage:ensure_bucket || echo "Warning: S3 bucket setup failed, continuing..."
+  fi
 fi
 
 # Force CSS rebuild in development environment on startup
@@ -56,7 +101,7 @@ if [ "${RAILS_ENV}" == "development" ] && [ -f "package.json" ]; then
   fi
   PATH="/usr/local/node/bin:$PATH" npm run build:css || echo "Warning: CSS rebuild failed, continuing anyway..."
   
-  # Vérifier que les fonts sont bien copiées
+  # Ensure Bootstrap Icons fonts are present
   if [ ! -f "app/assets/builds/fonts/bootstrap-icons.woff2" ]; then
     echo "Warning: Bootstrap Icons fonts not found, attempting to copy manually..."
     mkdir -p app/assets/builds/fonts
@@ -64,15 +109,14 @@ if [ "${RAILS_ENV}" == "development" ] && [ -f "package.json" ]; then
   fi
 fi
 
-# Lancer Supercronic en arrière-plan pour les tâches cron en production/staging
-if [ "${RAILS_ENV}" == "production" ] || [ "${APP_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "production" ]; then
+# Run Supercronic in the background for cron in production/staging
+if [ "${RAILS_ENV}" == "production" ] || [ "${RAILS_ENV}" == "staging" ] || [ "${APP_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "staging" ] || [ "${DEPLOY_ENV}" == "production" ]; then
   if [ -f "/rails/config/crontab" ]; then
     echo "Starting Supercronic for cron jobs..."
-    # Créer le répertoire log s'il n'existe pas et s'assurer des permissions
+    # Ensure log directory exists and permissions are OK
     mkdir -p /rails/log
     touch /rails/log/cron.log 2>/dev/null || true
-    # Lancer Supercronic en arrière-plan avec le fichier crontab
-    # Les logs de Supercronic vont vers stdout/stderr, les logs des tâches vers log/cron.log
+    # Supercronic logs to stdout/stderr; task output may go to log/cron.log
     supercronic /rails/config/crontab &
     SUPERICRONIC_PID=$!
     echo "Supercronic started in background (PID: $SUPERICRONIC_PID)"
@@ -81,4 +125,4 @@ if [ "${RAILS_ENV}" == "production" ] || [ "${APP_ENV}" == "staging" ] || [ "${D
   fi
 fi
 
-exec "${@}"
+exec "$@"

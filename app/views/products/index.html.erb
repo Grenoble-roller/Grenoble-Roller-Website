@@ -125,17 +125,16 @@
                      data-product-url="<%= product_path(product.slug.presence || product) %>" 
                      style="cursor: pointer;">
               <div class="card-product-image-wrapper">
-                <div class="card-product-image <%= 'product-image-clickable' if product.image.attached? || product.image_url.present? %>" 
-                     <% if product.image.attached? || product.image_url.present? %>
+                <% product_image = product_image_tag(product) %>
+                <div class="card-product-image <%= 'product-image-clickable' if product_image %>" 
+                     <% if product_image %>
                        style="cursor: pointer;" 
                        data-bs-toggle="modal" 
                        data-bs-target="#productImageModal<%= product.id %>"
                        aria-label="Agrandir l'image de <%= product.name %>"
                      <% end %>>
-                  <% if product.image.attached? %>
-                    <%= image_tag product.image, alt: product.name, loading: "lazy", decoding: "async" %>
-                  <% elsif product.image_url.present? %>
-                    <%= image_tag product.image_url, alt: product.name, loading: "lazy", decoding: "async" %>
+                  <% if product_image %>
+                    <%= image_tag product_image, alt: product.name, loading: "lazy", decoding: "async" %>
                   <% end %>
                 </div>
                 <% if has_stock %>
@@ -249,7 +248,8 @@
 
 <!-- Modals Lightbox pour images produits -->
 <% @products.each do |product| %>
-  <% if product.image.attached? || product.image_url.present? %>
+  <% modal_image = product_image_tag(product) %>
+  <% if modal_image %>
     <div class="modal fade" id="productImageModal<%= product.id %>" tabindex="-1" aria-labelledby="productImageModalLabel<%= product.id %>" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content bg-transparent border-0">
@@ -258,11 +258,7 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
           </div>
           <div class="modal-body p-0 text-center">
-            <% if product.image.attached? %>
-              <%= image_tag product.image, alt: product.name, class: "img-fluid rounded", style: "max-height: 80vh; width: auto;" %>
-            <% elsif product.image_url.present? %>
-              <%= image_tag product.image_url, alt: product.name, class: "img-fluid rounded", style: "max-height: 80vh; width: auto;" %>
-            <% end %>
+            <%= image_tag modal_image, alt: product.name, class: "img-fluid rounded", style: "max-height: 80vh; width: auto;" %>
           </div>
         </div>
       </div>

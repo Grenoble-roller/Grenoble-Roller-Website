@@ -95,9 +95,14 @@
           </div>
 
           <div class="mb-3">
-            <%= f.label :images, "Images", class: "form-label" %>
+            <div class="d-flex flex-wrap align-items-baseline justify-content-between gap-2 mb-1">
+              <%= f.label :images, "Images", class: "form-label mb-0" %>
+              <%= render "shared/image_upload_help_link" %>
+            </div>
             <%= f.file_field :images, accept: "image/*", class: "form-control", multiple: true %>
-            <div class="form-text">Vous pouvez sélectionner plusieurs images</div>
+            <div class="form-text">
+              Formats : JPG, PNG, WebP. Ratios compatibles : 16:9 ou 4:5 (recommandés) ; le site recadre en carré 1:1 côté boutique. Sujet centré.
+            </div>
             <% if @variant.images.attached? %>
               <div class="mt-2">
                 <% @variant.images.each do |image| %>
@@ -134,11 +139,6 @@
               </div>
             </div>
           <% end %>
-
-          <div class="mb-3">
-            <%= f.label :image_url, "OU URL image", class: "form-label" %>
-            <%= f.url_field :image_url, class: "form-control", placeholder: "https://..." %>
-          </div>
 
           <div class="d-flex justify-content-between mt-4">
             <%= link_to "Annuler", admin_panel_product_path(@product), class: "btn btn-outline-secondary" %>

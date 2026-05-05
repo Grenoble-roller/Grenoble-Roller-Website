@@ -29,10 +29,9 @@
               <% @cart_items.each do |ci| %>
                 <div class="cart-item">
                   <div class="cart-item-image">
-                    <% if ci[:product].image.attached? %>
-                      <%= image_tag ci[:product].image, alt: ci[:product].name, loading: "lazy" %>
-                    <% elsif ci[:product].image_url.present? %>
-                      <%= image_tag ci[:product].image_url, alt: ci[:product].name, loading: "lazy" %>
+                    <% checkout_image = product_image_tag(ci[:product]) %>
+                    <% if checkout_image %>
+                      <%= image_tag checkout_image, alt: ci[:product].name, loading: "lazy" %>
                     <% end %>
                   </div>
                   

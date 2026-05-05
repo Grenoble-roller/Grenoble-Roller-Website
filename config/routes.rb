@@ -177,6 +177,7 @@ Rails.application.routes.draw do
   # Static pages
   get "/welcome", to: "pages#welcome", as: "welcome"
   get "/a-propos", to: "pages#about", as: "about"
+  get "/guide-images", to: "pages#guide_images", as: "guide_images"
   # Redirection 301 de /association vers /a-propos (fusion des pages)
   get "/association", to: redirect("/a-propos", status: 301), as: "association"
 

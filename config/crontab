@@ -1,23 +1,22 @@
 # Crontab pour Supercronic
-# Généré à partir de config/schedule.rb
+# RAILS_ENV is inherited from the container (set by Docker/Dokploy).
+# Use rake for Rake tasks (loads tasks correctly; avoids "uninitialized constant Rake::Task").
 # Format: minute hour day month weekday command
-# Note: Utilise RAILS_ENV de l'environnement Docker (production pour staging et production)
 
-# Sync HelloAsso payments toutes les 5 minutes
-0,5,10,15,20,25,30,35,40,45,50,55 * * * * /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''Rake::Task["helloasso:sync_payments"].invoke'\'' >> log/cron.log 2>&1'
+# Sync HelloAsso payments every 5 minutes
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rake helloasso:sync_payments >> log/cron.log 2>&1'
 
-# Job de rappel la veille à 19h pour les événements du lendemain
-0 19 * * * /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''EventReminderJob.perform_now'\'' >> log/cron.log 2>&1'
+# Event reminder job (day before at 19:00)
+0 19 * * * /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rails runner "EventReminderJob.perform_now" >> log/cron.log 2>&1'
 
-# Mettre à jour les adhésions expirées (tous les jours à minuit)
-0 0 * * * /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''Rake::Task["memberships:update_expired"].invoke'\'' >> log/cron.log 2>&1'
+# Update expired memberships (midnight)
+0 0 * * * /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rake memberships:update_expired >> log/cron.log 2>&1'
 
-# Envoyer les rappels de renouvellement (tous les jours à 9h)
-0 9 * * * /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''Rake::Task["memberships:send_renewal_reminders"].invoke'\'' >> log/cron.log 2>&1'
+# Renewal reminders (09:00)
+0 9 * * * /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rake memberships:send_renewal_reminders >> log/cron.log 2>&1'
 
-# Vérifier les autorisations parentales (tous les lundis à 10h)
-0 10 * * 1 /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''Rake::Task["memberships:check_minor_authorizations"].invoke'\'' >> log/cron.log 2>&1'
+# Minor authorizations check (Mondays 10:00)
+0 10 * * 1 /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rake memberships:check_minor_authorizations >> log/cron.log 2>&1'
 
-# Vérifier les certificats médicaux (tous les lundis à 10h30)
-30 10 * * 1 /bin/bash -l -c 'cd /rails && bundle exec bin/rails runner -e "${RAILS_ENV:-production}" '\''Rake::Task["memberships:check_medical_certificates"].invoke'\'' >> log/cron.log 2>&1'
-
+# Medical certificates check (Mondays 10:30)
+30 10 * * 1 /bin/bash -c 'cd /rails && export RAILS_ENV="${RAILS_ENV:-production}" && bundle exec rake memberships:check_medical_certificates >> log/cron.log 2>&1'

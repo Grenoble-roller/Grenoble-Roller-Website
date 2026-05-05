@@ -248,10 +248,11 @@
 
       <!-- Section: Images -->
       <div class="card card-liquid mb-4">
-        <div class="card-header card-liquid-primary">
+        <div class="card-header card-liquid-primary d-flex flex-wrap align-items-center justify-content-between gap-2">
           <h5 class="mb-0">
             <i class="bi bi-images me-2"></i>Images du produit
           </h5>
+          <%= render "shared/image_upload_help_link" %>
         </div>
         <div class="card-body">
           <%= render 'admin_panel/products/image_upload', form: f, product: @product %>

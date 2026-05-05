@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Run from repo root: ./bin/verify-runtime-config
+# In Docker (Rails web container): cd /rails && ./bin/verify-runtime-config
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+exec bin/rails runner "$ROOT/script/verify_runtime_config.rb"

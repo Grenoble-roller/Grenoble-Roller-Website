@@ -53,3 +53,7 @@ ops/logs/
 .cursorrules.local
 .cursorignore.local
 .continue/
+
+# Graphify — graphe de code généré automatiquement
+/graphify-out/
+/raw/
