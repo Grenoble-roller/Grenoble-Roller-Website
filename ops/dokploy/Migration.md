@@ -1,8 +1,8 @@
 # Plan de Migration — Grenoble Roller vers Dokploy
 
 > **Fichier :** `/home/flowtech/grenoble-roller-migration-dokploy.md`  
-> **Date :** 2026-05-02  
-> **Statut :** ✅ PHASE 1 TERMINÉE — site en ligne via Traefik Dokploy — Phase 2 à planifier
+> **Date :** 2026-05-02 (mise à jour staging pilote : 2026-05-05)  
+> **Statut :** ✅ Phase 1 — site prod en ligne derrière Traefik Dokploy — ✅ **pilote Phase 2 staging** (app Rails native Dokploy + DB + Solid Queue + stockage S3) opérationnel — **Phase 2 production** (cutover stack legacy → Dokploy natif) encore à planifier.
 
 ---
 
@@ -163,6 +163,19 @@ Internet (80/443)
 | **Phase 0** | Backup + préparation | 0 | Nul |
 | **Phase 1** | Stop Caddy → Install Dokploy → Traefik pointe vers le Compose existant | ~5 min | Faible |
 | **Phase 2** | Migration des services dans Dokploy (planifier séparément) | à définir | Moyen |
+
+### 2.3 Pilote Phase 2 — **staging natif Dokploy** (validé ~2026-05-05)
+
+Le déploiement **Rails** sur le projet Dokploy **Site**, environnement **Staging**, est considéré **fonctionnel** après correction des points suivants (à réutiliser pour prod / autres env) :
+
+| Sujet | Détail |
+|---|---|
+| **PostgreSQL interne** | L’hostname Dokploy du service Postgres **staging** (souvent `site-database-*`) doit apparaître dans `DATABASE_URL` / `DATABASE_HOST`. Erreur fréquente : réutiliser la DB **Dev** (`site-grenoblerollerdbdev-*`) → `could not translate host name` ou mauvaise base. |
+| **Solid Queue** | Base vide : tables `solid_queue_*` absentes → erreur au boot Puma. Corriger par **`bin/rails db:migrate`** sur la base staging. Mitigation code : `bin/docker-entrypoint` vérifie l’existence de `solid_queue_processes` et lance `db:migrate` si besoin (`SOLID_QUEUE_IN_PUMA=true`, staging/production). |
+| **S3 (SeaweedFS)** | Endpoint interne + clés alignés sur le compose **Infrastructure** ; buckets `grenoble-roller-<env>` via Active Storage (`storage.yml` + `storage:ensure_bucket` à l’entrypoint). |
+| **MCP Dokploy** | L’outil `application-saveEnvironment` peut renvoyer une erreur de schéma côté client : les variables sensibles se saisissent alors dans l’**UI Dokploy** (ou API REST + clé). |
+
+Prochain jalon Phase 2 : répliquer le même schéma pour **production** Dokploy (DB dédiée, S3, domaines, puis bascule du routage Traefik hors ancien compose si encore utilisé).
 
 ---
 
@@ -404,7 +417,8 @@ claude mcp add dokploy \
 ### Phase 2 — Migration des services dans Dokploy (session suivante, via MCP)
 
 > Ces étapes ne font pas partie du downtime initial.  
-> Grâce au MCP Dokploy, elles sont quasi-entièrement automatisées par Claude.
+> **Staging pilote :** déjà en place sur Dokploy (voir §2.3).  
+> Grâce au MCP Dokploy, la suite est en partie automatisable ; en cas d’échec MCP (schéma), compléter à la main dans l’UI.
 
 #### 2.1 🤖 Créer le projet Dokploy et importer le Compose
 
@@ -517,4 +531,4 @@ Caddyfile     : /opt/Grenoble-Roller-Project/ops/production/Caddyfile
 
 ---
 
-*Document complété avec les données réelles du serveur — prêt à valider avant action.*
+*Document complété avec les données réelles du serveur. Staging natif Dokploy validé (§2.3) ; suite : production et retrait de l’ancienne stack si applicable.*
