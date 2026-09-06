@@ -2,6 +2,18 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - Fix SEO JSON-LD breaking CSS/JS head (v2.4.2)
+
+### Fixed
+- **P0 layout:** `seo_json_ld` used `tag(:script, content: …)` so JSON sat in a `content=` attribute and left `<script>` open; browsers swallowed stylesheet + importmap → unstyled pages and broken JS. Emit JSON-LD as the script **body** instead.
+- **SEO meta:** restore non-empty `og:description` / `twitter:description` (no longer strip the whole meta tag when deriving OG/Twitter copy).
+
+### Tests
+- Helper + homepage request regression covering script shape and head asset tags.
+
+### Documentation
+- Patch note: [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md) (v2.4.2)
+
 ## [2026-09-06] - Attendance Audit Trail (v2.4.1)
 
 ### Added
