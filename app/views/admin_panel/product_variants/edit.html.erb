@@ -107,7 +107,7 @@
               <div class="mt-2">
                 <% @variant.images.each do |image| %>
                   <div class="d-inline-block me-2 mb-2">
-                    <%= image_tag image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                    <%= lazy_image_tag image, class: "img-thumbnail", style: "max-height: 150px;" %>
                   </div>
                 <% end %>
               </div>

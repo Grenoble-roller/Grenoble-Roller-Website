@@ -3,7 +3,7 @@ title: "Rapport Final Accessibilité - Sprint 0"
 status: "completed"
 version: "1.0"
 created: "2025-11-14"
-updated: "2025-11-14"
+updated: "2026-08-14"
 authors: ["FlowTech"]
 tags: ["accessibility", "a11y", "wcag", "completed", "sprint-0"]
 ---
@@ -134,12 +134,16 @@ Tous les éléments critiques et importants d'accessibilité ont été **corrig�
 
 ## 📚 **Documentation Créée**
 
-1. `docs/development/accessibility/accessibility-audit.md` - Audit complet
-2. `docs/08-security-privacy/accessibility-summary.md` - Résumé
-3. `docs/08-security-privacy/a11y-reports/pa11y-results-summary.md` - Résultats initiaux
-4. `docs/08-security-privacy/a11y-reports/corrections-applied.md` - Détails corrections
-5. `docs/08-security-privacy/a11y-reports/validation-success.md` - Validation finale
-6. `docs/08-security-privacy/A11Y_TESTING.md` - Guide tests automatisés
+> Note (2026-08-14, MC#85) : les rapports détaillés ci-dessous ont été archivés
+> (supprimés de l'arborescence, conservés dans l'historique git). Ce document reste
+> le résumé durable du sprint accessibilité.
+
+1. `docs/development/accessibility/accessibility-audit.md` - Audit complet (archivé)
+2. `docs/08-security-privacy/accessibility-summary.md` - Résumé (archivé)
+3. `docs/08-security-privacy/a11y-reports/pa11y-results-summary.md` - Résultats initiaux (archivé)
+4. `docs/08-security-privacy/a11y-reports/corrections-applied.md` - Détails corrections (archivé)
+5. `docs/08-security-privacy/a11y-reports/validation-success.md` - Validation finale (archivé)
+6. `docs/08-security-privacy/A11Y_TESTING.md` - Guide tests automatisés (archivé)
 
 ---
 
@@ -186,6 +190,6 @@ Tous les éléments critiques et importants d'accessibilité ont été :
 
 ---
 
-**Dernière mise à jour** : 2025-11-14  
+**Dernière mise à jour** : 2026-08-14  
 **Status** : ✅ **COMPLET**
 

@@ -2,6 +2,9 @@
   "name": "app",
   "private": "true",
   "scripts": {
+    "build": "npm run build:js && npm run build:css",
+    "build:js": "esbuild app/javascript/application.js --bundle --format=esm --target=es2019 --outdir=app/assets/builds --public-path=/assets --external:@hotwired/turbo-rails --external:@hotwired/stimulus --external:@hotwired/stimulus-loading --external:bootstrap --external:photoswipe --external:photoswipe/lightbox",
+    "watch:js": "esbuild app/javascript/application.js --bundle --format=esm --target=es2019 --outdir=app/assets/builds --public-path=/assets --external:@hotwired/turbo-rails --external:@hotwired/stimulus --external:@hotwired/stimulus-loading --external:bootstrap --external:photoswipe --external:photoswipe/lightbox --watch",
     "build:css:fonts": "mkdir -p ./app/assets/builds/fonts && cp -r node_modules/bootstrap-icons/font/fonts/*.woff* ./app/assets/builds/fonts/ 2>/dev/null || echo 'Warning: Bootstrap Icons fonts not found, continuing...'",
     "build:css:compile": "SASS_PATH=node_modules:$(bundle exec ruby -e 'print Gem.loaded_specs[\"activeadmin\"].full_gem_path + \"/app/assets/stylesheets\"') sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.bootstrap.css --no-source-map --quiet-deps && SASS_PATH=node_modules:$(bundle exec ruby -e 'print Gem.loaded_specs[\"activeadmin\"].full_gem_path + \"/app/assets/stylesheets\"') sass ./app/assets/stylesheets/active_admin.scss:./app/assets/builds/active_admin.css --no-source-map --quiet-deps",
     "build:css:prefix": "postcss ./app/assets/builds/application.bootstrap.css --use=autoprefixer --output=./app/assets/builds/application.bootstrap.css && postcss ./app/assets/builds/active_admin.css --use=autoprefixer --output=./app/assets/builds/active_admin.css",
@@ -21,6 +24,7 @@
     "@axe-core/cli": "^4.11.0",
     "autoprefixer": "^10.4.17",
     "chrome-launcher": "^1.2.1",
+    "esbuild": "^0.28.2",
     "lighthouse": "^12.8.2",
     "nodemon": "^3.0.3",
     "pa11y-ci": "^4.0.1",

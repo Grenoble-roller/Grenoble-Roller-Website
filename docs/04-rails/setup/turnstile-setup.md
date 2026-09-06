@@ -374,7 +374,7 @@ Pour tester en développement local (localhost), il faut :
 - `app/controllers/sessions_controller.rb` : Blocage avec `render :new` et `return false`
 - `app/controllers/registrations_controller.rb` : Blocage avec `render :new` et `return`
 
-**Test de validation** : Voir [`turnstile-test-guide.md`](turnstile-test-guide.md)
+**Test de validation** : Voir [`turnstile-troubleshooting-consolidated.md`](turnstile-troubleshooting-consolidated.md)
 
 ---
 

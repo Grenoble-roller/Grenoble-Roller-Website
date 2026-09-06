@@ -3,7 +3,7 @@ title: "User Journeys Analysis"
 status: "active"
 version: "1.0"
 created: "2025-11-14"
-updated: "2025-11-14"
+updated: "2026-08-14"
 authors: ["FlowTech"]
 tags: ["product", "ux", "user-journeys", "analysis", "shape-up"]
 ---

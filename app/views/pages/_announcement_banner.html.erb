@@ -41,12 +41,12 @@
                       target: carousel.link_url.start_with?('http') ? '_blank' : nil,
                       rel: carousel.link_url.start_with?('http') ? 'noopener noreferrer' : nil,
                       aria: { label: "Voir la suite" } do %>
-                    <%= image_tag image_variant,
+                    <%= lazy_image_tag image_variant,
                         class: "d-block w-100 h-100 announcement-banner-img",
                         alt: carousel.title %>
                   <% end %>
                 <% else %>
-                  <%= image_tag image_variant,
+                  <%= lazy_image_tag image_variant,
                       class: "d-block w-100 h-100 announcement-banner-img",
                       alt: carousel.title %>
                 <% end %>

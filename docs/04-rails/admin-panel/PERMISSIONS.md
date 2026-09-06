@@ -271,4 +271,4 @@ bundle exec rspec spec/policies/admin_panel spec/requests/admin_panel
 
 ---
 
-**Retour** : [INDEX principal](./INDEX.md) | [Initiations - Tests](../03-initiations/09-tests.md)
+**Retour** : [INDEX principal](./INDEX.md) | [Initiations - Routes](./03-initiations/05-routes.md)

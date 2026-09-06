@@ -1,7 +1,7 @@
 # Rails Setup - Documentation
 
 **Section** : Configuration et setup Rails  
-**Dernière mise à jour** : 2025-12-07
+**Dernière mise à jour** : 2026-08-14
 
 ---
 
@@ -25,7 +25,7 @@
 - **[`active-storage-image-optimization.md`](active-storage-image-optimization.md)** - Optimisation des images
 
 ### Références Techniques
-- **[`devise-email-security-guide.md`](devise-email-security-guide.md)** - Guide complet sécurité email Devise (référence approfondie - 1930 lignes)
+- **[`../security/email-security-service.md`](../security/email-security-service.md)** - Guide complet sécurité email Devise (référence approfondie)
 
 ---
 

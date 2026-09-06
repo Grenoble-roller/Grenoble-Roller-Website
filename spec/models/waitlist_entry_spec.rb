@@ -227,4 +227,45 @@ RSpec.describe WaitlistEntry, type: :model do
       expect(entry2).to be_valid
     end
   end
+
+  describe 'audit trail' do
+    it 'logs creation' do
+      fill_event_to_capacity(initiation, 2)
+
+      expect {
+        create(:waitlist_entry, user: user, event: initiation)
+      }.to change { AuditLog.where(target_type: 'WaitlistEntry').count }.by(1)
+
+      log = AuditLog.where(target_type: 'WaitlistEntry').last
+      expect(log.action).to eq('created')
+      expect(log.actor_user_id).to eq(user.id)
+      expect(log.metadata['event_id']).to eq(initiation.id)
+      expect(log.metadata['status']).to eq('pending')
+    end
+
+    it 'logs update' do
+      fill_event_to_capacity(initiation, 2)
+      waitlist_entry = create(:waitlist_entry, user: user, event: initiation)
+
+      expect {
+        waitlist_entry.update!(status: 'notified')
+      }.to change { AuditLog.where(target_type: 'WaitlistEntry').count }.by(1)
+
+      log = AuditLog.where(target_type: 'WaitlistEntry').last
+      expect(log.action).to eq('updated')
+      expect(log.metadata['changes']).to include('status')
+    end
+
+    it 'logs destruction' do
+      fill_event_to_capacity(initiation, 2)
+      waitlist_entry = create(:waitlist_entry, user: user, event: initiation)
+
+      expect {
+        waitlist_entry.destroy!
+      }.to change { AuditLog.where(target_type: 'WaitlistEntry').count }.by(1)
+
+      log = AuditLog.where(target_type: 'WaitlistEntry').last
+      expect(log.action).to eq('destroyed')
+    end
+  end
 end

@@ -10240,3 +10240,68 @@ body.admin-panel {
     width: 100%;
   }
 }
+/* Lazy loading placeholder spinner */
+.lazy-img {
+  background-color: var(--gr-bg-light);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%23007bff' stroke-width='5' stroke-dasharray='80,200' stroke-dashoffset='0'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='1s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+}
+
+/* Dark theme adjustment for spinner */
+[data-bs-theme="dark"] .lazy-img {
+  background-color: #0f131a;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%235aa9fa' stroke-width='5' stroke-dasharray='80,200' stroke-dashoffset='0'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='1s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E");
+}
+
+/* Skeleton placeholder for lazy-loaded images */
+.lazy-skeleton {
+  background-color: var(--gr-bg-light);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Dark theme adjustment */
+[data-bs-theme="dark"] .lazy-skeleton {
+  background-color: #0f131a;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Fade-in effect for lazy-loaded images */
+img.lazy-skeleton {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+img.lazy-loaded {
+  opacity: 1;
+}
+
+/* Fade-in effect for lazy-loaded images */
+img.lazy-skeleton {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+img.lazy-loaded {
+  opacity: 1;
+}
+
+img.lazy-skeleton {
+  background-color: var(--gr-bg-light);
+  background-size: 100% 100%;
+  animation: pulse 1.5s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+img.lazy-loaded {
+  opacity: 1;
+}
+[data-bs-theme="dark"] img.lazy-skeleton {
+  background-color: #0f131a;
+}

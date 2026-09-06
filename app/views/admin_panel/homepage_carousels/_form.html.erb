@@ -127,7 +127,7 @@
         <div class="card-body">
           <div class="mb-3 carousel-form-image-preview" style="min-height: 200px;">
             <% if @carousel.image.attached? %>
-              <%= image_tag @carousel.image,
+              <%= lazy_image_tag @carousel.image,
                   data: { carousel_form_target: "imagePreview" },
                   class: "img-fluid rounded w-100",
                   style: "max-height: 280px; width: auto; object-fit: contain; display: block; margin: 0 auto;" %>
@@ -172,7 +172,7 @@
         <div class="card-body p-0">
           <div class="carousel-form-ratio-preview rounded overflow-hidden position-relative" style="aspect-ratio: 16/9; background: #eee;">
             <% if @carousel.image.attached? %>
-              <%= image_tag @carousel.image.variant(resize_to_fill: [1200, 675], format: :webp, saver: { quality: 85 }),
+              <%= lazy_image_tag @carousel.image.variant(resize_to_fill: [1200, 675], format: :webp, saver: { quality: 85 }),
                   data: { carousel_form_target: "ratioPreview" },
                   class: "w-100 h-100 position-absolute top-0 start-0",
                   style: "object-fit: cover; object-position: center;" %>

@@ -1,5 +1,6 @@
 # Erreur #XXX : [Titre de l'erreur]
 
+**Dernière mise à jour** : 2026-08-14  
 **Date d'analyse** : YYYY-MM-DD  
 **Priorité** : 🔴/🟠/🟡 [Priorité X]  
 **Catégorie** : [Catégorie]

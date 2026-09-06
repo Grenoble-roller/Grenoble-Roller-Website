@@ -3,7 +3,7 @@ title: "Système de Liste d'Attente (Waitlist) - Grenoble Roller"
 status: "active"
 version: "1.0"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["waitlist", "events", "initiations", "attendance"]
 ---
 

@@ -1,12 +1,18 @@
 # Domain Models
 
+**Dernière mise à jour** : 2026-08-14
+
+
 This document describes the current domain models and their relationships in the Grenoble Roller application.
 
 ## Overview
 
 The application implements:
 - **Phase 1** (✅ Complete): E-commerce system with user authentication and role-based access control
-- **Phase 2** (🔄 In Progress): Event management features (models and migrations created, controllers and views pending)
+- **Phase 2** (✅ ~95% Complete): Event management — models, migrations, controllers and views implemented; admin panel custom (`/admin-panel`) replaces ActiveAdmin
+- **Phase 3** (✅ ~90% Complete): Memberships (adult/child, HelloAsso) — pending: automatic attestation generation
+
+Verify against `db/schema.rb` (SSOT for columns) before changing models.
 
 ## Core Models
 
@@ -21,13 +27,16 @@ Authentication and user profile management using Devise.
 - `last_name` (string)
 - `bio` (text)
 - `phone` (string, limit: 10)
-- `avatar_url` (string)
-- `email_verified` (boolean, default: false)
+- `avatar_url` (string, legacy) — avatar via Active Storage (`has_one_attached :avatar`)
 - `role_id` (integer, foreign key, required)
+- `wants_events_mail`, `wants_initiation_mail`, `wants_email_info`, `wants_whatsapp`, `can_be_volunteer` (booleans)
 
 **Relationships:**
 - `belongs_to :role`
 - `has_many :orders`
+- `has_many :memberships`
+- `has_many :cart_lines`, `has_many :checkouts`
+- `has_one_attached :avatar` (Active Storage)
 - `has_many :created_events` (Event, as creator_user)
 - `has_many :attendances`
 - `has_many :events, through: :attendances`

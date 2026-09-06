@@ -254,7 +254,7 @@ bundle exec rspec spec/models/cart_line_spec.rb spec/models/checkout_spec.rb \
 ### Dev tooling
 
 - mise + Ruby 3.4.2, `.env.example`, Dependabot → `Dev`.
-- `AGENT.md` agent guide (replaces `CLAUDE.md`).
+- `AGENTS.md` agent guide (replaces `CLAUDE.md`; formerly `AGENT.md`).
 
 ### Roller stock reservations (v2.3)
 
@@ -448,7 +448,7 @@ Full Dev log since `origin/staging`: `git log origin/staging..Dev --oneline`
 - [`docs/09-product/unified-cart-ux.md`](../09-product/unified-cart-ux.md)
 - [`docs/06-events/roller-stock.md`](../06-events/roller-stock.md)
 - [`docs/08-security-privacy/umami-analytics.md`](../08-security-privacy/umami-analytics.md)
-- [`AGENT.md`](../../AGENT.md) — agent workflow & staging release process
+- [`AGENTS.md`](../../AGENTS.md) — agent workflow & staging release process
 
 ---
 
@@ -459,4 +459,4 @@ When preparing the next **Dev → staging** PR:
 1. Update **commit range** and **head SHA** at the top.
 2. Add new features / migrations / ENV vars / QA items.
 3. Add a line in [`CHANGELOG.md`](CHANGELOG.md) pointing here.
-4. Cross-check [`AGENT.md`](../../AGENT.md) § Release to staging.
+4. Cross-check [`AGENTS.md`](../../AGENTS.md) § Release to staging.

@@ -1,5 +1,8 @@
 # 🐕 Watchdog - Déploiement Automatique Local
 
+**Dernière mise à jour** : 2026-08-14
+
+
 ## 📋 Vue d'ensemble
 
 Solution **100% locale** pour déploiement automatique : pas de SSH, pas de registry, tout se fait sur le serveur local.

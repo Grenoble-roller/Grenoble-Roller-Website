@@ -93,7 +93,7 @@
     <% if @event.cover_image.attached? %>
       <hr>
       <p><strong>Image de couverture :</strong></p>
-      <%= image_tag @event.cover_image_thumb, class: "img-fluid rounded", style: "max-width: 400px;" %>
+      <%= lazy_image_tag @event.cover_image_thumb, class: "img-fluid rounded", style: "max-width: 400px;" %>
     <% end %>
   </div>
 </div>

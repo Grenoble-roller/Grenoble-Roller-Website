@@ -85,7 +85,7 @@ RSpec.describe "AdminPanel::NotificationChannels", type: :request do
           post admin_panel_notification_channels_path, params: params
         }.not_to change(NotificationChannel, :count)
 
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 

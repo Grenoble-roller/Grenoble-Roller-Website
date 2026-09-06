@@ -1,9 +1,9 @@
 <%# Product cart line row — used when unified cart is enabled %>
 <div class="cart-item">
   <div class="cart-item-image">
-    <% cart_image = product_image_tag(ci[:product]) %>
+    <% cart_image = product_lazy_image_tag(ci[:product]) %>
     <% if cart_image %>
-      <%= image_tag cart_image, alt: ci[:product].name, loading: "lazy" %>
+      <%= lazy_image_tag cart_image, alt: ci[:product].name, loading: "lazy" %>
     <% end %>
   </div>
 

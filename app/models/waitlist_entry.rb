@@ -2,6 +2,7 @@
 
 class WaitlistEntry < ApplicationRecord
   include Hashid::Rails
+  include Auditable
 
   belongs_to :user
   belongs_to :event
@@ -35,6 +36,19 @@ class WaitlistEntry < ApplicationRecord
   # Callbacks
   before_create :set_position
   after_create :log_waitlist_addition
+
+  def audit_actor
+    user
+  end
+
+  def audit_attributes
+    {
+      user_id: user_id,
+      event_id: event_id,
+      position: position,
+      status: status
+    }
+  end
 
   # ==================== MÉTHODES MÉTIER ====================
 

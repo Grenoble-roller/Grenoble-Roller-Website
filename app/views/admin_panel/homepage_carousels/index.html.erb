@@ -23,7 +23,7 @@
     <div class="row g-4 mb-4">
       <div class="col-md-5">
         <% if @carousel_settings.custom_hero_image? %>
-          <%= image_tag @carousel_settings.hero_image.variant(resize_to_limit: [480, 270]),
+          <%= lazy_image_tag @carousel_settings.hero_image.variant(resize_to_limit: [480, 270]),
               class: "img-fluid rounded border",
               alt: "Image hero actuelle" %>
           <p class="small text-success mt-2 mb-0">
@@ -133,7 +133,7 @@
             <div class="card h-100">
               <div class="position-relative">
                 <% if carousel.image.attached? %>
-                  <%= image_tag carousel.image.variant(resize_to_limit: [400, 200]), 
+                  <%= lazy_image_tag carousel.image.variant(resize_to_limit: [400, 200]), 
                       class: "card-img-top", 
                       style: "height: 200px; object-fit: cover;" %>
                 <% else %>

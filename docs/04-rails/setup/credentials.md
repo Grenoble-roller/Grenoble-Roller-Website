@@ -1,5 +1,8 @@
 # Rails Credentials Management
 
+**Dernière mise à jour** : 2026-08-14
+
+
 This project uses Rails encrypted credentials to securely store sensitive configuration data.
 
 ## Overview

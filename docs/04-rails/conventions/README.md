@@ -1,5 +1,8 @@
 # Conventions Rails du projet
 
+**Dernière mise à jour** : 2026-08-14
+
+
 ## Général
 - Rails 8, Ruby 3.4.2
 - Style: RuboCop Rails Omakase

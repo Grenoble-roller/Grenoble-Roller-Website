@@ -141,6 +141,77 @@
   </div>
 </section>
 
+<!-- FAQ section -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="h3 fw-bold text-center mb-4">Questions Fréquemment Posées</h2>
+    <div class="accordion accordion-flush" id="faqHomepageAccordion" role="tablist" aria-label="Questions fréquemment posées">
+      <!-- Question 1 -->
+      <div class="accordion-item card card-liquid border-liquid mb-2">
+        <h3 class="accordion-header" id="faqHomepage1">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqHomepageCollapse1" aria-expanded="false" aria-controls="#faqHomepageCollapse1">
+            <strong>Comment adhérer à l'association Grenoble Roller ?</strong>
+          </button>
+        </h3>
+        <div id="faqHomepageCollapse1" class="accordion-collapse collapse" aria-labelledby="faqHomepage1" data-bs-parent="#faqHomepageAccordion">
+          <div class="accordion-body">
+            <p>Pour adhérer à l'association Grenoble Roller :</p>
+            <ol>
+              <li>Créez un compte sur le site en cliquant sur "S'inscrire"</li>
+              <li>Remplissez le formulaire d'adhésion avec vos informations</li>
+              <li>Choisissez votre formule (adulte ou enfant)</li>
+              <li>Effectuez le paiement en ligne via HelloAsso</li>
+            </ol>
+            <p class="mb-0">
+              <%= link_to "Adhérer maintenant", new_membership_path(type: 'adult'), class: "btn btn-liquid-primary btn-sm mt-2" %>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Question 2 -->
+      <div class="accordion-item card card-liquid border-liquid mb-2">
+        <h3 class="accordion-header" id="faqHomepage2">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqHomepageCollapse2" aria-expanded="false" aria-controls="#faqHomepageCollapse2">
+            <strong>Quels sont les tarifs d'adhésion ?</strong>
+          </button>
+        </h3>
+        <div id="faqHomepageCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHomepage2" data-bs-parent="#faqHomepageAccordion">
+          <div class="accordion-body">
+            <p>Les tarifs d'adhésion pour la saison en cours sont :</p>
+            <ul>
+              <li>Adulte : 40€</li>
+              <li>Enfant (moins de 18 ans) : 20€</li>
+              <li>Tarif réduit (étudiant, demandeur d'emploi) : 30€ (sur justificatif)</li>
+            </ul>
+            <p>Les adhésions sont valables du 1er septembre au 31 août de l'année suivante.</p>
+            <p class="mb-0">
+              <%= link_to "Voir les détails", memberships_path, class: "btn btn-outline-primary btn-sm mt-2" %>
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Question 3 -->
+      <div class="accordion-item card card-liquid border-liquid mb-2">
+        <h3 class="accordion-header" id="faqHomepage3">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqHomepageCollapse3" aria-expanded="false" aria-controls="#faqHomepageCollapse3">
+            <strong>Puis-je essayer le roller avant de m'inscrire ?</strong>
+          </button>
+        </h3>
+        <div id="faqHomepageCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHomepage3" data-bs-parent="#faqHomepageAccordion">
+          <div class="accordion-body">
+            <p>Oui, nous proposons des séances d'initiation gratuites tout au long de l'année.</p>
+            <p>Ces séances sont encadrées par nos staffeurs et permettent de découvrir le roller en toute sécurité.</p>
+            <p>Pour participer, il suffit de vous rendre à l'une de nos sorties publiques indiquée sur le calendrier et de demander à essayer.</p>
+            <p class="mb-0">
+              <%= link_to "Voir les prochaines séances", initiations_path, class: "btn btn-outline-primary btn-sm mt-2" %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- Chiffres clés (version simplifiée) -->
 <section class="py-4 mb-4 section-alt">
   <div class="container">

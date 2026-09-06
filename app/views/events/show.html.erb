@@ -1,5 +1,14 @@
 <% content_for :title, @event.title %>
 <% content_for :description, "#{@event.title} - #{@event.description.presence || 'Événement Roller à Grenoble'}. #{@event.start_at.present? ? "Le #{l(@event.start_at, format: :long, locale: :fr)}" : ''}" %>
+<% content_for :og_image, @event.cover_image.attached? ? rails_representation_path(@event.cover_image, resize_to_limit: [1200, 630], format: :jpg) : nil %>
+<% content_for :event, true %>
+<% content_for :event_name, @event.title %>
+<% content_for :event_start_date, @event.start_at.iso8601 %>
+<% content_for :event_end_date, @event.end_at ? @event.end_at.iso8601 : @event.start_at.iso8601 %>
+<% content_for :event_location_name, @event.location_text %>
+<% content_for :event_location_address, @event.location_text %>
+<% content_for :event_ticket_url, event_path(@event) %>
+<% content_for :event_price, (@event.price_cents.to_f / 100).to_s %>
 
 <section class="container py-4 py-lg-5">
   <article class="card card-liquid event-detail-card shadow-liquid border-0 mx-auto" data-controller="route-image-viewer">
@@ -13,7 +22,7 @@
               data: hero_viewer_data,
               aria: { label: "Agrandir l'image de l'événement" }
             ) do %>
-          <%= image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
+          <%= lazy_image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
           <div class="hero-overlay"></div>
 
           <!-- Badge de date en haut à droite (z-index élevé) -->
@@ -109,7 +118,7 @@
       <% else %>
         <div class="hero-image-container">
           <% if @event.cover_image.attached? %>
-            <%= image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
+            <%= lazy_image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
           <% end %>
           <div class="hero-overlay"></div>
           <div class="hero-content">
@@ -242,7 +251,7 @@
                       data: route_map_viewer_data(@event.route, title: "Carte du parcours"),
                       aria: { label: "Agrandir la carte du parcours" }
                     ) do %>
-                  <%= image_tag(route_map_image_path(@event.route, resize_to: [1200, 600]),
+                  <%= lazy_image_tag(route_map_image_path(@event.route, resize_to: [1200, 600]),
                       alt: "Carte du parcours",
                       class: "route-image event-loop-card__img") %>
                 <% end %>

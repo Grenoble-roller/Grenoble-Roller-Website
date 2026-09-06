@@ -3,7 +3,7 @@ title: "Technical Implementation Guide"
 status: "active"
 version: "1.0"
 created: "2025-01-20"
-updated: "2025-11-14"
+updated: "2026-08-14"
 authors: ["FlowTech"]
 tags: ["shape-up", "technical", "rails", "bootstrap", "implementation"]
 ---
@@ -661,7 +661,7 @@ end
 
 ## ✅ CHECKLIST PHASE 2
 
-> **📋 Checklist complète** : Voir le plan détaillé dans [`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)
+> **📋 Checklist complète** : Voir le plan détaillé Phase 2 (archivé dans git)
 
 ### ✅ PRÉ-REQUIS (Avant Jour 1)
 - [ ] ER Diagram créé (Event → Route, User, Attendance)
@@ -706,7 +706,7 @@ end
 6. **✅ Documentation complète**
 
 ### 🔜 Phase 2 - Événements (15 jours - À VENIR)
-1. **🔜 Checklist complète** : Voir le plan détaillé dans [`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)
+1. **🔜 Checklist complète** : Voir le plan détaillé dans le plan Phase 2 (archivé dans git)
 2. **🔜 Développement module événements** (Jour 6-9)
 3. **✅ Tests TDD >70% coverage** (Jour 10)
 4. **✅ ActiveAdmin** (Jour 12-13)

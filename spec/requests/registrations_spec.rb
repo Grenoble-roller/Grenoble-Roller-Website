@@ -121,7 +121,7 @@ RSpec.describe 'Registrations', type: :request do
 
       it 'renders the registration form with errors' do
         post user_registration_path, params: params_without_consent
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:new)
       end
 
@@ -148,7 +148,7 @@ RSpec.describe 'Registrations', type: :request do
 
       it 'renders the registration form with errors' do
         post user_registration_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response).to render_template(:new)
       end
 
@@ -161,7 +161,7 @@ RSpec.describe 'Registrations', type: :request do
       it 'rejects email without TLD (e.g. user@gmail)' do
         params_no_tld = valid_params.deep_merge(user: { email: 'Augustinmcbp138@gmail' })
         expect { post user_registration_path, params: params_no_tld }.not_to change(User, :count)
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to match(/email|valide|domaine/i)
       end
     end

@@ -1,5 +1,6 @@
 class Event < ApplicationRecord
   include Hashid::Rails
+  include Auditable
 
   belongs_to :creator_user, class_name: "User"
   belongs_to :organizer, class_name: "EventOrganizer", optional: true
@@ -375,6 +376,29 @@ class Event < ApplicationRecord
 
   # Callback pour notifier tous les inscrits et bénévoles quand l'événement est annulé
   after_commit :notify_attendees_on_cancellation, on: [ :update ], if: -> { saved_change_to_status? && canceled? }
+
+    # Auditable concern methods
+    def audit_actor
+      creator_user
+    end
+
+    def audit_attributes
+      {
+        title: title,
+        start_at: start_at,
+        duration_min: duration_min,
+        status: status,
+        max_participants: max_participants,
+        location_text: location_text,
+        level: level,
+        distance_km: distance_km,
+        price_cents: price_cents,
+        currency: currency,
+        meeting_lat: meeting_lat,
+        meeting_lng: meeting_lng,
+        cover_image_attached: cover_image.attached?
+      }
+    end
 
   private
 

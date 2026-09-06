@@ -6,12 +6,12 @@
 
 ## 📋 Vue d'ensemble
 
-Gestion système : paiements, **notifications Discord (webhooks admin)** — voir [DR-002](../../10-decisions-and-changelog/DR-002-discord-webhook-notifications.md).
+Gestion système : paiements, **notifications Discord (webhooks admin)** — voir [DR-002](../../../10-decisions-and-changelog/DR-002-discord-webhook-notifications.md).
 
 **Status actuel** : ✅ Payments dans AdminPanel · ✅ Notification channels **implémenté** (DR-002, 2026-06-09)
 
 **Note** : 
-- **Maintenance** → Géré dans [`00-dashboard/`](../00-dashboard/README.md)
+- **Maintenance** → Géré dans le dashboard (toggle level ≥ 60)
 - **AuditLogs** → Non prioritaire (peu utilisé)
 
 ---
@@ -19,17 +19,11 @@ Gestion système : paiements, **notifications Discord (webhooks admin)** — voi
 ## 📄 Documentation
 
 ### **📁 Fichiers détaillés par type (CODE EXACT)**
-- [`01-migrations.md`](./01-migrations.md) - Migrations (code exact)
-- [`02-modeles.md`](./02-modeles.md) - Modèles (code exact)
-- [`03-services.md`](./03-services.md) - Services (code exact)
-- [`04-controllers.md`](./04-controllers.md) - Controllers (code exact)
-- [`05-routes.md`](./05-routes.md) - Routes (code exact)
-- [`06-policies.md`](./06-policies.md) - Policies (code exact)
-- [`07-vues.md`](./07-vues.md) - Vues ERB (code exact)
-- [`08-javascript.md`](./08-javascript.md) - JavaScript (code exact)
+Les fichiers de construction détaillés (migrations, modèles, services, controllers, routes, policies, vues, JavaScript) ont été **archivés** — le code source (`app/controllers/admin_panel/`, `app/policies/`) est la référence vivante.
 
 ### **📁 Fichiers par fonctionnalité**
-- [`paiements.md`](./paiements.md) - Gestion paiements
+
+> Les fichiers de construction détaillés (migrations, modèles, services, controllers, policies, vues, JavaScript) ont été **archivés** — le code source (`app/controllers/admin_panel/`, `app/policies/`) est la référence vivante.
 
 ---
 
@@ -46,7 +40,7 @@ Gestion système : paiements, **notifications Discord (webhooks admin)** — voi
 - Toggles par type d'événement (~65 clés), bouton test, échantillons QA, multi-canaux
 - Dispatch après confirmation paiement HelloAsso (pas callbacks modèle)
 - Gate staging : `ALLOW_DISCORD_NOTIFICATIONS=true`
-- Spec : [DR-002-discord-webhook-notifications.md](../../10-decisions-and-changelog/DR-002-discord-webhook-notifications.md)
+- Spec : [DR-002-discord-webhook-notifications.md](../../../10-decisions-and-changelog/DR-002-discord-webhook-notifications.md)
 
 ---
 

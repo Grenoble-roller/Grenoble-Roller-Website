@@ -1,7 +1,7 @@
 # ⏰ Système Cron - Documentation Complète
 
 **Date** : 2025-12-22  
-**Dernière mise à jour** : 2025-01-13  
+**Dernière mise à jour** : 2026-08-14  
 **Statut** : ✅ **Solid Queue actif** | ⚠️ Supercronic déprécié (migration terminée)  
 **Version** : 2.0
 
@@ -409,4 +409,4 @@ production:
 
 ---
 
-**Retour** : [INDEX Rails](../../README.md) | [INDEX principal](../../README.md)
+**Retour** : [README racine](../../../README.md)

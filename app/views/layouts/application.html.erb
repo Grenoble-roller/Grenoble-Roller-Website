@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr" data-bs-theme="dark">
   <head>
-    <title><%= content_for(:title) || "Grenoble Roller" %></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="<%= content_for(:description) || "Découvrez la communauté Roller Grenobloise. Participez à des événements, partagez vos sorties et connectez-vous avec d'autres riders à Grenoble." %>">
+    <%= seo_head %>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>

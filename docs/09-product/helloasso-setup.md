@@ -1,8 +1,8 @@
 # HelloAsso - Guide de Configuration et Setup
 
-**Date** : 2025-01-30  
-**Version** : 2.0  
-**Status** : ✅ Documentation consolidée
+**Date** : 2026-08-14  
+**Version** : 2.1  
+**Status** : ✅ Documentation consolidée (mise à jour — HelloAsso intégré, checkout + polling actifs)
 
 ---
 
@@ -503,6 +503,6 @@ Payment.where(provider: 'helloasso', status: 'pending').where('created_at > ?', 
 
 ---
 
-**Dernière mise à jour** : 2025-01-30  
+**Dernière mise à jour** : 2026-08-14  
 **Version** : 2.0
 

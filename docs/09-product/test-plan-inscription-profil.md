@@ -349,5 +349,5 @@ Ce document consolide le plan de test complet pour les fonctionnalités d'inscri
 
 ---
 
-**Dernière mise à jour** : 2025-01-30  
+**Dernière mise à jour** : 2026-08-14  
 **Version** : 2.0

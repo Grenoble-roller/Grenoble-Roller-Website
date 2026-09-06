@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Checkout < ApplicationRecord
+  include Auditable
+
   belongs_to :user
   belongs_to :payment, optional: true
   has_many :checkout_lines, dependent: :destroy
@@ -33,6 +35,21 @@ class Checkout < ApplicationRecord
   end
 
   private
+
+  def audit_actor
+    user
+  end
+
+  def audit_attributes
+    {
+      user_id: user_id,
+      payment_id: payment_id,
+      status: status,
+      subtotal_cents: subtotal_cents,
+      donation_cents: donation_cents,
+      total_cents: total_cents
+    }
+  end
 
   def total_equals_subtotal_plus_donation
     return if total_cents.nil? || subtotal_cents.nil? || donation_cents.nil?

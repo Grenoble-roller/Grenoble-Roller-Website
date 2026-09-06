@@ -15,7 +15,7 @@ tags: ["release", "production", "main", "changelog", "unified-checkout", "discor
 **Head on staging:** `092061d0` — `Merge pull request #247 from Grenoble-roller/Dev`
 
 **Staging validation URL:** https://staging.grenoble-roller.org  
-**Human sign-off required** before merge (see AGENT.md). Do **not** merge this PR without Florian approval.
+**Human sign-off required** before merge (see AGENTS.md). Do **not** merge this PR without Florian approval.
 
 **Related staging note (detail):** [`release-dev-to-staging-2026-06.md`](release-dev-to-staging-2026-06.md)  
 **Changelog:** [`CHANGELOG.md`](CHANGELOG.md)
@@ -177,4 +177,4 @@ Full staging QA history: [`release-dev-to-staging-2026-06.md`](release-dev-to-st
 - [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md)  
 - [`DR-001-unified-checkout-cart.md`](DR-001-unified-checkout-cart.md)  
 - [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md)  
-- [`AGENT.md`](../../AGENT.md) — promotion path `Dev` → `staging` → `main`
+- [`AGENTS.md`](../../AGENTS.md) — promotion path `Dev` → `staging` → `main`

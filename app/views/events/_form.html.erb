@@ -353,7 +353,7 @@
                   </div>
                   <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 220px;">
                     <% if event.persisted? && event.cover_image.attached? %>
-                      <%= image_tag event.cover_image,
+                      <%= lazy_image_tag event.cover_image,
                           data: { media_preview_target: "masterImage" },
                           class: "img-fluid rounded",
                           style: "max-height: 200px; width: auto; object-fit: contain;" %>
@@ -378,7 +378,7 @@
                   <div class="card-body p-0">
                     <div class="position-relative rounded overflow-hidden" style="aspect-ratio: 16 / 9; background: #eee;">
                       <% if event.persisted? && event.cover_image.attached? %>
-                        <%= image_tag event.cover_image_square,
+                        <%= lazy_image_tag event.cover_image_square,
                             data: { media_preview_target: "surfaceImage" },
                             class: "position-absolute top-0 start-0 w-100 h-100",
                             style: "object-fit: cover; object-position: center;" %>
@@ -404,7 +404,7 @@
                   <div class="card-body p-0">
                     <div class="position-relative rounded overflow-hidden" style="aspect-ratio: 16 / 9; background: #eee;">
                       <% if event.persisted? && event.cover_image.attached? %>
-                        <%= image_tag event.cover_image_banner,
+                        <%= lazy_image_tag event.cover_image_banner,
                             data: { media_preview_target: "surfaceImage" },
                             class: "position-absolute top-0 start-0 w-100 h-100",
                             style: "object-fit: cover; object-position: center;" %>

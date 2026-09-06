@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class CartLine < ApplicationRecord
+  include Auditable
+
   belongs_to :user
   belongs_to :reference, polymorphic: true
 
@@ -29,5 +31,23 @@ class CartLine < ApplicationRecord
 
   def subtotal_cents
     amount_cents * quantity
+  end
+
+  private
+
+  def audit_actor
+    user
+  end
+
+  def audit_attributes
+    {
+      user_id: user_id,
+      reference_type: reference_type,
+      reference_id: reference_id,
+      line_type: line_type,
+      amount_cents: amount_cents,
+      quantity: quantity,
+      label: label
+    }
   end
 end

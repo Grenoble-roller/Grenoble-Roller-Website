@@ -1,5 +1,8 @@
 # Lacunes de couverture des specs (prod)
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Document généré pour identifier ce qui **n’est pas couvert** par les specs actuels et **devrait l’être** pour sécuriser la prod (auth/authz, chemins critiques, règles métier).
 
 ---

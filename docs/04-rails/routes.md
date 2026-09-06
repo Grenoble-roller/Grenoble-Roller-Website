@@ -1,5 +1,8 @@
 # Routes de l’application (Rails 8)
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Ce document liste les routes disponibles et les flux principaux. Basé sur `config/routes.rb` à la date actuelle.
 
 ## Résumé
@@ -149,7 +152,6 @@ Ce document liste les routes disponibles et les flux principaux. Basé sur `conf
 - `GET    /maintenance` → Page maintenance statique (pour tests)
 - `PATCH  /activeadmin/maintenance/toggle` → `admin/maintenance_toggle#toggle` (activer/désactiver mode maintenance)
   - Protégé par authentification admin
-  - Voir [`docs/07-ops/maintenance-mode.md`](../07-ops/maintenance-mode.md) pour la documentation complète
 
 ## Notes
 - **Administration** : `ActiveAdmin.routes(self)` expose `/admin/*` (accès restreint via Devise + Pundit).

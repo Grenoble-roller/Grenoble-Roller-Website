@@ -56,9 +56,9 @@
           <dt class="col-sm-3">Avatar</dt>
           <dd class="col-sm-9">
             <% if @user.avatar.attached? %>
-              <%= image_tag @user.avatar, height: 150, style: "border-radius: 8px;" %>
+              <%= lazy_image_tag @user.avatar, height: 150, style: "border-radius: 8px;" %>
             <% elsif @user.avatar_url.present? %>
-              <%= image_tag @user.avatar_url, height: 150, style: "border-radius: 8px;" %>
+              <%= lazy_image_tag @user.avatar_url, height: 150, style: "border-radius: 8px;" %>
             <% else %>
               <span class="text-muted">Aucun avatar</span>
             <% end %>

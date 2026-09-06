@@ -59,7 +59,7 @@
           <dt class="col-sm-4">Logo</dt>
           <dd class="col-sm-8">
             <% if @partner.logo_url.present? %>
-              <%= image_tag @partner.logo_url, height: 100, style: "border-radius: 8px;", alt: @partner.name %>
+              <%= lazy_image_tag @partner.logo_url, height: 100, style: "border-radius: 8px;", alt: @partner.name %>
             <% else %>
               <span class="text-muted">Aucun logo</span>
             <% end %>

@@ -1,5 +1,6 @@
 # Contexte – Phase 1
 
+**Dernière mise à jour** : 2026-08-14  
 **Méthode cible** : `[fichier] #[nom_méthode]`  
 **Date** : YYYY-MM-DD
 

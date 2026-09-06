@@ -50,4 +50,4 @@ end
 
 ---
 
-**Retour** : [README Événements](./README.md) | [INDEX principal](../INDEX.md)
+**Retour** : [INDEX principal](../INDEX.md)

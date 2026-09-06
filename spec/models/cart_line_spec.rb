@@ -84,4 +84,39 @@ RSpec.describe CartLine do
       end
     end
   end
+
+  describe 'audit trail' do
+    it "creates an audit log on creation" do
+      user = create(:user)
+      expect {
+        create(:cart_line, user: user, label: 'Test Label', line_type: :product_variant)
+      }.to change { AuditLog.where(target_type: 'CartLine').count }.by(1)
+
+      log = AuditLog.where(target_type: 'CartLine').last
+      expect(log.action).to eq('created')
+      expect(log.actor_user_id).to eq(user.id)
+      expect(log.metadata).to include('label' => 'Test Label', 'line_type' => 'product_variant')
+    end
+
+    it "creates an audit log on update" do
+      line = create(:cart_line, label: 'Original')
+      expect {
+        line.update!(label: 'Updated')
+      }.to change { AuditLog.where(target_type: 'CartLine', target_id: line.id).count }.by(1)
+
+      log = AuditLog.where(target_type: 'CartLine', target_id: line.id).last
+      expect(log.action).to eq('updated')
+      expect(log.metadata['changes']).to include('label')
+    end
+
+    it "creates an audit log on destruction" do
+      line = create(:cart_line)
+      expect {
+        line.destroy!
+      }.to change { AuditLog.where(target_type: 'CartLine', target_id: line.id).count }.by(1)
+
+      log = AuditLog.where(target_type: 'CartLine', target_id: line.id).last
+      expect(log.action).to eq('destroyed')
+    end
+  end
 end

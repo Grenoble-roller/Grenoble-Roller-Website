@@ -3,7 +3,7 @@ title: "Guide Complet - Pages Légales pour Association"
 status: "active"
 version: "1.1"
 created: "2025-11-15"
-updated: "2025-11-17"
+updated: "2026-08-14"
 tags: ["legal", "rgpd", "cgv", "cgu", "mentions-legales", "association"]
 ---
 

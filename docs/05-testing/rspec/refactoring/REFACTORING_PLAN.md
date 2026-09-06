@@ -1,5 +1,6 @@
 # Plan de refactoring – Phase 4
 
+**Dernière mise à jour** : 2026-08-14  
 **Méthode** : `[fichier] #[nom_méthode]`  
 **Date** : YYYY-MM-DD
 

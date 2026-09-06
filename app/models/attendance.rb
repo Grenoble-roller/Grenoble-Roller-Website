@@ -1,5 +1,6 @@
 class Attendance < ApplicationRecord
   include Hashid::Rails
+  include Auditable
 
   belongs_to :user
   belongs_to :event, counter_cache: true
@@ -359,5 +360,24 @@ class Attendance < ApplicationRecord
     return if available.positive?
 
     errors.add(:roller_size, "n'est plus disponible pour cette initiation")
+  end
+
+  # Auditable concern methods
+  def audit_actor
+    user
+  end
+
+  def audit_attributes
+    {
+      event_id: event_id,
+      status: status,
+      child_membership_id: child_membership_id,
+      is_volunteer: is_volunteer,
+      free_trial_used: free_trial_used,
+      wants_reminder: wants_reminder,
+      needs_equipment: needs_equipment,
+      roller_size: roller_size,
+      payment_id: payment_id
+    }
   end
 end

@@ -2,6 +2,21 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-06] - Attendance Audit Trail (v2.4.1)
+
+### Added
+- Audit trail for attendance create/update/destroy actions via `AuditLog` model, tracking user, event, status changes, etc.
+
+## [2026-09-05] - SEO/GEO Improvements & Lazy Loading (v2.4.0)
+
+### Added
+- **SEO Helper:** New `seo_head` helper for dynamic meta, OG, Twitter, JSON-LD (Organization+Event).
+- **SEO/GEO Content:** FAQ section (homepage), descriptive anchor text replacements, heading hierarchy fixes.
+- **Performance:** Lazy loading (`loading="lazy"`) extended to all images (`lazy_image_tag`).
+
+### Documentation
+- Patch note: [`release-seo-improvements-2026-09.md`](release-seo-improvements-2026-09.md) (v2.4.0)
+
 ## [2026-08-04] - Event map viewer: PhotoSwipe overlay (v2.3.4)
 
 ### Changed

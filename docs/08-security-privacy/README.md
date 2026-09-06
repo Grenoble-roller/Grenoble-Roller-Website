@@ -3,13 +3,13 @@ title: "Documentation Accessibilité, Performance & Conformité Légale"
 status: "active"
 version: "2.0"
 created: "2025-11-14"
-updated: "2025-11-21"
+updated: "2026-08-14"
 tags: ["accessibility", "a11y", "performance", "lighthouse", "seo", "legal", "rgpd", "cookies"]
 ---
 
 # Documentation Accessibilité, Performance & Conformité Légale
 
-**Dernière mise à jour** : 2025-11-21
+**Dernière mise à jour** : 2026-08-14
 
 ---
 
@@ -51,38 +51,17 @@ tags: ["accessibility", "a11y", "performance", "lighthouse", "seo", "legal", "rg
 
 ### Accessibilité
 
-3. ⚠️ **Déplacé** : [`../development/accessibility/accessibility-audit.md`](../development/accessibility/accessibility-audit.md) - Audit complet WCAG 2.1 AA (actions à réaliser)
+3. **[Accessibility Final Report](accessibility-final-report.md)** ✅
+   - Rapport final complet (résumé durable des audits et corrections)
+   - Tous les éléments corrigés et validés (WCAG 2.1 AA, Pa11y 6/6)
 
-4. **[Accessibility Summary](accessibility-summary.md)**
-   - Récapitulatif exécutif
-   - Statistiques et corrections
-
-5. **[Accessibility Final Report](accessibility-final-report.md)**
-   - Rapport final complet
-   - Tous les éléments corrigés et validés
+> Les rapports intermédiaires (`accessibility-summary.md`, `lighthouse-quick-wins-completed.md`,
+> `a11y-reports/*`, audits dans `../development/accessibility/`) ont été archivés
+> (résolus — voir `accessibility-final-report.md` pour le résumé durable).
 
 ### Performance & SEO (Lighthouse)
 
-6. ⚠️ **Déplacé** : [`../development/accessibility/lighthouse-action-plan.md`](../development/accessibility/lighthouse-action-plan.md) - Plan d'action complet (actions à réaliser)
-
-7. **[Lighthouse Quick Wins Completed](lighthouse-quick-wins-completed.md)**
-   - Quick wins appliqués
-   - Meta descriptions + hiérarchie headings
-
-### Tests & Rapports
-
-8. ⚠️ **Déplacé** : [`../development/accessibility/a11y-testing.md`](../development/accessibility/a11y-testing.md) - Guide d'utilisation des outils de test
-
-9. **[Pa11y Results Summary](a11y-reports/pa11y-results-summary.md)**
-   - Résultats initiaux des tests Pa11y
-   - 20 erreurs détectées
-
-10. **[Pa11y Validation Success](a11y-reports/validation-success.md)**
-   - Validation après corrections
-   - 6/6 pages conformes ✅
-
-11. **[Corrections Applied](a11y-reports/corrections-applied.md)**
-   - Détails de toutes les corrections appliquées
+- ✅ Quick wins Lighthouse terminés (meta descriptions, hiérarchie headings) — détail dans [`accessibility-final-report.md`](accessibility-final-report.md)
 
 ---
 

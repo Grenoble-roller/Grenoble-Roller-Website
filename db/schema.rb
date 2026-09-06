@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_120000) do
 
   create_table "audit_logs", force: :cascade do |t|
     t.string "action", limit: 80, null: false
-    t.bigint "actor_user_id", null: false
+    t.bigint "actor_user_id"
     t.datetime "created_at", null: false
     t.jsonb "metadata"
     t.integer "target_id", null: false

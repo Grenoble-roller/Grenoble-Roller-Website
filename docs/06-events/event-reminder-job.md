@@ -3,7 +3,7 @@ title: "Job de Rappel Événements (EventReminderJob) - Grenoble Roller"
 status: "active"
 version: "1.0"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["job", "cron", "reminder", "events", "emails"]
 ---
 

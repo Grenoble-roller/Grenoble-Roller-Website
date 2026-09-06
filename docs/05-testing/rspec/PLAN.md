@@ -1,7 +1,6 @@
 # Plan – Tests RSpec & Refactoring
 
-**Dernière mise à jour** : 2026-01-31  
-**Référence** : [RSPEC_AUDIT_REPORT.md](RSPEC_AUDIT_REPORT.md)
+**Dernière mise à jour** : 2026-08-14  
 
 ---
 
@@ -77,15 +76,13 @@
 3. Créer des copies des templates dans `refactoring/` pour cette méthode (ex. dans un sous-dossier ou avec le nom de la méthode dans le fichier).
 4. Remplir : METHODE_CONTEXT → METHODE_RESEARCH → METHODE_ANALYSIS → REFACTORING_PLAN.
 5. Appliquer le plan étape par étape (implémentation guidée, validation à chaque étape).
-6. Remplir REFACTORING_REPORT en fin de Phase 6.
+6. Clôturer avec le REFACTORING_PLAN rempli (l'ancien rapport `refactoring/REFACTORING_REPORT.md` a été archivé — MC#85 ; l'état résolu vit dans le code).
 
-**Livrable** : Une méthode refactorée + 5 documents de suivi remplis.
+**Livrable** : Une méthode refactorée + 4 documents de suivi remplis.
 
 ---
 
 ## Priorité 5 : Couverture zones critiques
-
-**Référence** : Section 3 de [RSPEC_AUDIT_REPORT.md](RSPEC_AUDIT_REPORT.md).
 
 **Actions (au moins une)** :
 - **Services** : Ajouter un spec pour au moins un service non couvert (ex. `HelloassoService`, `InventoryService`, `AdminDashboardService`).

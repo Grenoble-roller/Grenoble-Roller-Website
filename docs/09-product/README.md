@@ -14,9 +14,9 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 ## 📚 Documentation Disponible
 
 ### Page d'Accueil & Communication
-- **Carrousel hero** : ✅ implémenté. **Doc dédiée** : [`../development/homepage-carousel.md`](../development/homepage-carousel.md) (liens code, routes, vues, doc associée).
-- [`../development/homepage-implementation-plan.md`](../development/homepage-implementation-plan.md) - Plan d’implémentation (carousel complété ; annonces/galerie/témoignages non faits)
-- [`../development/homepage-reflection.md`](../development/homepage-reflection.md) - Réflexion page d'accueil (annonces, galerie, témoignages à faire)
+- **Carrousel hero** : ✅ implémenté. **Doc dédiée** : [`../12-development/homepage-carousel.md`](../12-development/homepage-carousel.md) (liens code, routes, vues, doc associée).
+- [`../12-development/homepage-implementation-plan.md`](../12-development/homepage-implementation-plan.md) - Plan d’implémentation (carousel complété ; annonces/galerie/témoignages non faits)
+- [`../12-development/homepage-reflection.md`](../12-development/homepage-reflection.md) - Réflexion page d'accueil (annonces, galerie, témoignages à faire)
 
 ## 📚 Documentation Disponible
 
@@ -32,7 +32,7 @@ Cette section contient toute la documentation liée au **produit**, aux **parcou
 - **[`test-plan-inscription-profil.md`](test-plan-inscription-profil.md)** : Plan de test complet (scénarios, checklist, tests RSpec)
 
 ### Quick Wins & Intégration
-- **[`quick-wins-helloasso.md`](quick-wins-helloasso.md)** - Synthèse quick wins et intégration HelloAsso (état actuel, plan d'action) ✅ **100% INTÉGRÉ**
+- ✅ **Quick wins HelloAsso** : **100% INTÉGRÉ** — voir [`flux-boutique-helloasso.md`](flux-boutique-helloasso.md) et [`unified-cart-ux.md`](unified-cart-ux.md)
 
 ### UX Analysis
 - **[`../10-decisions-and-changelog/PLAN-ux-pages-verification.md`](../10-decisions-and-changelog/PLAN-ux-pages-verification.md)** : **Active** — site-wide UX page verification (priority waves, checklist, skills; verify-first, no blanket refactor)
@@ -158,5 +158,5 @@ La documentation a été consolidée pour améliorer la maintenabilité :
 
 ---
 
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-08-14
 

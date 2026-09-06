@@ -1,6 +1,6 @@
 # 📋 INDEX - Plan d'Implémentation Admin Panel
 
-**Date** : 2025-01-13 | **Version** : 3.0 | **État** : ✅ **100% complété** | **Dernière mise à jour** : 2025-01-13
+**Date** : 2025-01-13 | **Version** : 3.0 | **État** : ✅ **100% complété** | **Dernière mise à jour** : 2026-08-14
 
 > 📖 **Index principal** : Ce fichier recense tous les blocs indépendants organisés par thème métier et contient le guide complet d'implémentation.
 
@@ -19,11 +19,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 ### 📊 00 - TABLEAU DE BORD
 
 **Description** : Dashboard principal avec KPIs, statistiques et vue d'ensemble
-
-**Fichiers** :
-- [`00-dashboard/README.md`](./00-dashboard/README.md) - Vue d'ensemble dashboard
-- [`00-dashboard/dashboard.md`](./00-dashboard/dashboard.md) - Implémentation complète
-- [`00-dashboard/sidebar.md`](./00-dashboard/sidebar.md) - 🎨 **Sidebar Admin Panel** (structure, optimisations)
 
 **Éléments inclus** :
 - ✅ Controller Dashboard ✅ **AMÉLIORÉ** (utilise AdminDashboardService)
@@ -51,13 +46,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 
 **Description** : Gestion des produits, variantes, inventaire et catégories
 
-**Fichiers** :
-- [`01-boutique/README.md`](./01-boutique/README.md) - Vue d'ensemble boutique
-- [`01-boutique/produits.md`](./01-boutique/produits.md) - Gestion produits
-- [`01-boutique/variantes.md`](./01-boutique/variantes.md) - Gestion variantes (GRID éditeur)
-- [`01-boutique/inventaire.md`](./01-boutique/inventaire.md) - Tracking stock (inventories)
-- [`01-boutique/categories.md`](./01-boutique/categories.md) - Gestion catégories
-
 **Éléments inclus** :
 - ✅ Migrations (inventories, inventory_movements, active_storage)
 - ✅ Modèles (Inventory, InventoryMovement, modifications ProductVariant)
@@ -74,10 +62,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 ### 📦 02 - COMMANDES
 
 **Description** : Gestion des commandes et workflow stock (reserve/release)
-
-**Fichiers** :
-- [`02-commandes/README.md`](./02-commandes/README.md) - Vue d'ensemble commandes
-- [`02-commandes/gestion-commandes.md`](./02-commandes/gestion-commandes.md) - Workflow complet
 
 **Éléments inclus** :
 - ✅ Modifications Order (reserve/release stock) ✅ **IMPLÉMENTÉ ET TESTÉ**
@@ -96,10 +80,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 ### 🎓 03 - INITIATIONS
 
 **Description** : Gestion des initiations, participants, bénévoles, liste d'attente
-
-**Fichiers** :
-- [`03-initiations/README.md`](./03-initiations/README.md) - Vue d'ensemble initiations
-- [`03-initiations/gestion-initiations.md`](./03-initiations/gestion-initiations.md) - Workflow complet
 
 **Éléments inclus** :
 - ✅ Controller Initiations (séparation à venir/passées)
@@ -126,12 +106,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 
 **Description** : Gestion des événements (randonnées, sorties) et routes
 
-**Fichiers** :
-- [`04-evenements/README.md`](./04-evenements/README.md) - Vue d'ensemble événements
-- [`04-evenements/randonnees.md`](./04-evenements/randonnees.md) - Gestion randonnées (Events)
-- [`04-evenements/routes.md`](./04-evenements/routes.md) - Gestion routes/parcours
-- [`04-evenements/participations.md`](./04-evenements/participations.md) - Gestion participations (Attendances)
-
 **Éléments inclus** :
 - ✅ Controller Events ✅ **IMPLÉMENTÉ** (index, show, destroy, convert_waitlist, notify_waitlist)
 - ✅ Controller Routes ✅ **IMPLÉMENTÉ** (CRUD complet)
@@ -152,19 +126,15 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 **Status** : ✅ **100% IMPLÉMENTÉ dans AdminPanel** - Tous les modules migrés avec tests RSpec complets (2025-01-13)
 
 **Note** : 
-- Les initiations (Event::Initiation) sont gérées séparément dans [`03-initiations/`](./03-initiations/README.md)
+- Les initiations (Event::Initiation) sont gérées séparément dans [`03-initiations/05-routes.md`](./03-initiations/05-routes.md)
 - Les formulaires new/edit pour Events utilisent les routes publiques existantes (`new_event_path`, `edit_event_path`)
 - **Routes, Attendances, OrganizerApplications** : Actuellement gérés par **ActiveAdmin** (fonctionnel) - Migration vers AdminPanel optionnelle
-- Voir [`04-evenements/STATUS.md`](./04-evenements/STATUS.md) pour le détail de l'implémentation
 
 ---
 
 ### 📧 05 - MAILING (Futur)
 
 **Description** : Gestion des emails et notifications
-
-**Fichiers** :
-- [`05-mailing/README.md`](./05-mailing/README.md) - Vue d'ensemble mailing
 
 **Priorité** : 🟢 BASSE | **Phase** : Future | **Semaine** : 6+
 
@@ -176,13 +146,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 
 **Description** : Gestion des utilisateurs, rôles, adhésions et candidatures organisateur
 
-**Fichiers** :
-- [`06-utilisateurs/README.md`](./06-utilisateurs/README.md) - Vue d'ensemble utilisateurs
-- [`06-utilisateurs/utilisateurs.md`](./06-utilisateurs/utilisateurs.md) - Gestion utilisateurs
-- [`06-utilisateurs/roles.md`](./06-utilisateurs/roles.md) - Gestion rôles
-- [`06-utilisateurs/adhesions.md`](./06-utilisateurs/adhesions.md) - Gestion adhésions
-- [`06-utilisateurs/candidatures-organisateur.md`](./06-utilisateurs/candidatures-organisateur.md) - Candidatures organisateur
-
 **Éléments inclus** :
 - ✅ Controller Users ✅ **IMPLÉMENTÉ** (CRUD complet, filtres Ransack, gestion password)
 - ✅ Controller Roles ✅ **IMPLÉMENTÉ** (CRUD complet, filtres par level)
@@ -192,7 +155,7 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 - ✅ Vues (index, show, edit, new) ✅ **IMPLÉMENTÉES** (12 vues au total)
 - ✅ Sidebar ✅ **AJOUTÉE** (menu Utilisateurs avec sous-menu)
 
-**Note** : OrganizerApplications est géré dans [`04-evenements/`](./04-evenements/README.md)
+**Note** : OrganizerApplications est géré dans [`04-evenements/05-routes.md`](./04-evenements/05-routes.md)
 
 **Priorité** : 🟡 MOYENNE | **Phase** : 6 | **Semaine** : 6+
 
@@ -203,11 +166,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 ### ⚙️ 08 - SYSTÈME
 
 **Description** : Gestion système : paiements, logs emails, monitoring jobs
-
-**Fichiers** :
-- [`08-systeme/README.md`](./08-systeme/README.md) - Vue d'ensemble système
-- [`08-systeme/STATUS.md`](./08-systeme/STATUS.md) - État d'implémentation
-- [`08-systeme/paiements.md`](./08-systeme/paiements.md) - Gestion paiements
 
 **Éléments inclus** :
 - ✅ Controller Payments ✅ **IMPLÉMENTÉ** (index, show, destroy)
@@ -226,7 +184,7 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 **Status** : ✅ **100% IMPLÉMENTÉ** - Module Payments complet et opérationnel dans AdminPanel (2025-01-13)
 
 **Note** : 
-- **Maintenance** → Géré dans [`00-dashboard/`](./00-dashboard/README.md) ✅ **IMPLÉMENTÉ**
+- **Maintenance** → Géré dans le dashboard (toggle level ≥ 60) ✅ **IMPLÉMENTÉ**
 - **MailLogs** → ✅ **IMPLÉMENTÉ** (accès SUPERADMIN uniquement, level >= 70)
 - **Mission Control Jobs** → ✅ **INTÉGRÉ** (dashboard monitoring jobs, utilise BaseController pour auth)
 - **AuditLogs** → Non prioritaire (peu utilisé)
@@ -236,11 +194,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 ### 📢 07 - COMMUNICATION
 
 **Description** : Gestion des messages de contact et partenaires
-
-**Fichiers** :
-- [`07-communication/README.md`](./07-communication/README.md) - Vue d'ensemble communication
-- [`07-communication/messages-contact.md`](./07-communication/messages-contact.md) - Messages de contact
-- [`07-communication/partenaires.md`](./07-communication/partenaires.md) - Gestion partenaires
 
 **Éléments inclus** :
 - ⚠️ **À CRÉER** : Formulaire de contact public (pas de formulaire actuellement)
@@ -259,13 +212,6 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 
 **Description** : Gestion système : logs d'audit, maintenance, paiements
 
-**Fichiers** :
-- [`08-systeme/README.md`](./08-systeme/README.md) - Vue d'ensemble système
-- [`08-systeme/STATUS.md`](./08-systeme/STATUS.md) - État d'implémentation
-- [`08-systeme/audit-logs.md`](./08-systeme/audit-logs.md) - Logs d'audit
-- [`08-systeme/maintenance.md`](./08-systeme/maintenance.md) - Mode maintenance
-- [`08-systeme/paiements.md`](./08-systeme/paiements.md) - Gestion paiements
-
 **Éléments inclus** :
 - ✅ Controller Payments ✅ **IMPLÉMENTÉ** (index, show, destroy)
 - ✅ Policy Payments ✅ **IMPLÉMENTÉE** (index/show: level >= 60, destroy: level >= 70 ⚠️ SUPERADMIN uniquement)
@@ -280,7 +226,7 @@ Chaque thème contient **tous les éléments nécessaires** (migrations, modèle
 - ✅ Mission Control Jobs ✅ **INTÉGRÉ** (monitoring Solid Queue, monté dans routes)
 
 **Note** : 
-- **Maintenance** → Géré dans [`00-dashboard/`](./00-dashboard/README.md) ✅ **IMPLÉMENTÉ**
+- **Maintenance** → Géré dans le dashboard (toggle level ≥ 60) ✅ **IMPLÉMENTÉ**
 - **MailLogs** → ✅ **IMPLÉMENTÉ** (accès SUPERADMIN uniquement, level >= 70)
 - **Mission Control Jobs** → ✅ **INTÉGRÉ** (dashboard monitoring jobs, utilise BaseController pour auth)
 - **AuditLogs** → Non prioritaire (peu utilisé)
@@ -675,17 +621,11 @@ Implémenter selon les besoins urgents du moment
 
 ## 🔗 Liens Rapides
 
-- [Dashboard - README](./00-dashboard/README.md)
-- [Boutique - README](./01-boutique/README.md)
-- [Commandes - README](./02-commandes/README.md)
-- [Initiations - README](./03-initiations/README.md)
-- [Événements - README](./04-evenements/README.md)
-- [Utilisateurs - README](./06-utilisateurs/README.md)
-- [Communication - README](./07-communication/README.md)
-- [Système - README](./08-systeme/README.md)
 - [**Permissions par Grade**](./PERMISSIONS.md) - 🔐 Documentation complète des permissions
-- [**Liquid Glass Harmonisation**](./LIQUID-GLASS-HARMONISATION.md) - 🎨 Guide d'harmonisation design
 - [**CHANGELOG**](./CHANGELOG.md) - 📝 Historique des modifications
+- [Initiations - Routes](./03-initiations/05-routes.md)
+- [Événements - Routes](./04-evenements/05-routes.md)
+- [Système - Vue d'ensemble](./08-systeme/README.md)
 
 ---
 

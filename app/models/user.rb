@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Hashid::Rails
+  include Auditable
 
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -176,6 +177,27 @@ class User < ApplicationRecord
 
   # Attribut virtuel pour stocker l'utilisateur qui fait la modification (utilisé pour la validation)
   attr_accessor :assigner_user
+
+  # Auditable concern methods
+  def audit_actor
+    Rails.logger.debug "USER_AUDIT_ACTOR_CALLED: self=#{self.inspect}"
+    self
+  end
+
+
+
+  def audit_attributes
+    {
+      email: email,
+      first_name: first_name,
+      last_name: last_name,
+      role_id: role_id,
+      skill_level: skill_level,
+      phone: phone,
+      confirmed_at: confirmed_at,
+      display_name: display_name
+    }
+  end
 
   private
 

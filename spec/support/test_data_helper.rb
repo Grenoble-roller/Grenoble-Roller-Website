@@ -14,7 +14,6 @@ module TestDataHelper
       first_name: 'Alex',
       last_name: 'Rider',
       email: "user#{SecureRandom.hex(4)}@example.com",
-      # Doit respecter la validation de longueur minimale (12 caractères)
       password: 'password12345',
       skill_level: 'intermediate',
       role: role
@@ -61,18 +60,15 @@ module TestDataHelper
       price_cents: 0,
       currency: 'EUR',
       location_text: 'Grenoble City Center',
-      # Champs devenus obligatoires sur Event
       level: 'beginner',
       distance_km: 10.0
     }
 
-    # Gérer STI pour Event::Initiation
     event_class = type.constantize
     event_class.new(defaults.merge(attrs))
   end
 
   def create_event(attrs = {})
-    # Utiliser build_event qui gère correctement les attributs par défaut
     event = build_event(attrs)
     event.save!
     event
@@ -81,11 +77,13 @@ module TestDataHelper
   def build_attendance(attrs = {})
     user = attrs.delete(:user) || create_user
     event = attrs.delete(:event) || create_event
+
     defaults = {
       user: user,
       event: event,
       status: 'registered',
-      stripe_customer_id: 'cus_123'
+      stripe_customer_id: 'cus_123',
+      free_trial_used: false # Ensure default doesn't bypass validation
     }
     Attendance.new(defaults.merge(attrs))
   end
@@ -94,5 +92,16 @@ module TestDataHelper
     attendance = build_attendance(attrs)
     attendance.save!
     attendance
+  end
+
+  def create_active_membership(user, attrs = {})
+    create(:membership, {
+      user: user,
+      status: :active,
+      category: :standard,
+      start_date: 1.month.ago,
+      end_date: 1.year.from_now,
+      season: '2025-2026'
+    }.merge(attrs))
   end
 end

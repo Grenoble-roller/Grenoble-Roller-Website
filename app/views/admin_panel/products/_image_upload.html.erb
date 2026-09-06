@@ -14,7 +14,7 @@
       <strong>Glissez-déposez vos images ici</strong>
     </p>
     <p class="text-muted small mb-3">
-      ou cliquez sur le bouton ci-dessous
+      ou sélectionnez un fichier en cliquant sur le bouton ci-dessous
     </p>
     <%= form.file_field :image, 
         multiple: false,
@@ -43,7 +43,7 @@
         </div>
         <div class="card-body d-flex align-items-center justify-content-center" style="min-height: 220px;">
           <% if product&.persisted? && product.image&.attached? %>
-            <%= image_tag product.image,
+            <%= lazy_image_tag product.image,
                 data: { image_upload_target: "masterImage" },
                 class: "img-fluid rounded",
                 style: "max-height: 200px; width: auto; object-fit: contain;" %>
@@ -68,7 +68,7 @@
         <div class="card-body p-0">
           <div class="position-relative rounded overflow-hidden" style="aspect-ratio: 16 / 9; background: #eee;">
             <% if product&.persisted? && product.image&.attached? %>
-              <%= image_tag product.image.variant(resize_to_fill: [800, 450], format: :webp, saver: { quality: 82 }),
+              <%= lazy_image_tag product.image.variant(resize_to_fill: [800, 450], format: :webp, saver: { quality: 82 }),
                   data: { image_upload_target: "squareImage" },
                   class: "position-absolute top-0 start-0 w-100 h-100",
                   style: "object-fit: cover; object-position: center;" %>
@@ -92,7 +92,7 @@
     <div class="image-preview-current mb-4">
       <h6 class="mb-3">Image actuelle</h6>
       <div class="position-relative d-inline-block">
-        <%= image_tag product.image, class: "img-thumbnail", style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
+        <%= lazy_image_tag product.image, class: "img-thumbnail", style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
         <button type="button"
                 class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
                 data-action="click->image-upload#removeCurrentImage"

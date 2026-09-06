@@ -3,7 +3,7 @@ title: "Formulaire - Informations Légales à Compléter"
 status: "completed"
 version: "2.1"
 created: "2025-11-15"
-updated: "2025-11-17"
+updated: "2026-08-14"
 tags: ["legal", "formulaire", "checklist", "completed"]
 ---
 

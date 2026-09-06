@@ -107,4 +107,4 @@ Les helpers suivants seront disponibles :
 
 ---
 
-**Retour** : [README Initiations](./README.md) | [INDEX principal](../INDEX.md)
+**Retour** : [INDEX principal](../INDEX.md)

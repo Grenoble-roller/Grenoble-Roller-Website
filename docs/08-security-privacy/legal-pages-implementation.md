@@ -3,7 +3,7 @@ title: "Implémentation Pages Légales & Gestion Cookies"
 status: "active"
 version: "1.0"
 created: "2025-11-21"
-updated: "2025-11-21"
+updated: "2026-08-14"
 tags: ["legal", "rgpd", "cookies", "compliance", "stimulus"]
 ---
 
@@ -185,8 +185,8 @@ end
 
 - **Guide complet** : [`legal-pages-guide.md`](legal-pages-guide.md)
 - **Informations collectées** : [`informations-a-collecter.md`](informations-a-collecter.md)
-- **Routes** : [`../../04-rails/routes.md`](../../04-rails/routes.md)
-- **Changelog** : [`../../10-decisions-and-changelog/CHANGELOG.md`](../../10-decisions-and-changelog/CHANGELOG.md)
+- **Routes** : [`../04-rails/routes.md`](../04-rails/routes.md)
+- **Changelog** : [`../10-decisions-and-changelog/CHANGELOG.md`](../10-decisions-and-changelog/CHANGELOG.md)
 
 ---
 
@@ -209,5 +209,5 @@ Ces cookies sont **toujours actifs** et ne peuvent pas être désactivés.
 
 ---
 
-**Dernière mise à jour** : 2025-11-21
+**Dernière mise à jour** : 2026-08-14
 

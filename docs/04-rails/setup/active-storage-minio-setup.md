@@ -1,5 +1,8 @@
 # Configuration Active Storage avec MinIO
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Ce document décrit la configuration complète d'Active Storage avec MinIO (S3-compatible) pour le projet Grenoble Roller.
 
 ## Vue d'ensemble

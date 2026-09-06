@@ -1,5 +1,8 @@
 # Staging Troubleshooting Guide
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Common issues and solutions for the staging environment.
 
 ## Container Won't Start
@@ -218,7 +221,7 @@ If you're still stuck:
 
 2. Check the main documentation:
    - [Staging Setup](staging-setup.md)
-   - [Local Development Setup](../04-rails/setup/local-development.md)
+   - [Local Development Setup](../../04-rails/setup/local-development.md)
 
 3. Review common Rails errors in logs
 
