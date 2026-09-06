@@ -9,6 +9,19 @@ RSpec.describe 'Pages', type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    # Regression: tag(:script, content: json) left <script> open and browsers
+    # treated stylesheet + importmap as script text → unstyled site, broken JS.
+    it 'keeps stylesheet and importmap outside the JSON-LD script' do
+      get '/'
+      body = response.body
+
+      expect(body).to match(%r{<script type="application/ld\+json">\{.*?"@type":"Organization".*?</script>}m)
+      expect(body).not_to match(%r{<script type="application/ld\+json" content=})
+      expect(body).to include('stylesheet')
+      expect(body).to include('application.bootstrap')
+      expect(body).to include('type="importmap"')
+    end
+
     context 'when no active carousel slides exist' do
       it 'returns 200 and shows hero (banner-hero, La communauté Roller Grenobloise)' do
         get '/'

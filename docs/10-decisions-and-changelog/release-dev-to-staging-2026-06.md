@@ -1,13 +1,20 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.3.2"
+version: "2.4.2"
 created: "2026-06-07"
-updated: "2026-08-03"
-tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux"]
+updated: "2026-09-07"
+tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo"]
 ---
 
 # Release Dev → staging (June 2026)
+
+> **v2.4.2 hotfix (2026-09-07) — current Dev → staging slice**  
+> **P0:** SEO JSON-LD broke every public page layout (CSS + importmap swallowed by open `<script>`).  
+> **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)  
+> **Migrations:** none · **ENV:** none · **Rollback:** redeploy previous staging image  
+> **QA:** hard-refresh homepage — Bootstrap dark theme must apply; no importmap console error; JSON-LD is a closed script **before** stylesheet.  
+> Also on `Dev` since last staging tip (if not yet deployed): PR #264 CI RSpec greens (`product_lazy_image_tag`, AuditLog isolation, attend modal specs).
 
 **Target branch:** merge `Dev` → `staging` (PR)  
 **Commit range:** `2201eefa` … `0f16a913` (`origin/staging` … `Dev`) — **v2.3.1 slice only** (3 commits ahead of current staging tip)  
