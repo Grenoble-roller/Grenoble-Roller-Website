@@ -58,7 +58,7 @@ RSpec.describe 'Password Reset', type: :request do
 
       it 'affiche un message d\'erreur' do
         post user_password_path, params: { user: { email: user.email } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include('Vérification de sécurité échouée')
       end
 
@@ -76,7 +76,7 @@ RSpec.describe 'Password Reset', type: :request do
 
       it 'bloque la demande de réinitialisation' do
         post user_password_path, params: { user: { email: user.email } }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include('Vérification de sécurité échouée')
       end
     end
@@ -120,7 +120,7 @@ RSpec.describe 'Password Reset', type: :request do
         user.reload
         expect(user.encrypted_password).to eq(old_encrypted_password)
         # Vérifier que la réponse indique une erreur de validation
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -158,7 +158,7 @@ RSpec.describe 'Password Reset', type: :request do
         user.reload
         expect(user.encrypted_password).to eq(old_encrypted_password)
         # Vérifier que la réponse indique une erreur
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -182,7 +182,7 @@ RSpec.describe 'Password Reset', type: :request do
         user.reload
         expect(user.encrypted_password).to eq(old_encrypted_password)
         # Vérifier que la réponse indique une erreur
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end

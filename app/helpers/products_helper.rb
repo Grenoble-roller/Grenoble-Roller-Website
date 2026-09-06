@@ -85,10 +85,15 @@ module ProductsHelper
     square_image_variant(image, size: 800) if image
   end
 
+  # Alias used by storefront views that wrap the variant in lazy_image_tag.
+  alias_method :product_lazy_image_tag, :product_image_tag
+
   def variant_image_tag(variant)
     image = variant_primary_image(variant)
     square_image_variant(image, size: 800) if image
   end
+
+  alias_method :variant_lazy_image_tag, :variant_image_tag
 
   # Storefront urgency threshold (aligned with events/initiations ≤5 and admin low-stock cues).
   LOW_STOCK_THRESHOLD = 5
