@@ -2,6 +2,19 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - PurgeCSS actually applied (v2.4.3)
+
+### Fixed
+- **CSS build:** `build:css:purge` never wrote PurgeCSS output (CLI no-op) → deploys kept ~1.8 MiB Bootstrap. Write results via `scripts/purge-css.mjs`.
+
+### Changed
+- Tighter PurgeCSS safelist (runtime/JS/Pagy/PhotoSwipe only); drop broad `/^btn-/`, `/^bg-/`, `/^text-/` prefixes.
+- Public CSS only purged; leave `active_admin.css` unpurged.
+- Local build: `application.bootstrap.css` **~344 KiB** (was ~1.8 MiB).
+
+### Documentation
+- Patch note: [`release-purgecss-2026-09.md`](release-purgecss-2026-09.md) (v2.4.3)
+
 ## [2026-09-07] - Fix SEO JSON-LD breaking CSS/JS head (v2.4.2)
 
 ### Fixed

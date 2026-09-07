@@ -5,9 +5,9 @@
 # Channel target (ops): Grenoble Roller release salon — see
 # docs/07-ops/runbooks/discord-release-announce.md
 
-version: "2.4.2"
-headline: "Hotfix — CSS/JS layout cassé par le JSON-LD SEO"
+version: "2.4.3"
+headline: "Perf — CSS Bootstrap ~344 KiB (PurgeCSS réellement appliqué)"
 bullets:
-  - "Correction P0 : le script JSON-LD n’avale plus le <head> (CSS + importmap)"
-  - "og:description / twitter:description de nouveau renseignés"
-  - "Specs de non-régression sur la homepage"
+  - "Le purge CSS écrivait rien → bundle ~1,8 Mo en prod ; write-back corrigé"
+  - "Safelist resserré (plus de préfixes btn/bg/text trop larges)"
+  - "application.bootstrap.css ~344 KiB (−81 %)"
