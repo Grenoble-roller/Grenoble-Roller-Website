@@ -5,9 +5,9 @@
 # Channel target (ops): Grenoble Roller release salon — see
 # docs/07-ops/runbooks/discord-release-announce.md
 
-version: "2.4.5"
-headline: "Perf staging — CSS ~344 KiB + images allégées"
+version: "2.4.6"
+headline: "SEO — sitemap.xml + robots.txt dynamiques"
 bullets:
-  - "PurgeCSS réellement appliqué : bundle public ~344 KiB (ex ~1,8 Mo)"
-  - "Logos navbar 200×80 + hero custom ≤1280×720 WebP"
-  - "Cartes events/initiations : variants 800×450 / thumbs 400×225"
+  - "/robots.txt : Allow public + Sitemap host-aware (prod/staging)"
+  - "/sitemap.xml : pages publiques + produits actifs + events/initiations visibles"
+  - "Fini le robots.txt Rails vide et le 404 sitemap"
