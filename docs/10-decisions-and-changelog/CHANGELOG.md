@@ -2,6 +2,11 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - llms.txt for AI agents (v2.4.7)
+
+### Added
+- Dynamic **`/llms.txt`** (`SeoController#llms`) — site summary + public page links (llmstxt.org style), host-aware.
+
 ## [2026-09-07] - Sitemap + robots.txt (v2.4.6)
 
 ### Added
