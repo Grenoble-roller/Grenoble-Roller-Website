@@ -1,13 +1,6 @@
-# Curated Discord release announce (read by CI on push to staging/main).
-# Update this file in every Dev→staging or staging→main release PR.
-# Skip a push: include [skip discord] in the merge commit message.
-#
-# Channel target (ops): Grenoble Roller release salon — see
-# docs/07-ops/runbooks/discord-release-announce.md
-
-version: "2.4.6"
-headline: "SEO — sitemap.xml + robots.txt dynamiques"
+version: "2.4.7"
+headline: "SEO — /llms.txt pour agents IA"
 bullets:
-  - "/robots.txt : Allow public + Sitemap host-aware (prod/staging)"
-  - "/sitemap.xml : pages publiques + produits actifs + events/initiations visibles"
-  - "Fini le robots.txt Rails vide et le 404 sitemap"
+  - "Route dynamique /llms.txt (résumé + liens publics host-aware)"
+  - "Complète robots.txt + sitemap.xml (v2.4.6) pour les audits techniques"
+  - "Format llmstxt.org"

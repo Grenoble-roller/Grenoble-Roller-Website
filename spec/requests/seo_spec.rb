@@ -16,6 +16,19 @@ RSpec.describe "SEO crawlability", type: :request do
     end
   end
 
+  describe "GET /llms.txt" do
+    it "returns text/plain with site summary and host-aware links" do
+      get llms_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.media_type).to eq("text/plain")
+      expect(response.body).to include("# Grenoble Roller")
+      expect(response.body).to include("http://www.example.com/shop")
+      expect(response.body).to include("http://www.example.com/sitemap.xml")
+      expect(response.body).to include("Initiations")
+    end
+  end
+
   describe "GET /sitemap.xml" do
     let!(:active_product) do
       product = create(:product, is_active: true, slug: "sitemap-product")
