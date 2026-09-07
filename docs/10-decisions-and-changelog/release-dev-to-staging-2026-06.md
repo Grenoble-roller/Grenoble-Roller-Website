@@ -1,7 +1,7 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.4.2"
+version: "2.4.3"
 created: "2026-06-07"
 updated: "2026-09-07"
 tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo"]
@@ -9,12 +9,13 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 
 # Release Dev → staging (June 2026)
 
-> **v2.4.2 hotfix (2026-09-07) — current Dev → staging slice**  
-> **P0:** SEO JSON-LD broke every public page layout (CSS + importmap swallowed by open `<script>`).  
-> **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)  
-> **Migrations:** none · **ENV:** none · **Rollback:** redeploy previous staging image  
-> **QA:** hard-refresh homepage — Bootstrap dark theme must apply; no importmap console error; JSON-LD is a closed script **before** stylesheet.  
-> Also on `Dev` since last staging tip (if not yet deployed): PR #264 CI RSpec greens (`product_lazy_image_tag`, AuditLog isolation, attend modal specs).
+> **v2.4.3 (2026-09-07) — PurgeCSS write-back**  
+> Public CSS ~**344 KiB** (was ~1.8 MiB): purge now writes output; tighter safelist.  
+> **Patch note:** [`release-purgecss-2026-09.md`](release-purgecss-2026-09.md) · Discord payload **2.4.3**  
+> **Migrations:** none · **ENV:** none · rebuild CSS on deploy  
+
+> **v2.4.2 hotfix (2026-09-07)** — SEO JSON-LD head fix (already on staging via #266).  
+> **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)
 
 **Target branch:** merge `Dev` → `staging` (PR)  
 **Commit range:** `2201eefa` … `0f16a913` (`origin/staging` … `Dev`) — **v2.3.1 slice only** (3 commits ahead of current staging tip)  
