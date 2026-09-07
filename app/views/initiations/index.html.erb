@@ -180,7 +180,13 @@
                     <td data-label="Titre">
                       <div class="d-flex align-items-center">
                         <% if initiation.cover_image.attached? %>
-                          <%= lazy_image_tag rails_representation_path(initiation.cover_image_banner), class: "rounded me-2", style: "width: 71px; height: 40px; object-fit: cover;", alt: initiation.title %>
+                          <%= lazy_image_tag rails_representation_path(initiation.cover_image_thumb),
+                                class: "rounded me-2",
+                                style: "width: 71px; height: 40px; object-fit: cover;",
+                                alt: initiation.title,
+                                width: 71,
+                                height: 40,
+                                decoding: "async" %>
                         <% end %>
                         <span class="fw-semibold"><%= initiation.title %></span>
                       </div>

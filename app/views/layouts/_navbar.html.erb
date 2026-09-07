@@ -11,8 +11,22 @@
 <nav class="navbar navbar-grenoble-roller navbar-expand-lg navbar-liquid sticky-top shadow-liquid mb-4">
   <div class="container-fluid">
     <a class="navbar-brand d-flex align-items-center" href="<%= root_path %>">
-      <%= lazy_image_tag('logo/logo_grenobleroller_color.png', alt: 'Grenoble Roller', class: 'navbar-logo navbar-logo-light', style: 'height: 40px;') %>
-      <%= lazy_image_tag('logo/logo_grenobleroller_white.png', alt: 'Grenoble Roller', class: 'navbar-logo navbar-logo-dark', style: 'height: 40px;') %>
+      <%= image_tag "logo/logo_grenobleroller_color_nav.png",
+            alt: "Grenoble Roller",
+            class: "navbar-logo navbar-logo-light",
+            width: 100,
+            height: 40,
+            loading: "eager",
+            decoding: "async",
+            fetchpriority: "high" %>
+      <%= image_tag "logo/logo_grenobleroller_white_nav.png",
+            alt: "Grenoble Roller",
+            class: "navbar-logo navbar-logo-dark",
+            width: 100,
+            height: 40,
+            loading: "eager",
+            decoding: "async",
+            fetchpriority: "high" %>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarComponent" aria-controls="navbarComponent" aria-expanded="false" aria-label="Basculer la navigation">
       <span class="navbar-toggler-icon" aria-hidden="true"></span>

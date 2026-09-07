@@ -2,6 +2,33 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - Event/initiation card image variants (v2.4.5)
+
+### Changed
+- Event & initiation **cards** use `cover_image_square` (800×450) instead of banner 1200×675, with HTML `width`/`height`.
+- Past-events / past-initiations **table thumbs** use `cover_image_thumb` (400×225) for 71×40 display slots.
+- Show heroes keep `cover_image_banner`.
+
+## [2026-09-07] - Navbar logos + hero variant (v2.4.4)
+
+### Changed
+- Navbar uses `*_nav.png` (200×80) with explicit `width`/`height`, eager load (not lazy) — was 2000×800 full logos.
+- Custom homepage hero Active Storage variant: `resize_to_limit` **1280×720** WebP q80 (was fill 1920×1080 q85).
+
+## [2026-09-07] - PurgeCSS actually applied (v2.4.3)
+
+### Fixed
+- **CSS build:** `build:css:purge` never wrote PurgeCSS output (CLI no-op) → deploys kept ~1.8 MiB Bootstrap. Write results via `scripts/purge-css.mjs`.
+
+### Changed
+- Tighter PurgeCSS safelist (runtime/JS/Pagy/PhotoSwipe only); drop broad `/^btn-/`, `/^bg-/`, `/^text-/` prefixes.
+- Public CSS only purged; leave `active_admin.css` unpurged.
+- Local build: `application.bootstrap.css` **~344 KiB** (was ~1.8 MiB).
+
+### Documentation
+- Patch note: [`release-purgecss-2026-09.md`](release-purgecss-2026-09.md) (v2.4.3)
+- Staging promo note: [`release-perf-bundle-staging-2026-09.md`](release-perf-bundle-staging-2026-09.md) (v2.4.3–2.4.5)
+
 ## [2026-09-07] - Fix SEO JSON-LD breaking CSS/JS head (v2.4.2)
 
 ### Fixed
