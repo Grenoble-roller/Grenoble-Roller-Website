@@ -32,9 +32,9 @@ class HomepageCarouselSetting < ApplicationRecord
     return unless custom_hero_image?
 
     hero_image.variant(
-      resize_to_fill: [ 1920, 1080 ],
+      resize_to_limit: [ 1280, 720 ],
       format: :webp,
-      saver: { quality: 85 }
+      saver: { quality: 80 }
     )
   end
 

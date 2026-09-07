@@ -2,6 +2,12 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - Navbar logos + hero variant (v2.4.4)
+
+### Changed
+- Navbar uses `*_nav.png` (200×80) with explicit `width`/`height`, eager load (not lazy) — was 2000×800 full logos.
+- Custom homepage hero Active Storage variant: `resize_to_limit` **1280×720** WebP q80 (was fill 1920×1080 q85).
+
 ## [2026-09-07] - PurgeCSS actually applied (v2.4.3)
 
 ### Fixed
