@@ -25,8 +25,8 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 > **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)
 
 **Target branch:** merge `Dev` → `staging` (PR)  
-**Commit range (this promo):** update after merge to `Dev`  
-**Head on Dev:** SEO llms.txt (v2.4.7)
+**Commit range (this promo):** `1a2c0afe` (`origin/staging`) … `65f72c80` (`Dev`) — merge #275  
+**Head on Dev:** `65f72c80` — SEO llms.txt (v2.4.7)
 
 **Agent SSOT for checkout epic:** [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md) (Waves 0–6 complete on `Dev`).  
 **Agent SSOT for Discord notifications:** [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md) (implemented 2026-06-09).
