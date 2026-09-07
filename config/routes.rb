@@ -186,6 +186,10 @@ Rails.application.routes.draw do
   # root "posts#index"
   root "pages#index"
 
+  # Crawlability (must not live under public/ — static files would win)
+  get "/robots.txt", to: "seo#robots", as: :robots
+  get "/sitemap.xml", to: "seo#sitemap", as: :sitemap, defaults: { format: :xml }
+
   # Static pages
   get "/welcome", to: "pages#welcome", as: "welcome"
   get "/a-propos", to: "pages#about", as: "about"

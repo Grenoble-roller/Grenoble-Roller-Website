@@ -2,6 +2,18 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - Sitemap + robots.txt (v2.4.6)
+
+### Added
+- Dynamic **`/sitemap.xml`**: static public pages + active products + visible events/initiations.
+- Dynamic **`/robots.txt`**: `Allow: /`, Disallow for private areas, `Sitemap:` using the request host (prod/staging).
+
+### Changed
+- Removed static `public/robots.txt` (empty Rails default) so the route is not shadowed.
+
+### Documentation
+- Patch note: [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)
+
 ## [2026-09-07] - Event/initiation card image variants (v2.4.5)
 
 ### Changed
