@@ -1,7 +1,7 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.4.6"
+version: "2.4.7"
 created: "2026-06-07"
 updated: "2026-09-07"
 tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf"]
@@ -9,12 +9,14 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 
 # Release Dev → staging (June 2026)
 
-> **Current slice (2026-09-07) — SEO crawlability v2.4.6**  
-> **Patch note:** [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)  
+> **Current slice (2026-09-07) — SEO llms.txt v2.4.7**  
 > **Migrations:** none · **ENV:** none  
-> **Discord:** `.github/release-discord.yml` → **2.4.6**  
-> Includes: dynamic `/robots.txt` + `/sitemap.xml` (host-aware Sitemap line).  
-> Prior slice on staging: perf **v2.4.3–2.4.5** (#272).
+> **Discord:** `.github/release-discord.yml` → **2.4.7**  
+> Includes: dynamic `/llms.txt` for AI/SEO scanners.  
+> Prior on staging: sitemap/robots **v2.4.6** (#274).
+
+> **v2.4.6 (2026-09-07)** — `/robots.txt` + `/sitemap.xml` already on staging via #274.  
+> **Patch note:** [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)
 
 > **v2.4.5 / v2.4.4 / v2.4.3 (2026-09-07)** — already on staging via #272.  
 > **Patch note:** [`release-perf-bundle-staging-2026-09.md`](release-perf-bundle-staging-2026-09.md)
@@ -23,8 +25,8 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 > **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)
 
 **Target branch:** merge `Dev` → `staging` (PR)  
-**Commit range (this promo):** `94cf2243` (`origin/staging`) … `74d0b42a` (`Dev`) — merge #273  
-**Head on Dev:** `74d0b42a` — SEO sitemap/robots (v2.4.6)
+**Commit range (this promo):** update after merge to `Dev`  
+**Head on Dev:** SEO llms.txt (v2.4.7)
 
 **Agent SSOT for checkout epic:** [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md) (Waves 0–6 complete on `Dev`).  
 **Agent SSOT for Discord notifications:** [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md) (implemented 2026-06-09).
