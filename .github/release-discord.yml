@@ -6,8 +6,8 @@
 # docs/07-ops/runbooks/discord-release-announce.md
 
 version: "2.4.5"
-headline: "Perf — images des cartes events/initiations allégées"
+headline: "Perf staging — CSS ~344 KiB + images allégées"
 bullets:
-  - "Cartes : variant 800×450 (plus de banner 1200×675)"
-  - "Miniatures liste : thumb 400×225 + width/height"
-  - "Suite perf v2.4.3–2.4.4 (CSS + logos)"
+  - "PurgeCSS réellement appliqué : bundle public ~344 KiB (ex ~1,8 Mo)"
+  - "Logos navbar 200×80 + hero custom ≤1280×720 WebP"
+  - "Cartes events/initiations : variants 800×450 / thumbs 400×225"

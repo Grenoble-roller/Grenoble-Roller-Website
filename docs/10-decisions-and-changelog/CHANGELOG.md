@@ -27,6 +27,7 @@ Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
 ### Documentation
 - Patch note: [`release-purgecss-2026-09.md`](release-purgecss-2026-09.md) (v2.4.3)
+- Staging promo note: [`release-perf-bundle-staging-2026-09.md`](release-perf-bundle-staging-2026-09.md) (v2.4.3–2.4.5)
 
 ## [2026-09-07] - Fix SEO JSON-LD breaking CSS/JS head (v2.4.2)
 
