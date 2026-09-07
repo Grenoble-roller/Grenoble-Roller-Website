@@ -5,9 +5,9 @@
 # Channel target (ops): Grenoble Roller release salon — see
 # docs/07-ops/runbooks/discord-release-announce.md
 
-version: "2.4.3"
-headline: "Perf — CSS Bootstrap ~344 KiB (PurgeCSS réellement appliqué)"
+version: "2.4.4"
+headline: "Perf — logos navbar + hero plus légers"
 bullets:
-  - "Le purge CSS écrivait rien → bundle ~1,8 Mo en prod ; write-back corrigé"
-  - "Safelist resserré (plus de préfixes btn/bg/text trop larges)"
-  - "application.bootstrap.css ~344 KiB (−81 %)"
+  - "Logos navbar 200×80 (plus de PNG 2000×800) + width/height"
+  - "Hero custom AS limité à 1280×720 WebP"
+  - "Suite de v2.4.3 (PurgeCSS ~344 KiB)"
