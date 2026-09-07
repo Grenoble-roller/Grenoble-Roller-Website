@@ -2,6 +2,13 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-07] - Event/initiation card image variants (v2.4.5)
+
+### Changed
+- Event & initiation **cards** use `cover_image_square` (800×450) instead of banner 1200×675, with HTML `width`/`height`.
+- Past-events / past-initiations **table thumbs** use `cover_image_thumb` (400×225) for 71×40 display slots.
+- Show heroes keep `cover_image_banner`.
+
 ## [2026-09-07] - Navbar logos + hero variant (v2.4.4)
 
 ### Changed

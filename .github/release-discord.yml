@@ -5,9 +5,9 @@
 # Channel target (ops): Grenoble Roller release salon — see
 # docs/07-ops/runbooks/discord-release-announce.md
 
-version: "2.4.4"
-headline: "Perf — logos navbar + hero plus légers"
+version: "2.4.5"
+headline: "Perf — images des cartes events/initiations allégées"
 bullets:
-  - "Logos navbar 200×80 (plus de PNG 2000×800) + width/height"
-  - "Hero custom AS limité à 1280×720 WebP"
-  - "Suite de v2.4.3 (PurgeCSS ~344 KiB)"
+  - "Cartes : variant 800×450 (plus de banner 1200×675)"
+  - "Miniatures liste : thumb 400×225 + width/height"
+  - "Suite perf v2.4.3–2.4.4 (CSS + logos)"
