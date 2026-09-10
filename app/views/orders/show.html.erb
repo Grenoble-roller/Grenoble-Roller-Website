@@ -258,13 +258,21 @@
             <!-- Action principale -->
             <div class="mb-3">
               <% if is_pending_payment %>
-                <!-- Payer (si paiement pending) -->
-                <%= button_to order_payments_path(@order),
-                    method: :post,
-                    class: "btn btn-warning w-100 w-md-auto",
-                    data: { turbo: false },
-                    aria: { label: "Finaliser le paiement de la commande ##{@order.id}" } do %>
-                  <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Finaliser le paiement
+                <% if @order.open_unified_checkout %>
+                  <%= link_to new_checkout_path,
+                      class: "btn btn-warning w-100 w-md-auto",
+                      aria: { label: "Finaliser le paiement via le panier unifié pour la commande ##{@order.id}" } do %>
+                    <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Finaliser via le panier
+                  <% end %>
+                <% else %>
+                  <!-- Payer (si paiement pending) -->
+                  <%= button_to order_payments_path(@order),
+                      method: :post,
+                      class: "btn btn-warning w-100 w-md-auto",
+                      data: { turbo: false },
+                      aria: { label: "Finaliser le paiement de la commande ##{@order.id}" } do %>
+                    <i class="bi bi-credit-card me-2" aria-hidden="true"></i>Finaliser le paiement
+                  <% end %>
                 <% end %>
               <% elsif @order.status.downcase == 'paid' || @order.status.downcase == 'payé' %>
                 <!-- Paiement confirmé (disabled) -->

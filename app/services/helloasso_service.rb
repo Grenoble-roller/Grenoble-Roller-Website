@@ -14,6 +14,8 @@ class HelloassoService
 
   # HelloAsso checkout-intent itemName hard limit (HTTP 400 beyond this).
   ITEM_NAME_MAX_LENGTH = 250
+  # Soft ceiling for checkout-intent metadata JSON size (HelloAsso rejects oversized payloads).
+  METADATA_MAX_BYTES = 18_000
 
   class << self
     # Raw helloasso config from Rails credentials
@@ -33,6 +35,45 @@ class HelloassoService
 
       "#{short[0, ITEM_NAME_MAX_LENGTH - 1]}…"
     end
+
+    # Shrink metadata so to_json stays under METADATA_MAX_BYTES while keeping ids.
+    def compact_checkout_metadata(metadata)
+      meta = metadata.deep_dup
+      return meta if meta.to_json.bytesize <= METADATA_MAX_BYTES
+
+      items_key = if meta.key?(:items)
+        :items
+      elsif meta.key?("items")
+        "items"
+      end
+
+      if items_key
+        meta[items_key] = Array(meta[items_key]).map { |item| slim_metadata_item(item) }
+      end
+
+      return meta if meta.to_json.bytesize <= METADATA_MAX_BYTES
+
+      meta.delete(items_key) if items_key
+      meta
+    end
+
+    def slim_metadata_item(item)
+      slim = item.deep_dup
+      slim = slim.stringify_keys if slim.respond_to?(:stringify_keys)
+      slim.delete("metadata")
+      slim.delete(:metadata)
+      name = (slim["name"] || slim[:name]).to_s
+      if name.length > 120
+        truncated = "#{name[0, 119]}…"
+        if slim.key?("name")
+          slim["name"] = truncated
+        else
+          slim[:name] = truncated
+        end
+      end
+      slim
+    end
+    private :slim_metadata_item
 
     # Resolves which HelloAsso API environment to use (sandbox vs production)
     # Safe default: HelloAsso **sandbox** unless production is explicit (deploy flags, credentials helloasso.environment: production, or HELLOASSO_USE_PRODUCTION).
@@ -202,12 +243,12 @@ class HelloassoService
         errorUrl: error_url,
         returnUrl: return_url,
         containsDonation: donation.positive?,
-        metadata: {
+        metadata: compact_checkout_metadata(
           localOrderId: order.id,
           environment: environment,
           donationCents: donation,
           items: items # keep line items in metadata for reference
-        }
+        )
       }
     end
 
@@ -277,7 +318,7 @@ class HelloassoService
         errorUrl: error_url,
         returnUrl: return_url,
         containsDonation: donation.positive?,
-        metadata: {
+        metadata: compact_checkout_metadata(
           checkoutId: checkout.id,
           lineTypes: lines.map { |l| l.line_type.to_s }.uniq,
           localOrderIds: local_order_ids,
@@ -287,7 +328,7 @@ class HelloassoService
           donationCents: donation,
           environment: environment,
           items: items
-        }
+        )
       }
     end
 

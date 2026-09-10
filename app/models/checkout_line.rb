@@ -4,6 +4,8 @@ class CheckoutLine < ApplicationRecord
   belongs_to :checkout
   belongs_to :reference, polymorphic: true
 
+  LABEL_MAX_LENGTH = CartLine::LABEL_MAX_LENGTH
+
   enum :line_type, {
     product_variant: "product_variant",
     membership: "membership",
@@ -12,7 +14,7 @@ class CheckoutLine < ApplicationRecord
 
   validates :amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
-  validates :label, presence: true
+  validates :label, presence: true, length: { maximum: LABEL_MAX_LENGTH }
 
   before_update :prevent_mutation_if_checkout_paid
 
