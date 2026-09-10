@@ -28,6 +28,15 @@ class Order < ApplicationRecord
     %w[user payment order_items]
   end
 
+  # Open unified Checkout that still owns this Order (product lines snapshot).
+  def open_unified_checkout
+    Checkout
+      .where(user_id: user_id, status: [ :pending, :processing ])
+      .where("metadata->>'order_id' = ?", id.to_s)
+      .order(created_at: :desc)
+      .first
+  end
+
   private
 
   # NOUVEAU : Réserver le stock à la création de la commande

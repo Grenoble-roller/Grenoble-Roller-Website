@@ -69,6 +69,18 @@ RSpec.describe 'Orders', type: :request do
       post order_payments_path(order)
       expect(response).to have_http_status(:redirect)
     end
+
+    it 'blocks legacy checkout-intent when an open unified checkout exists' do
+      login_user(user)
+      create(:checkout, user: user, status: :pending, metadata: { 'order_id' => order.id.to_s })
+
+      expect(HelloassoService).not_to receive(:create_checkout_intent)
+
+      post order_payments_path(order)
+
+      expect(response).to redirect_to(new_checkout_path)
+      expect(flash[:alert]).to match(/panier unifié/i)
+    end
   end
 
   describe 'GET /orders/:order_id/payments/status' do

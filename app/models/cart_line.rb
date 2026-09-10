@@ -3,6 +3,8 @@
 class CartLine < ApplicationRecord
   include Auditable
 
+  LABEL_MAX_LENGTH = 200
+
   belongs_to :user
   belongs_to :reference, polymorphic: true
 
@@ -14,7 +16,7 @@ class CartLine < ApplicationRecord
 
   validates :amount_cents, numericality: { greater_than_or_equal_to: 0 }
   validates :quantity, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
-  validates :label, presence: true
+  validates :label, presence: true, length: { maximum: LABEL_MAX_LENGTH }
   validates :reference_id, uniqueness: {
     scope: [ :user_id, :reference_type, :line_type ],
     message: "already in cart for this user"

@@ -1,6 +1,6 @@
-version: "2.4.7"
-headline: "SEO — /llms.txt pour agents IA"
+version: "2.4.9"
+headline: "HelloAsso — harden unified checkout paths"
 bullets:
-  - "Route dynamique /llms.txt (résumé + liens publics host-aware)"
-  - "Complète robots.txt + sitemap.xml (v2.4.6) pour les audits techniques"
-  - "Format llmstxt.org"
+  - "Block legacy Order pay when an open unified Checkout exists"
+  - "Compact checkout-intent metadata under ~18KB soft limit"
+  - "Cap cart/checkout line labels at 200 characters"

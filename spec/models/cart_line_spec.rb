@@ -20,6 +20,12 @@ RSpec.describe CartLine do
       expect(line.errors[:label]).to be_present
     end
 
+    it "rejects label longer than LABEL_MAX_LENGTH" do
+      line = build(:cart_line, label: "x" * (CartLine::LABEL_MAX_LENGTH + 1))
+      expect(line).not_to be_valid
+      expect(line.errors[:label]).to be_present
+    end
+
     it "requires non-negative amount_cents" do
       line = build(:cart_line, amount_cents: -1)
       expect(line).not_to be_valid
