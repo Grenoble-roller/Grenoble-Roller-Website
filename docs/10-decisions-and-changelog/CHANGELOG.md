@@ -2,6 +2,16 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-10] - HelloAsso itemName max 250 (v2.4.8)
+
+### Fixed
+- **P0 checkout:** HelloAsso returns HTTP 400 when checkout-intent `itemName` exceeds 250 characters. Multi-membership carts (parent + children) concatenated long labels and failed payment init.
+- Clamp via `HelloassoService.clamp_item_name` with short panier/cotisation fallback; keep line details in metadata.
+- Log unified checkout HelloAsso error bodies (`create_unified_checkout_intent ERROR`) for observability.
+
+### Documentation
+- Patch note: [`release-helloasso-itemname-2026-09.md`](release-helloasso-itemname-2026-09.md) (v2.4.8)
+
 ## [2026-09-07] - llms.txt for AI agents (v2.4.7)
 
 ### Added

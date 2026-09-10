@@ -191,6 +191,61 @@ RSpec.describe HelloassoService do
 
       expect(payload[:containsDonation]).to be(false)
     end
+
+    it "clamps itemName to 250 chars for multi-membership carts (Recoura case)" do
+      long_checkout = create(:checkout, donation_cents: 0, subtotal_cents: 4000, total_cents: 4000)
+      labels = [
+        "Cotisation Adhérent Grenoble Roller — Saison 2025-2026 (Recoura Eric)",
+        "Cotisation Adhérent Grenoble Roller — Saison 2025-2026 (Recoura Suzanne)",
+        "Cotisation Adhérent Grenoble Roller — Saison 2025-2026 (Recoura Salomé)",
+        "Cotisation Adhérent Grenoble Roller — Saison 2025-2026 (Recoura Elie)"
+      ]
+      labels.each do |label|
+        create(
+          :checkout_line,
+          :membership,
+          checkout: long_checkout,
+          label: label,
+          amount_cents: 1000,
+          quantity: 1
+        )
+      end
+      long_checkout.reload
+
+      joined = labels.map { |label| "#{label} x1" }.join(", ")
+      expect(joined.length).to be > described_class::ITEM_NAME_MAX_LENGTH
+
+      payload = described_class.build_unified_checkout_intent_payload(long_checkout, **urls)
+
+      expect(payload[:itemName].length).to be <= described_class::ITEM_NAME_MAX_LENGTH
+      expect(payload[:itemName]).to eq("Panier Grenoble Roller (4 articles)")
+      expect(payload[:metadata][:items].size).to eq(4)
+      expect(payload[:totalAmount]).to eq(4000)
+    end
+  end
+
+  describe ".clamp_item_name" do
+    it "returns joined parts when under the limit" do
+      expect(described_class.clamp_item_name([ "A x1", "B x2" ], fallback: "Panier")).to eq("A x1, B x2")
+    end
+
+    it "returns fallback when joined parts exceed the limit" do
+      parts = Array.new(10) { "Cotisation Adhérent Grenoble Roller — Saison 2025-2026 (Nom Très Long) x1" }
+      expect(parts.join(", ").length).to be > described_class::ITEM_NAME_MAX_LENGTH
+
+      result = described_class.clamp_item_name(parts, fallback: "Panier Grenoble Roller (10 articles)")
+      expect(result).to eq("Panier Grenoble Roller (10 articles)")
+      expect(result.length).to be <= described_class::ITEM_NAME_MAX_LENGTH
+    end
+
+    it "truncates fallback when fallback itself exceeds the limit" do
+      long_fallback = "X" * (described_class::ITEM_NAME_MAX_LENGTH + 40)
+      result = described_class.clamp_item_name([ long_fallback ], fallback: long_fallback)
+
+      expect(result.length).to eq(described_class::ITEM_NAME_MAX_LENGTH)
+      expect(result).to end_with("…")
+      expect(result[0, described_class::ITEM_NAME_MAX_LENGTH - 1]).to eq("X" * (described_class::ITEM_NAME_MAX_LENGTH - 1))
+    end
   end
 
   describe ".create_unified_checkout_intent" do
@@ -280,6 +335,24 @@ RSpec.describe HelloassoService do
 
       result = described_class.create_unified_checkout_intent(checkout, **urls)
       expect(result.dig(:body, "redirectUrl")).to eq("https://pay.example/redirect")
+    end
+
+    it "logs ERROR with response body on HTTP 400" do
+      http = instance_double(Net::HTTP)
+      error_body = { "message" => "itemName too long" }.to_json
+      response = instance_double(Net::HTTPBadRequest, body: error_body, code: "400")
+      allow(response).to receive(:is_a?).with(Net::HTTPSuccess).and_return(false)
+      allow(Net::HTTP).to receive(:new).and_return(http)
+      allow(http).to receive(:use_ssl=)
+      allow(http).to receive(:request).and_return(response)
+
+      expect(Rails.logger).to receive(:error).with(
+        a_string_matching(/create_unified_checkout_intent ERROR \(400\):.*itemName too long/)
+      )
+
+      result = described_class.create_unified_checkout_intent(checkout, **urls)
+      expect(result[:success]).to be(false)
+      expect(result[:status]).to eq(400)
     end
   end
 
