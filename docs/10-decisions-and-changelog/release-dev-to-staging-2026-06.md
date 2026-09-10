@@ -3,17 +3,17 @@ title: "Release Dev → staging (June 2026)"
 status: "active"
 version: "2.4.7"
 created: "2026-06-07"
-updated: "2026-09-07"
+updated: "2026-09-10"
 tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf"]
 ---
 
 # Release Dev → staging (June 2026)
 
-> **Current slice (2026-09-07) — SEO llms.txt v2.4.7**  
-> **Migrations:** none · **ENV:** none  
-> **Discord:** `.github/release-discord.yml` → **2.4.7**  
-> Includes: dynamic `/llms.txt` for AI/SEO scanners.  
-> Prior on staging: sitemap/robots **v2.4.6** (#274).
+> **Current promotion (2026-09-10) — staging safety preflight**
+> **Migrations:** none
+> **Required staging ENV before deployment:** `MAIL_DELIVERY_METHOD=test`, `MAIL_DELIVERY_ENABLED=false`, `SUPERCRONIC_ENABLED=false`
+> **Dev-only commit:** `17138355` — disable staging email delivery and Supercronic via ENV gates
+> Prior functionality already on staging: HelloAsso fixes v2.4.8/v2.4.9, SEO/perf v2.4.2–v2.4.7.
 
 > **v2.4.6 (2026-09-07)** — `/robots.txt` + `/sitemap.xml` already on staging via #274.  
 > **Patch note:** [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)
@@ -24,9 +24,10 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 > **v2.4.2 hotfix (2026-09-07)** — SEO JSON-LD head fix (already on staging via #266).  
 > **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)
 
-**Target branch:** merge `Dev` → `staging` (PR)  
-**Commit range (this promo):** `1a2c0afe` (`origin/staging`) … `65f72c80` (`Dev`) — merge #275  
-**Head on Dev:** `65f72c80` — SEO llms.txt (v2.4.7)
+**Comparison:** origin/staging...origin/Dev
+**Dev-only commits:** 1
+**Dev head:** 17138355
+**Merge base:** b4babb7e
 
 **Agent SSOT for checkout epic:** [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md) (Waves 0–6 complete on `Dev`).  
 **Agent SSOT for Discord notifications:** [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md) (implemented 2026-06-09).
@@ -51,6 +52,40 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 **Migrations:** none  
 **ENV:** none  
 **Rollback:** redeploy previous staging image / revert merge to `2201eefa`
+
+### Staging safety preflight — current promotion
+
+| Commit | Summary |
+|--------|---------|
+| `17138355` | Disable staging email delivery and Supercronic via ENV gates
+
+**Migrations:** none
+
+**Required staging ENV before deployment:**
+
+| Variable | Value |
+| --- | --- |
+| `MAIL_DELIVERY_METHOD` | `test` |
+| `MAIL_DELIVERY_ENABLED` | `false` |
+| `SUPERCRONIC_ENABLED` | `false` |
+
+**Behaviour:**
+- `MAIL_DELIVERY_METHOD=test` routes mail through the test delivery adapter.
+- `MAIL_DELIVERY_ENABLED=false` disables Action Mailer deliveries.
+- `SUPERCRONIC_ENABLED=false` prevents Supercronic startup.
+- If these variables are absent, historical defaults remain enabled.
+
+**Validation already completed:**
+- Ruby syntax: PASS
+- Shell syntax: PASS
+- `git diff --check`: PASS
+- Action Mailer runtime kill switch: PASS
+- Supercronic kill switch: PASS
+
+**Rollback safety:**
+Do not remove the staging safety variables while staging contains production-like data.
+If rollback requires deploying code that does not support these gates, staging must remain stopped/isolated or use a non-production-like database until the protections are restored.
+
 
 ---
 
