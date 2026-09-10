@@ -2,6 +2,16 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-10] - HelloAsso checkout hardening (v2.4.9)
+
+### Fixed
+- Block legacy Order “Finaliser le paiement” when an open unified Checkout exists (resume HelloAsso intent or redirect to `/checkout`).
+- Compact HelloAsso checkout-intent metadata under ~18KB soft limit.
+- Cap cart/checkout line labels at 200 characters (truncate on create).
+
+### Documentation
+- Patch note: [`release-helloasso-checkout-hardening-2026-09.md`](release-helloasso-checkout-hardening-2026-09.md) (v2.4.9)
+
 ## [2026-09-10] - HelloAsso itemName max 250 (v2.4.8)
 
 ### Fixed

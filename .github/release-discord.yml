@@ -1,6 +1,6 @@
-version: "2.4.8"
-headline: "HelloAsso — clamp itemName (max 250)"
+version: "2.4.9"
+headline: "HelloAsso — harden unified checkout paths"
 bullets:
-  - "Fix HTTP 400 on multi-membership carts when itemName exceeded 250 chars"
-  - "Short panier/cotisation fallback; line details kept in metadata"
-  - "Log unified checkout HelloAsso error bodies for observability"
+  - "Block legacy Order pay when an open unified Checkout exists"
+  - "Compact checkout-intent metadata under ~18KB soft limit"
+  - "Cap cart/checkout line labels at 200 characters"

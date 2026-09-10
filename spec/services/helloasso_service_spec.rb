@@ -248,6 +248,39 @@ RSpec.describe HelloassoService do
     end
   end
 
+  describe ".compact_checkout_metadata" do
+    it "slims nested item metadata when over the soft byte limit" do
+      stub_const("#{described_class}::METADATA_MAX_BYTES", 1_200)
+
+      fat_items = Array.new(4) do |i|
+        {
+          name: "Article #{i}",
+          quantity: 1,
+          amount: 1000,
+          type: "Membership",
+          metadata: { "sku" => "SKU-#{i}", "nested" => { "blob" => "x" * 400 } }
+        }
+      end
+      metadata = {
+        checkoutId: 42,
+        membershipIds: [ 1, 2, 3 ],
+        items: fat_items
+      }
+
+      expect(metadata.to_json.bytesize).to be > described_class::METADATA_MAX_BYTES
+
+      compacted = described_class.compact_checkout_metadata(metadata)
+
+      expect(compacted.to_json.bytesize).to be <= described_class::METADATA_MAX_BYTES
+      expect(compacted[:checkoutId]).to eq(42)
+      expect(compacted[:membershipIds]).to eq([ 1, 2, 3 ])
+      expect(compacted[:items]).to be_an(Array)
+      expect(compacted[:items].size).to eq(4)
+      expect(compacted[:items].first).not_to have_key("metadata")
+      expect(compacted[:items].first).not_to have_key(:metadata)
+    end
+  end
+
   describe ".create_unified_checkout_intent" do
     let(:helloasso_creds) do
       {

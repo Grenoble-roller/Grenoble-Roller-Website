@@ -21,7 +21,7 @@ class CartLineService
       requested = (line.persisted? ? line.quantity : 0) + quantity
       line.quantity = [ requested, available ].min
       line.amount_cents = variant.price_cents
-      line.label = variant.product.name
+      line.label = truncate_cart_label(variant.product.name)
       line.expires_at = nil
       line.metadata = line.metadata.presence || {}
       line.save!
@@ -129,7 +129,7 @@ class CartLineService
         reference: membership
       ).tap do |line|
         line.amount_cents = membership.total_amount_cents
-        line.label = membership_cart_label(membership)
+        line.label = truncate_cart_label(membership_cart_label(membership))
         line.quantity = 1
         line.expires_at = nil
         line.metadata = metadata
@@ -143,7 +143,7 @@ class CartLineService
 
     def add_event_registration!(user:, attendance:, event:)
       expires_at = EVENT_HOLD_DURATION.from_now
-      label = "#{event.title} — #{attendance.participant_name}"
+      label = truncate_cart_label("#{event.title} — #{attendance.participant_name}")
 
       user.cart_lines.find_or_initialize_by(
         line_type: :event_registration,
@@ -182,6 +182,13 @@ class CartLineService
           line.destroy
         end
       end
+    end
+
+    def truncate_cart_label(label)
+      text = label.to_s
+      return text if text.length <= CartLine::LABEL_MAX_LENGTH
+
+      "#{text[0, CartLine::LABEL_MAX_LENGTH - 1]}…"
     end
 
     private
