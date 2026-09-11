@@ -49,7 +49,7 @@
               </div>
               <div class="col-md-3 mb-3">
                 <%= f.label :distance_km, "Distance (km)", class: "form-label" %>
-                <%= f.number_field :distance_km, class: "form-control form-control-liquid", step: 0.1, min: 0 %>
+                <%= f.number_field :distance_km, class: "form-control form-control-liquid", step: "any", min: 0 %>
               </div>
               <div class="col-md-3 mb-3">
                 <%= f.label :elevation_m, "Dénivelé (m)", class: "form-label" %>
@@ -57,7 +57,7 @@
               </div>
               <div class="col-12 mb-3">
                 <%= f.label :gpx_url, "URL GPX", class: "form-label" %>
-                <%= f.url_field :gpx_url, class: "form-control form-control-liquid" %>
+                <%= f.text_field :gpx_url, class: "form-control form-control-liquid", inputmode: "url" %>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
               </div>
               <div class="col-12 mb-3">
                 <%= f.label :map_image_url, "URL de carte (déprécié)", class: "form-label" %>
-                <%= f.url_field :map_image_url, class: "form-control form-control-liquid" %>
+                <%= f.text_field :map_image_url, class: "form-control form-control-liquid", inputmode: "url" %>
                 <small class="text-muted">Ou utilisez une URL (déprécié, pour transition)</small>
               </div>
             </div>
