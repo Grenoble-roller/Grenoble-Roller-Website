@@ -73,7 +73,7 @@
       </div>
       <div class="card-body text-center">
         <% if @product.image.attached? %>
-          <%= lazy_image_tag @product.image, class: "img-fluid rounded", style: "max-height: 300px;" %>
+          <%= lazy_image_tag rails_storage_proxy_path(@product.image, only_path: true), class: "img-fluid rounded", style: "max-height: 300px;" %>
         <% else %>
           <p class="text-muted">Aucune image</p>
         <% end %>
