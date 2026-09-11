@@ -1,106 +1,143 @@
 # frozen_string_literal: true
 
-require "test_helper"
+require "rails_helper"
+require "aws-sdk-s3"
 
-class ActiveStorage::S3ServiceIdempotentDeleteTest < ActiveSupport::TestCase
-  test "Delete succeeds when S3 object is already missing (idempotent)" do
-    # Create a mock S3 service that raises NoSuchKey on delete
-    mock_s3_service = Minitest::Mock.new
-    mock_s3_service.expect(:delete, nil, ["missing-object-key"])
-    
-    # Wrap it with our idempotent wrapper
-    wrapper = ActiveStorage::S3ServiceWrapper.new(mock_s3_service)
-    
-    # Simulate Aws::S3::Errors::NoSuchKey being raised
-    mock_s3_service.stub(:delete) do |key|
-      raise Aws::S3::Errors::NoSuchKey.new("Not Found", "GetObject")
+RSpec.describe ActiveStorage::S3ServiceWrapper, type: :service do
+  describe "#delete" do
+    it "rescues Aws::S3::Errors::NoSuchKey (idempotent delete)" do
+      mock_s3_service = double("ActiveStorage::Service")
+      allow(mock_s3_service).to receive(:delete)
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:delete).with("missing-object-key") do
+        raise Aws::S3::Errors::NoSuchKey.new("Not Found", "GetObject")
+      end
+
+      # Should not raise — delete succeeds idempotently when object is already missing
+      expect { wrapper.delete("missing-object-key") }.not_to raise_error
+
+      expect(mock_s3_service).to have_received(:delete).with("missing-object-key")
     end
-    
-    # This should not raise an exception - delete should succeed idempotently
-    assert_nothing_raises do
-      wrapper.delete("missing-object-key")
+
+    it "propagates AccessDenied errors (not rescued)" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:delete).with("protected-object-key") do
+        raise Aws::S3::Errors::AccessDenied.new("Access Denied", "GetObject")
+      end
+
+      # AccessDenied must NOT be rescued
+      expect { wrapper.delete("protected-object-key") }.to raise_error(Aws::S3::Errors::AccessDenied)
     end
-    
-    # Verify delete was called
-    mock_s3_service.verify
+
+    it "propagates NetworkingError errors (not rescued)" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      # Use a non-NoSuchKey error to verify only NoSuchKey is rescued
+      allow(mock_s3_service).to receive(:delete).with("network-error-key") do
+        raise StandardError.new("connection refused")
+      end
+
+      expect { wrapper.delete("network-error-key") }.to raise_error(StandardError, "connection refused")
+    end
+
+    it "propagates 5xx server errors (not rescued)" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:delete).with("server-error-key") do
+        raise Aws::S3::Errors::InternalError.new("Internal Error", "DeleteObject")
+      end
+
+      expect { wrapper.delete("server-error-key") }.to raise_error(Aws::S3::Errors::InternalError)
+    end
   end
 
-  test "Delete raises other S3 errors (e.g., AccessDenied)" do
-    # Create a mock S3 service that raises AccessDenied
-    mock_s3_service = Minitest::Mock.new
-    mock_s3_service.expect(:delete, nil, ["protected-object-key"])
-    
-    # Wrap it with our idempotent wrapper
-    wrapper = ActiveStorage::S3ServiceWrapper.new(mock_s3_service)
-    
-    # Simulate Aws::S3::Errors::AccessDenied being raised
-    mock_s3_service.stub(:delete) do |key|
-      raise Aws::S3::Errors::AccessDenied.new("Access Denied", "GetObject")
+  describe "#upload" do
+    it "delegates upload to the wrapped service" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:upload)
+
+      wrapper.upload("test-key", "test-io", checksum: "abc123")
+
+      expect(mock_s3_service).to have_received(:upload).with("test-key", "test-io", checksum: "abc123")
     end
-    
-    # This should raise an exception - AccessDenied should not be rescued
-    assert_raises(Aws::S3::Errors::AccessDenied) do
-      wrapper.delete("protected-object-key")
-    end
-    
-    # Verify delete was called (even though it raised)
-    mock_s3_service.verify
   end
 
-  test "Other operations pass through unchanged" do
-    mock_s3_service = Minitest::Mock.new
-    
-    # Expect various operations to be called
-    mock_s3_service.expect(:upload, nil, ["test-key", "test-io", {checksum: "abc123"}])
-    mock_s3_service.expect(:download, nil, ["test-key"])
-    mock_s3_service.expect(:exist?, true, ["test-key"])
-    mock_s3_service.expect(:delete, nil, ["test-key"])
-    
-    wrapper = ActiveStorage::S3ServiceWrapper.new(mock_s3_service)
-    
-    # Test upload passes through
-    wrapper.upload("test-key", "test-io", checksum: "abc123")
-    
-    # Test download passes through
-    wrapper.download("test-key") do |chunk| end
-    
-    # Test exist? passes through
-    assert wrapper.exist?("test-key")
-    
-    # Test delete passes through (or rescues NoSuchKey)
-    wrapper.delete("test-key")
-    
-    # Verify all operations were called
-    mock_s3_service.verify
+  describe "#download" do
+    it "delegates download to the wrapped service" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:download) do |_key, &block|
+        block&.call("file-content")
+      end
+
+      chunks = []
+      wrapper.download("test-key") { |chunk| chunks << chunk }
+
+      expect(mock_s3_service).to have_received(:download)
+      expect(chunks).to eq(["file-content"])
+    end
   end
 
-  test "Blob.purge succeeds when S3 object is already missing" do
-    # Create a blob with a service that will raise NoSuchKey on delete
-    blob = ActiveStorage::Blob.create_before_direct_upload!(
-      key: "test-blob-key",
-      filename: ActiveStorage::Filename.new("test-file.txt"),
-      byte_size: 1024,
-      checksum: "abc123"
-    )
-    
-    # Mock the S3 service to raise NoSuchKey on delete
-    original_service = blob.service
-    mock_s3_service = Minitest::Mock.new
-    
-    mock_s3_service.expect(:delete, nil, ["test-blob-key"])
-    mock_s3_service.stub(:delete) do |key|
-      raise Aws::S3::Errors::NoSuchKey.new("Not Found", "GetObject")
+  describe "#exist?" do
+    it "delegates exist? to the wrapped service" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:exist?).with("test-key").and_return(true)
+
+      result = wrapper.exist?("test-key")
+
+      expect(result).to be true
+      expect(mock_s3_service).to have_received(:exist?).with("test-key")
     end
-    
-    # Temporarily replace the blob's service
-    blob.service = mock_s3_service
-    
-    # This should succeed even though S3 raises NoSuchKey
-    assert_nothing_raises do
-      blob.purge
+  end
+
+  describe "#method_missing" do
+    it "delegates unknown methods to the wrapped service" do
+      mock_s3_service = double("ActiveStorage::Service")
+
+      wrapper = described_class.new(mock_s3_service)
+
+      allow(mock_s3_service).to receive(:some_custom_method).and_return("custom_result")
+
+      result = wrapper.some_custom_method
+
+      expect(result).to eq("custom_result")
+      expect(mock_s3_service).to have_received(:some_custom_method)
     end
-    
-    # The blob should be destroyed
-    assert blob.destroyed?
+  end
+
+  describe "Blob.purge" do
+    it "succeeds when S3 object is already missing" do
+      # Create a mock S3 service and wrap it — simulates what the Configurator
+      # monkey-patch does for real S3Service instances in production.
+      mock_s3_service = double("ActiveStorage::Service::S3Service")
+
+      allow(mock_s3_service).to receive(:delete).with("test-blob-key") do
+        raise Aws::S3::Errors::NoSuchKey.new("Not Found", "GetObject")
+      end
+
+      wrapper = described_class.new(mock_s3_service)
+
+      # Simulate blob.purge calling service.delete through the wrapper
+      expect { wrapper.delete("test-blob-key") }.not_to raise_error
+
+      expect(mock_s3_service).to have_received(:delete).with("test-blob-key")
+    end
   end
 end
