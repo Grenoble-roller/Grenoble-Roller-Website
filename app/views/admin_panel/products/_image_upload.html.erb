@@ -91,7 +91,7 @@
     <div class="image-preview-current mb-4">
       <h6 class="mb-3">Image actuelle</h6>
       <div class="position-relative d-inline-block">
-        <%= lazy_image_tag rails_storage_proxy_path(product.image), class: "img-thumbnail", style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
+        <%= lazy_image_tag rails_storage_proxy_path(product.image, only_path: true), class: "img-thumbnail", style: "max-height: 200px; max-width: 200px; object-fit: cover;" %>
         <button type="button"
                 class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2"
                 data-action="click->image-upload#removeCurrentImage"
