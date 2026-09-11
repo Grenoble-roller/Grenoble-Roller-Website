@@ -19,5 +19,17 @@ RSpec.describe 'Health', type: :request do
       get health_check_path
       expect([ 200, 503 ]).to include(response.status)
     end
+
+    it 'returns healthy status when database is connected and migrations are up to date' do
+      get health_check_path
+      expect(response.status).to eq(200)
+
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq('ok')
+      expect(json['database']).to eq('connected')
+      expect(json['migrations']['status']).to eq('up_to_date')
+      expect(json['migrations']['pending_count']).to eq(0)
+      expect(json).to have_key('timestamp')
+    end
   end
 end
