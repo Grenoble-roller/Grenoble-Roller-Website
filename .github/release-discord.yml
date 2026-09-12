@@ -1,6 +1,8 @@
-version: "2.4.9"
-headline: "HelloAsso — harden unified checkout paths"
+version: "2.4.10"
+headline: "Navbar PurgeCSS, UI Audit Logs, health, storage purge, admin image proxy"
 bullets:
-  - "Block legacy Order pay when an open unified Checkout exists"
-  - "Compact checkout-intent metadata under ~18KB soft limit"
-  - "Cap cart/checkout line labels at 200 characters"
+  - "Navbar PurgeCSS + UI Audit Logs"
+  - "Route form validation / unblock image upload"
+  - "GET /health 503 on Rails 8.1 (migration_context)"
+  - "Purge Active Storage idempotent when object S3 is missing"
+  - "Previews admin Active Storage via app proxy"
