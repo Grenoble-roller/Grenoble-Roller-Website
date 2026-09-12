@@ -12,6 +12,9 @@ Rails.application.routes.draw do
     # Logs des emails (SUPERADMIN uniquement)
     resources :mail_logs, path: "mail-logs", only: [ :index, :show ]
 
+    # Journal d'audit, lecture seule (SUPERADMIN uniquement)
+    resources :audit_logs, path: "audit-logs", only: [ :index, :show ]
+
     # Notifications Discord (SUPERADMIN uniquement)
     resources :notification_channels, path: "notification-channels" do
       member do

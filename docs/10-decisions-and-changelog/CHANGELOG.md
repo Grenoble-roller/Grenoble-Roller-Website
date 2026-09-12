@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026-09-12] - Navbar PurgeCSS + admin image proxy, health, storage purge, route form validation (v2.4.10)
+
+### Fixed
+- Navbar PurgeCSS + UI Audit Logs
+- Route form validation / unblock image upload
+- GET /health 503 on Rails 8.1 (migration_context)
+- Purge Active Storage idempotent when object S3 is missing
+- Previews admin Active Storage via app proxy
+
+### Documentation
+- Patch note: [Release note v2.4.10](release-navbar-purgecss-admin-proxy-health-storage-route-2026-09.md)
+
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
 ## [2026-09-10] - HelloAsso checkout hardening (v2.4.9)

@@ -56,7 +56,7 @@
           <dt class="col-sm-3">Avatar</dt>
           <dd class="col-sm-9">
             <% if @user.avatar.attached? %>
-              <%= lazy_image_tag @user.avatar, height: 150, style: "border-radius: 8px;" %>
+              <%= lazy_image_tag rails_storage_proxy_path(@user.avatar, only_path: true), height: 150, style: "border-radius: 8px;" %>
             <% elsif @user.avatar_url.present? %>
               <%= lazy_image_tag @user.avatar_url, height: 150, style: "border-radius: 8px;" %>
             <% else %>

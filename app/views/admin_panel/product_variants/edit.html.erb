@@ -103,15 +103,13 @@
             <div class="form-text">
               Formats : JPG, PNG, WebP. Ratios compatibles : 16:9 ou 4:5 (recommandés) ; le site recadre en carré 1:1 côté boutique. Sujet centré.
             </div>
-            <% if @variant.images.attached? %>
-              <div class="mt-2">
+            <div class="mt-2">
                 <% @variant.images.each do |image| %>
                   <div class="d-inline-block me-2 mb-2">
-                    <%= lazy_image_tag image, class: "img-thumbnail", style: "max-height: 150px;" %>
+                    <%= lazy_image_tag rails_storage_proxy_path(image, only_path: true), class: "img-thumbnail", style: "max-height: 150px;" %>
                   </div>
                 <% end %>
               </div>
-            <% end %>
           </div>
 
           <!-- Options (couleur, taille, etc.) -->

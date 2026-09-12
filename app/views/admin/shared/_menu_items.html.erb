@@ -322,6 +322,20 @@
   </li>
 <% end %>
 
+<!-- JOURNAL D'AUDIT (SUPERADMIN uniquement - level >= 70) -->
+<% if can_access_admin_panel?(70) %>
+  <li class="admin-menu-item">
+    <%= link_to admin_panel_audit_logs_path,
+        class: "admin-menu-link #{'active' if admin_panel_active?('audit_logs')}",
+        title: "Journal d'audit",
+        aria: { label: "Consulter le journal d'audit", current: admin_panel_active?('audit_logs') ? 'page' : nil },
+        data: { bs_dismiss: mobile ? "offcanvas" : nil }.compact do %>
+      <i class="bi bi-clipboard-data admin-menu-icon" aria-hidden="true"></i>
+      <span class="admin-menu-label">Audit Logs</span>
+    <% end %>
+  </li>
+<% end %>
+
 <!-- SÉPARATEUR -->
 <li class="admin-menu-divider" role="separator"></li>
 

@@ -105,5 +105,13 @@ module.exports = {
     deep: [/^pswp/, /^carousel-item-/],
     greedy: [/^tooltip/, /^popover/, /^bs-tooltip/, /^bs-popover/]
   },
+  // Attributes added by Bootstrap JS at runtime — they never appear in the scanned
+  // content, so PurgeCSS would drop every rule built on them.
+  // Losing `[data-bs-popper]` strips Bootstrap's own dropdown positioning:
+  //   .dropdown-menu[data-bs-popper]     { top: 100%; left: 0; margin-top: ... }
+  //   .dropdown-menu-end[data-bs-popper] { right: 0; left: auto }
+  // Without them `.dropdown-menu-end` no longer right-aligns and the menu overflows
+  // the viewport (navbar user dropdown, etc.).
+  dynamicAttributes: [ "data-bs-popper" ],
   defaultExtractor: (content) => content.match(/[\w-/:]+(?<!:)/g) || []
 }

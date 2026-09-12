@@ -93,7 +93,7 @@
     <% if @event.cover_image.attached? %>
       <hr>
       <p><strong>Image de couverture :</strong></p>
-      <%= lazy_image_tag @event.cover_image_thumb, class: "img-fluid rounded", style: "max-width: 400px;" %>
+      <%= lazy_image_tag rails_storage_proxy_path(@event.cover_image, only_path: true), class: "img-fluid rounded", style: "max-width: 400px;" %>
     <% end %>
   </div>
 </div>
