@@ -88,7 +88,7 @@ RSpec.describe ActiveStorage::S3ServiceWrapper, type: :service do
       wrapper.download("test-key") { |chunk| chunks << chunk }
 
       expect(mock_s3_service).to have_received(:download)
-      expect(chunks).to eq(["file-content"])
+      expect(chunks).to eq([ "file-content" ])
     end
   end
 
