@@ -77,7 +77,7 @@
                 <div class="col-12 mb-3">
                   <label class="form-label">Image actuelle</label>
                   <div>
-                    <%= lazy_image_tag @route.map_image, height: 150, style: "border-radius: 8px;", class: "img-fluid" %>
+                    <%= lazy_image_tag rails_storage_proxy_path(@route.map_image, only_path: true), height: 150, style: "border-radius: 8px;", class: "img-fluid" %>
                   </div>
                 </div>
               <% end %>
