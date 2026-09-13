@@ -1,33 +1,34 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.4.7"
+version: "2.4.11"
 created: "2026-06-07"
-updated: "2026-09-10"
+updated: "2026-09-13"
 tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf"]
 ---
 
 # Release Dev → staging (June 2026)
 
-> **Current promotion (2026-09-10) — staging safety preflight**
+> **Current promotion (2026-09-13) — v2.4.11 follow-up**
+> **Target:** `Dev` → `staging`
+> **Staging baseline:** `3677a97b` — v2.4.11 merged via PR #283
 > **Migrations:** none
-> **Required staging ENV before deployment:** `MAIL_DELIVERY_METHOD=test`, `MAIL_DELIVERY_ENABLED=false`, `SUPERCRONIC_ENABLED=false`
-> **Dev-only commit:** `17138355` — disable staging email delivery and Supercronic via ENV gates
-> Prior functionality already on staging: HelloAsso fixes v2.4.8/v2.4.9, SEO/perf v2.4.2–v2.4.7.
+> **New ENV:** none
+>
+> The v2.4.11 Active Storage application fix is already on `staging`.
+> This promotion synchronizes the remaining `Dev` changes:
+> - Ruby LSP development tooling (`64c92279`)
+> - v2.4.11 changelog/release documentation
+> - correction of the malformed v2.4.11/v2.4.10 changelog structure
+>
+> Existing staging safety variables remain required:
+> `MAIL_DELIVERY_METHOD=test`, `MAIL_DELIVERY_ENABLED=false`, `SUPERCRONIC_ENABLED=false`
+>
+> **Patch note:** [`release-v2.4.11.md`](release-v2.4.11.md)
 
-> **v2.4.6 (2026-09-07)** — `/robots.txt` + `/sitemap.xml` already on staging via #274.  
-> **Patch note:** [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)
-
-> **v2.4.5 / v2.4.4 / v2.4.3 (2026-09-07)** — already on staging via #272.  
-> **Patch note:** [`release-perf-bundle-staging-2026-09.md`](release-perf-bundle-staging-2026-09.md)
-
-> **v2.4.2 hotfix (2026-09-07)** — SEO JSON-LD head fix (already on staging via #266).  
-> **Patch note:** [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md)
-
-**Comparison:** origin/staging...origin/Dev
-**Dev-only commits:** 1
-**Dev head:** 17138355
-**Merge base:** b4babb7e
+**Comparison:** `origin/staging...origin/Dev`
+**Staging head before promotion:** `3677a97b`
+**Dev head before documentation correction:** `9fb3046f`
 
 **Agent SSOT for checkout epic:** [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md) (Waves 0–6 complete on `Dev`).  
 **Agent SSOT for Discord notifications:** [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md) (implemented 2026-06-09).
