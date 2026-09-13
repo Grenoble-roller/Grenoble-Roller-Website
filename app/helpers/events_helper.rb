@@ -111,28 +111,23 @@ module EventsHelper
   def route_map_viewer_data(route, title:)
     return {} unless route&.map_image&.attached?
 
-    image_viewer_data(
-      src: route_map_image_path(route),
-      title: title
-    )
+    pswp_gallery_item_data(route.map_image, title: title)
   end
 
   def event_cover_viewer_data(event)
     return {} unless event.cover_image.attached?
 
-    image_viewer_data(
-      src: rails_storage_proxy_path(event.cover_image, only_path: true),
-      title: event.title
-    )
+    pswp_gallery_item_data(event.cover_image, title: event.title)
   end
 
-  # Stimulus actions must not be set via tag helpers — Rails HTML-escapes "->" in data-action.
-  def image_viewer_data(src:, title:)
-    {
-      controller: "route-image-viewer",
-      route_image_viewer_src_value: src,
-      route_image_viewer_title_value: title
-    }
+  # PhotoSwipe gallery item attrs (parent mounts route-image-viewer). No Stimulus actions here —
+  # Rails HTML-escapes "->" in data-action when set via tag helpers.
+  def pswp_gallery_item_data(attachment, title:)
+    data = { pswp_title: title }
+    meta = attachment.blob.metadata || {}
+    data[:pswp_width] = meta["width"] if meta["width"].present?
+    data[:pswp_height] = meta["height"] if meta["height"].present?
+    data
   end
 
   # Active Storage variants only work on raster images (not SVG).

@@ -2798,97 +2798,24 @@
     height: 100%;
     object-fit: contain; /* Afficher l'image en entier sans crop */
     object-position: center;
-    pointer-events: none; /* Clic géré par le conteneur viewer */
+    pointer-events: none; /* Clic géré par le lien gallery */
   }
 
-  /* Viewer plein écran — pinch-zoom natif mobile, fermeture explicite */
-  .route-image-viewer {
-    position: fixed;
-    inset: 0;
-    z-index: 1080;
-    background: rgba(0, 0, 0, 0.96);
-    display: flex;
-    flex-direction: column;
+  /* PhotoSwipe tweaks — event maps / cover (library CSS in vendor/photoswipe.css) */
+  .pswp {
+    --pswp-bg: rgba(0, 0, 0, 0.92);
   }
 
-  .route-image-viewer__close {
-    position: fixed;
-    top: max(0.75rem, env(safe-area-inset-top));
-    right: max(0.75rem, env(safe-area-inset-right));
-    z-index: 2;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
-    color: #fff;
-    font-size: 1.75rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  a.pswp-gallery-item {
+    cursor: zoom-in;
   }
 
-  .route-image-viewer__title {
-    position: fixed;
-    top: max(0.875rem, env(safe-area-inset-top));
-    left: max(0.75rem, env(safe-area-inset-left));
-    right: 4rem;
-    z-index: 2;
-    margin: 0;
-    color: #fff;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    pointer-events: none;
+  a.hero-image-container.pswp-gallery-item {
+    color: inherit;
   }
 
-  .route-image-viewer__scroll {
-    flex: 1;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    touch-action: pan-x pan-y pinch-zoom;
-    padding:
-      calc(3.25rem + env(safe-area-inset-top))
-      max(0.5rem, env(safe-area-inset-right))
-      max(0.75rem, env(safe-area-inset-bottom))
-      max(0.5rem, env(safe-area-inset-left));
-  }
-
-  .route-image-viewer__img {
-    display: block;
-    width: auto;
-    max-width: min(96vw, 1400px);
-    max-height: calc(100vh - 5.5rem);
-    height: auto;
-    margin: 0 auto;
-    object-fit: contain;
-    border-radius: 0.35rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  .route-image-viewer__hint {
-    position: fixed;
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    margin: 0;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.55);
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.75rem;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-
-  body.route-image-viewer-open {
-    overflow: hidden;
+  a.hero-image-container.pswp-gallery-item:hover {
+    color: inherit;
   }
   
   /* Sur mobile : vignette fixe dans la carte (scroll dans le viewer) */

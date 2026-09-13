@@ -2,6 +2,16 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-08-04] - Event map viewer: PhotoSwipe overlay (v2.3.4)
+
+### Changed
+- **Event cover + loop maps:** PhotoSwipe 5 overlay gallery (pinch/wheel zoom) on mobile and desktop — replaces native new-tab open on coarse/narrow viewports and the custom non-zoom lightbox.
+- Importmap pins `photoswipe` + `photoswipe/lightbox`; CSS vendored + PurgeCSS safelist `/^pswp/`.
+
+### Documentation
+- AGENT.md gotcha updated; Discord announce payload bumped to v2.3.4 in `.github/release-discord.yml`.
+- Patch note: [`release-event-map-photoswipe-2026-08.md`](release-event-map-photoswipe-2026-08.md) (v2.3.4)
+
 ## [2026-08-03] - Storefront stock badges (honest + low-stock)
 
 ### Fixed

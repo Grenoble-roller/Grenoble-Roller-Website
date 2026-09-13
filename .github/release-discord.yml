@@ -5,10 +5,9 @@
 # Channel target (ops): Grenoble Roller release salon — see
 # docs/07-ops/runbooks/discord-release-announce.md
 
-version: "2.3.3"
-headline: "Adhésions UX · boutique · commandes · glass/WCAG"
+version: "2.3.4"
+headline: "Cartes parcours — overlay zoomable (PhotoSwipe)"
 bullets:
-  - "Adhésions — jours restants, Réadhérer"
-  - "Boutique — cartes 1:1, PDP galerie, badges stock"
-  - "Commandes — liste dense + chips WCAG"
-  - "Glass dual-theme · fix panier adhésion"
+  - "Couverture + boucles : overlay plein écran (plus de nouvel onglet)"
+  - "Pinch-zoom mobile · molette desktop · swipe entre images"
+  - "Même galerie pour cover et cartes de boucles"

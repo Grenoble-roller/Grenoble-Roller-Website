@@ -2,52 +2,50 @@
 <% content_for :description, "#{@event.title} - #{@event.description.presence || 'Événement Roller à Grenoble'}. #{@event.start_at.present? ? "Le #{l(@event.start_at, format: :long, locale: :fr)}" : ''}" %>
 
 <section class="container py-4 py-lg-5">
-  <article class="card card-liquid event-detail-card shadow-liquid border-0 mx-auto">
+  <article class="card card-liquid event-detail-card shadow-liquid border-0 mx-auto" data-controller="route-image-viewer">
     <!-- Hero image avec overlay gradient et informations superposées -->
     <div class="hero-event-wrapper">
       <% hero_viewer_data = event_cover_viewer_data(@event) %>
-      <%= tag.div(
-            class: ["hero-image-container", ("hero-image-container--expandable" if hero_viewer_data.present?)].compact.join(" "),
-            data: hero_viewer_data.presence,
-            role: (hero_viewer_data.present? ? "button" : nil),
-            tabindex: (hero_viewer_data.present? ? 0 : nil),
-            aria: (hero_viewer_data.present? ? { label: "Agrandir l'image de l'événement" } : {})
-          ) do %>
-        <% if @event.cover_image.attached? %>
+      <% if hero_viewer_data.present? %>
+        <%= link_to(
+              rails_storage_proxy_path(@event.cover_image, only_path: true),
+              class: "hero-image-container hero-image-container--expandable pswp-gallery-item route-image-container text-decoration-none",
+              data: hero_viewer_data,
+              aria: { label: "Agrandir l'image de l'événement" }
+            ) do %>
           <%= image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
-        <% end %>
-        <div class="hero-overlay"></div>
-        
-        <!-- Badge de date en haut à droite (z-index élevé) -->
-        <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
-          <span class="badge <%= @event.past? ? 'badge-liquid-secondary' : @event.ongoing? ? 'bg-warning text-dark' : 'badge-liquid-primary' %> text-uppercase shadow-sm">
-            <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
-            <%= l @event.start_at, format: :day_month, locale: :fr %>
-          </span>
-        </div>
-        
-        <% if @event.ongoing? %>
-          <div class="position-absolute top-0 start-0 p-3" style="z-index: 10;">
-            <span class="badge bg-warning text-dark text-uppercase shadow-sm">
-              <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>En cours
+          <div class="hero-overlay"></div>
+
+          <!-- Badge de date en haut à droite (z-index élevé) -->
+          <div class="position-absolute top-0 end-0 p-3" style="z-index: 10;">
+            <span class="badge <%= @event.past? ? 'badge-liquid-secondary' : @event.ongoing? ? 'bg-warning text-dark' : 'badge-liquid-primary' %> text-uppercase shadow-sm">
+              <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>
+              <%= l @event.start_at, format: :day_month, locale: :fr %>
             </span>
           </div>
-        <% elsif @event.past? %>
-          <div class="position-absolute top-0 start-0 p-3" style="z-index: 10;">
-            <span class="badge badge-liquid-secondary text-uppercase shadow-sm">
-              <i class="bi bi-archive me-1" aria-hidden="true"></i>Passé
-            </span>
-          </div>
-        <% end %>
-        
-        <!-- Informations directement sur l'image -->
-        <div class="hero-content">
-          <h1 class="hero-title"><%= @event.title %></h1>
-          
-          <div class="hero-meta">
-            <span class="meta-item">
-              <i class="bi bi-geo-alt" aria-hidden="true"></i>
-              <%= @event.location_text %>
+
+          <% if @event.ongoing? %>
+            <div class="position-absolute top-0 start-0 p-3" style="z-index: 10;">
+              <span class="badge bg-warning text-dark text-uppercase shadow-sm">
+                <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>En cours
+              </span>
+            </div>
+          <% elsif @event.past? %>
+            <div class="position-absolute top-0 start-0 p-3" style="z-index: 10;">
+              <span class="badge badge-liquid-secondary text-uppercase shadow-sm">
+                <i class="bi bi-archive me-1" aria-hidden="true"></i>Passé
+              </span>
+            </div>
+          <% end %>
+
+          <!-- Informations directement sur l'image -->
+          <div class="hero-content">
+            <h1 class="hero-title"><%= @event.title %></h1>
+
+            <div class="hero-meta">
+              <span class="meta-item">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                <%= @event.location_text %>
             </span>
             <span class="meta-item">
               <i class="bi bi-clock" aria-hidden="true"></i>
@@ -105,6 +103,23 @@
                 <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Vous êtes inscrit(e)
               </span>
             <% end %>
+          </div>
+        </div>
+        <% end %>
+      <% else %>
+        <div class="hero-image-container">
+          <% if @event.cover_image.attached? %>
+            <%= image_tag(rails_representation_path(@event.cover_image_banner), alt: @event.title, class: "hero-image", loading: "eager") %>
+          <% end %>
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <h1 class="hero-title"><%= @event.title %></h1>
+            <div class="hero-meta">
+              <span class="meta-item">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                <%= @event.location_text %>
+              </span>
+            </div>
           </div>
         </div>
       <% end %>
@@ -223,9 +238,7 @@
               <% if @event.route.map_image.attached? %>
                 <%= link_to(
                       route_map_image_path(@event.route),
-                      class: "event-loop-card__media route-image-container",
-                      target: "_blank",
-                      rel: "noopener noreferrer",
+                      class: "event-loop-card__media route-image-container pswp-gallery-item",
                       data: route_map_viewer_data(@event.route, title: "Carte du parcours"),
                       aria: { label: "Agrandir la carte du parcours" }
                     ) do %>

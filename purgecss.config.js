@@ -31,6 +31,8 @@ module.exports = {
     /^bg-/,
     /^text-/,
     /^border-/,
+    // PhotoSwipe 5 (DOM classes injected at runtime)
+    /^pswp/,
     // Classes pour les états
     /^show$/,
     /^active$/,
