@@ -1,6 +1,16 @@
 # Changelog
 
 ## [2026-09-12] - Navbar PurgeCSS + admin image proxy, health, storage purge, route form validation (v2.4.10)
+## [2026-09-12] - ActiveStorage proxy + Spec fixes (v2.4.11)
+
+### Fixed
+- **ActiveStorage:** S3ServiceWrapper identity preservation + idempotent S3 delete.
+- **Admin:** Render all Active Storage image previews through the app proxy (handles missing objects).
+- **Specs:** Fix RuboCop offenses in health and Active Storage purge specs.
+
+### Documentation
+- Patch note: [`release-v2.4.11.md`](release-v2.4.11.md)
+
 
 ### Fixed
 - Navbar PurgeCSS + UI Audit Logs
