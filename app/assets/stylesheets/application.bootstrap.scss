@@ -1,6 +1,152 @@
-@use "bootstrap/scss/bootstrap" as *;
-@use "bootstrap-icons/font/bootstrap-icons" as *;
-@use "style" as *;
-
 /* PhotoSwipe 5 — event map / cover overlay viewer */
 @import "vendor/photoswipe";
+
+/* ==========================================================================
+   NORMALIZED LAYOUT RHYTHM AND CONTAINER WIDTHS
+   ==========================================================================
+
+   This section establishes consistent container widths and spacing across the
+   entire application to create a unified visual rhythm and improve readability.
+
+   Key changes:
+   1. Standardize main containers to use Bootstrap's .container class
+   2. Establish consistent padding and margins following the 8px rhythm system
+   3. Create consistent max-width for content sections
+   ========================================================================== */
+
+/* Define the main container max-width for consistency */
+$container-max-width: 1200px;
+
+/* Normalize page-level spacing */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bs-body-bg);
+}
+
+/* Main content containers - unified width and spacing */
+.container, .container-fluid {
+  @include media-breakpoint-up(lg) {
+    max-width: $container-max-width;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+// Improve container padding for better rhythm
+.container {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+
+  @include media-breakpoint-up(sm) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+// Section spacing for rhythm consistency
+section {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+
+  @include media-breakpoint-up(lg) {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
+// Card and component spacing
+.card, .card-liquid {
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+/* Improve typography hierarchy */
+h1 {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+
+  @include media-breakpoint-up(lg) {
+    margin-bottom: 2rem;
+    font-size: 3rem;
+  }
+}
+
+h2 {
+  margin-bottom: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+
+  @include media-breakpoint-up(lg) {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+}
+
+h3 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+
+  @include media-breakpoint-up(lg) {
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+  }
+}
+
+/* Text utility classes for semantic typography hierarchy */
+.text-display {
+  @include media-breakpoint-up(lg) {
+    font-size: 3rem;
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+  @include media-breakpoint-up(md) {
+    font-size: 2.5rem;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+  }
+  @include media-breakpoint-up(sm) {
+    font-size: 2rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+}
+
+.text-heading {
+  @include media-breakpoint-up(lg) {
+    font-size: 2rem;
+    line-height: 1.3;
+    margin-bottom: 1.5rem;
+  }
+  @include media-breakpoint-up(md) {
+    font-size: 1.75rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+}
+
+.text-subheading {
+  @include media-breakpoint-up(lg) {
+    font-size: 1.5rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+  @include media-breakpoint-up(md) {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+  }
+}
+
+.text-body-large {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.text-caption {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--bs-secondary-color);
+}
