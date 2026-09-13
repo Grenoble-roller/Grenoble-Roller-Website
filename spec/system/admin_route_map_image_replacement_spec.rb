@@ -35,13 +35,6 @@ RSpec.describe 'Admin Route#map_image replacement (browser)', type: :system, js:
     Route.unscoped.find_by(id: record.id)
   end
 
-  def sign_in_as(user)
-    visit new_user_session_path
-    fill_in 'user_email', with: user.email
-    fill_in 'user_password', with: 'password12345'
-    click_button 'Se connecter'
-    expect(page).to have_no_content('Email ou mot de passe invalide')
-  end
 
   # Instrumente le navigateur : événements submit (capture + bubble), fetch/XHR,
   # FormData. Persiste dans sessionStorage pour survivre à une navigation.
@@ -163,8 +156,17 @@ RSpec.describe 'Admin Route#map_image replacement (browser)', type: :system, js:
 
   # Retourne [replaced?, snapshot, state]
   def attempt_replacement(record, label:, modify_distance: false)
-    sign_in_as(admin)
+    login_as(admin)
     visit edit_admin_panel_route_path(record)
+    expect(page).to have_current_path(
+      edit_admin_panel_route_path(record),
+      ignore_query: true
+    )
+    expect(page).to have_field(
+      'route_map_image',
+      type: 'file',
+      disabled: false
+    )
     instrument_browser!
 
     before_blob_id = current_blob_id(record)
