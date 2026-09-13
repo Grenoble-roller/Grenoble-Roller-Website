@@ -101,10 +101,10 @@
                         class: "card card-product card-liquid rounded-liquid text-decoration-none text-reset",
                         aria: { label: "Voir #{product.name}" } do %>
               <div class="card-product-image-wrapper">
-                <% product_image = product_image_tag(product) %>
+                <% product_image = product_lazy_image_tag(product) %>
                 <div class="card-product-image">
                   <% if product_image %>
-                    <%= image_tag product_image, alt: "", loading: "lazy", decoding: "async" %>
+                    <%= lazy_image_tag product_image, alt: "", loading: "lazy", decoding: "async" %>
                   <% end %>
                 </div>
                 <%= render "products/stock_badge", level: stock_level, qty: total_stock %>

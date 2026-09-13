@@ -1,5 +1,8 @@
 # 🚀 Déploiement Automatique - Watchdog
 
+**Dernière mise à jour** : 2026-08-14
+
+
 ## 📋 Vue d'ensemble
 
 Système de déploiement automatique **100% local** qui surveille les mises à jour Git et déploie automatiquement.

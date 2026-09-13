@@ -1,5 +1,8 @@
 # Audit des specs en échec
 
+**Dernière mise à jour** : 2026-08-14
+
+
 **Dernier run (après salve 1 + corrections 011–012) :** 1054 exemples, **0 échec**, 10 pending.
 
 **Commande pour reproduire :**

@@ -154,7 +154,7 @@ RSpec.describe 'AdminPanel::Attendances', type: :request do
 
         it 'renders new template' do
           post admin_panel_attendances_path, params: invalid_params
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
     end
@@ -224,7 +224,7 @@ RSpec.describe 'AdminPanel::Attendances', type: :request do
 
         it 'renders edit template' do
           patch admin_panel_attendance_path(attendance), params: invalid_params
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
     end

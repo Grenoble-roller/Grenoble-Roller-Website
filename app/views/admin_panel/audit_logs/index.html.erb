@@ -1,0 +1,117 @@
+<div class="admin-audit-logs">
+  <!-- HEADER -->
+  <div class="admin-page-header">
+    <div>
+      <h1>📋 Journal d'Audit</h1>
+      <p class="text-muted">Traçabilité des créations, modifications et suppressions (lecture seule)</p>
+    </div>
+  </div>
+
+  <!-- STATISTIQUES -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-body">
+          <h5 class="card-title text-muted small">Total</h5>
+          <h3 class="mb-0"><%= @stats[:total] %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-body">
+          <h5 class="card-title text-muted small">Actions distinctes</h5>
+          <h3 class="mb-0"><%= @stats[:actions] %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-body">
+          <h5 class="card-title text-muted small">Types de cible</h5>
+          <h3 class="mb-0"><%= @stats[:targets] %></h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card card-liquid rounded-liquid shadow-liquid">
+        <div class="card-body">
+          <h5 class="card-title text-muted small">Acteurs distincts</h5>
+          <h3 class="mb-0"><%= @stats[:actors] %></h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTRES -->
+  <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">Filtres</h5>
+    </div>
+    <div class="card-body">
+      <%= form_with url: admin_panel_audit_logs_path, method: :get, local: true, class: "row g-3" do |f| %>
+        <div class="col-md-3">
+          <%= f.label :audit_action, "Action", class: "form-label" %>
+          <%= f.select :audit_action,
+              options_for_select([ [ "Toutes les actions", "" ] ] + @available_actions.map { |a| [ a, a ] }, params[:audit_action]),
+              {},
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :target_type, "Type de cible", class: "form-label" %>
+          <%= f.select :target_type,
+              options_for_select([ [ "Toutes les cibles", "" ] ] + @available_targets.map { |t| [ t, t ] }, params[:target_type]),
+              {},
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :actor_user_id, "Acteur", class: "form-label" %>
+          <%= f.select :actor_user_id,
+              options_for_select([ [ "Tous les acteurs", "" ] ] + @available_actors.map { |u| [ u.display_name.presence || u.email, u.id ] }, params[:actor_user_id]),
+              {},
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :since, "Depuis le", class: "form-label" %>
+          <%= f.date_field :since, value: params[:since], class: "form-control form-control-liquid" %>
+        </div>
+        <div class="col-md-3">
+          <%= f.label :until, "Jusqu'au", class: "form-label" %>
+          <%= f.date_field :until, value: params[:until], class: "form-control form-control-liquid" %>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <%= f.submit "Filtrer", class: "btn btn-primary w-100" %>
+        </div>
+        <% if params[:audit_action].present? || params[:target_type].present? || params[:actor_user_id].present? || params[:since].present? || params[:until].present? %>
+          <div class="col-md-3 d-flex align-items-end">
+            <%= link_to "Réinitialiser", admin_panel_audit_logs_path, class: "btn btn-outline-secondary w-100" %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- TABLEAU DES LOGS -->
+  <div class="card card-liquid rounded-liquid shadow-liquid">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Entrées</h5>
+      <div class="text-muted small">
+        <% if @pagy.count.positive? %>
+          <%= @pagy.from %>-<%= @pagy.to %> sur <%= @pagy.count %>
+        <% else %>
+          0 entrée
+        <% end %>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <%= render "logs_table" %>
+    </div>
+    <% if @pagy.pages > 1 %>
+      <div class="card-footer">
+        <div class="d-flex justify-content-center">
+          <%== pagy_bootstrap_nav(@pagy) %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

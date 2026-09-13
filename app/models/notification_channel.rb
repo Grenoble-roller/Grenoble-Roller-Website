@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class NotificationChannel < ApplicationRecord
+  include Auditable
+
   ALLOWED_WEBHOOK_HOSTS = %w[discord.com discordapp.com www.discord.com].freeze
 
   has_many :notification_subscriptions, dependent: :destroy
@@ -65,6 +67,13 @@ class NotificationChannel < ApplicationRecord
   end
 
   private
+
+  def audit_attributes
+    {
+      name: name,
+      enabled: enabled
+    }
+  end
 
   def webhook_url_presence_on_create
     return unless new_record?

@@ -63,10 +63,9 @@ RSpec.describe 'Mes sorties', type: :system do
 
         # Sur la page show, cliquer sur le bouton de désinscription
         # Le bouton affiche "Annuler" mais a aria-label="Se désinscrire"
-        accept_confirm do
-          button = page.find('button[aria-label="Se désinscrire"]')
-          button.click
-        end
+        # data-turbo-confirm uses window.confirm; stub for headless reliability
+        page.execute_script('window.confirm = () => true')
+        page.find('button[aria-label="Se désinscrire"]').click
 
         # Attendre que la page se recharge
         sleep 0.5

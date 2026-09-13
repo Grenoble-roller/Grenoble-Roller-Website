@@ -1,15 +1,15 @@
 ---
 title: "Grenoble Roller - Overview Complet"
 status: "active"
-version: "2.0"
+version: "2.1"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["overview", "project", "vision", "architecture", "status"]
 ---
 
 # Grenoble Roller – Overview Complet du Projet
 
-**Dernière mise à jour** : 2026-06-07
+**Dernière mise à jour** : 2026-08-14
 
 ---
 
@@ -217,7 +217,7 @@ Créer une plateforme complète qui rassemble la communauté roller grenobloise 
 
 ### Documentation
 - **Fichiers docs/** : ~100 fichiers markdown
-- **Structure** : 11 sections organisées (00-overview → 11-templates)
+- **Structure** : 13 sections organisées (00-overview → 12-development)
 - **ADRs** : À créer (structure prête)
 
 ### Features
@@ -274,7 +274,7 @@ Créer une plateforme complète qui rassemble la communauté roller grenobloise 
 - Codes promo
 - Statistiques personnelles utilisateur
 
-**Voir détails complets** : [`docs/development/ux-improvements/todo-restant.md`](../development/ux-improvements/todo-restant.md)
+**Voir détails complets** : [`docs/09-product/todo-restant.md`](../09-product/todo-restant.md)
 
 ---
 
@@ -289,15 +289,15 @@ docs/
 ├── 04-rails/             # Conventions Rails, setup, sécurité
 ├── 05-testing/           # Stratégie tests (RSpec)
 ├── 06-events/            # Documentation événements
-├── 06-infrastructure/     # Infrastructure (CI/CD, observabilité)
 ├── 07-ops/               # Runbooks (setup, backup, incidents)
 ├── 08-security-privacy/   # Accessibilité, RGPD, conformité
 ├── 09-product/           # Product, UX, parcours utilisateur
 ├── 10-decisions-and-changelog/  # ADRs, DRs, changelog
-└── 11-templates/         # Gabarits (ADR, PR, issues)
+├── 11-templates/         # Gabarits (ADR, PR, issues)
+└── 12-development/       # WIP — fonctionnalités en cours
 ```
 
-**Index complet** : [`docs/README.md`](../README.md)
+**Index complet** : [`00-overview/README.md`](README.md) (il n'y a pas de `docs/README.md` — voir AGENTS.md)
 
 ---
 
@@ -306,7 +306,6 @@ docs/
 ### Overview & Audit
 - **Vue d'ensemble** : Ce document (`README.md`)
 - **État des fonctionnalités** : [`features-status.md`](features-status.md)
-- **Audit complet** : [`audit-complet-fonctionnalites.md`](audit-complet-fonctionnalites.md) ⭐ NOUVEAU
 
 ### Documentation Clé
 - **Setup local** : [`docs/04-rails/setup/local-development.md`](../04-rails/setup/local-development.md)
@@ -315,14 +314,13 @@ docs/
 - **Changelog** : [`docs/10-decisions-and-changelog/CHANGELOG.md`](../10-decisions-and-changelog/CHANGELOG.md)
 
 ### Product & UX
-- **Backlog UX** : [`docs/development/ux-improvements/ux-improvements-backlog.md`](../development/ux-improvements/ux-improvements-backlog.md)
-- **Todo restant** : [`docs/development/ux-improvements/todo-restant.md`](../development/ux-improvements/todo-restant.md)
+- **Backlog UX** : [`docs/09-product/ux-improvements-backlog.md`](../09-product/ux-improvements-backlog.md)
+- **Todo restant** : [`docs/09-product/todo-restant.md`](../09-product/todo-restant.md)
 
 ### Ops & Deploy
 - **Runbooks** : [`docs/07-ops/runbooks/`](../07-ops/runbooks/)
 - **Déploiement** : [`docs/07-ops/deployment.md`](../07-ops/deployment.md)
 - **Déploiement VPS** : [`docs/07-ops/deploy-vps.md`](../07-ops/deploy-vps.md)
-- **Mode Maintenance** : [`docs/07-ops/maintenance-mode.md`](../07-ops/maintenance-mode.md)
 
 ---
 

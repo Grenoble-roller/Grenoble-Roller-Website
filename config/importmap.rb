@@ -8,6 +8,8 @@ pin "@hotwired/stimulus-loading", to: "stimulus-loading.js"
 pin_all_from "app/javascript/controllers", under: "controllers"
 # Bootstrap (UMD) : résolu depuis vendor/javascript/bootstrap.bundle.min.js, expose window.bootstrap
 pin "bootstrap", to: "bootstrap.bundle.min.js"
+pin "photoswipe", to: "photoswipe.esm.min.js"
+pin "photoswipe/lightbox", to: "photoswipe-lightbox.esm.min.js"
 pin "stats_counter", to: "stats_counter.js"
 pin "membership_form_validation", to: "membership_form_validation.js"
 pin "admin_panel_navbar", to: "admin_panel_navbar.js"

@@ -98,6 +98,9 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
+  # LSP for Ruby
+  gem "ruby-lsp"
+
   # File watcher for auto-reload in development (required for Docker volumes)
   gem "listen", "~> 3.8"
 end
@@ -107,3 +110,5 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "jsbundling-rails", "~> 1.3"

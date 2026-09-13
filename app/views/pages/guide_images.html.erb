@@ -26,7 +26,7 @@
                   download: "grenoble-roller-guide-images.svg",
                   title: "Télécharger le schéma (fichier SVG)",
                   aria: { label: "Télécharger le schéma récapitulatif au format SVG", describedby: "guide-images-schematic-desc" } do %>
-                <%= image_tag "/guides/image-upload-reference.svg",
+                <%= lazy_image_tag "/guides/image-upload-reference.svg",
                     alt: "",
                     class: "img-fluid rounded border",
                     style: "max-height: 640px; width: auto;",

@@ -119,7 +119,7 @@ Ce document décrit **l'ensemble du système de mailing automatique** de l'appli
 - Rappel possibilité d'annulation
 
 **Références** :
-- Documentation : [`docs/06-events/email-notifications-implementation.md`](../06-events/email-notifications-implementation.md)
+- Documentation : [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md)
 
 ---
 
@@ -200,7 +200,7 @@ Ce document décrit **l'ensemble du système de mailing automatique** de l'appli
 - Job : [`app/jobs/event_reminder_job.rb`](../app/jobs/event_reminder_job.rb)
 - Modèle Attendance : [`app/models/attendance.rb`](../app/models/attendance.rb) (scope `.active` ligne 45, champ `wants_reminder` ligne 73)
 - Modèle User : [`app/models/user.rb`](../app/models/user.rb) (méthode `wants_initiation_mail?`)
-- Documentation complète : [`docs/06-events/event-reminder-job.md`](../06-events/event-reminder-job.md)
+- Documentation complète : [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md)
 
 ---
 
@@ -269,7 +269,7 @@ Ce document décrit **l'ensemble du système de mailing automatique** de l'appli
 **Références** :
 - Modèle WaitlistEntry : [`app/models/waitlist_entry.rb`](../app/models/waitlist_entry.rb) (méthode `send_notification_email` ligne 229)
 - Modèle Attendance : [`app/models/attendance.rb`](../app/models/attendance.rb) (callback `notify_waitlist_if_needed` ligne 295)
-- Documentation waitlist : [`docs/06-events/waitlist-system.md`](../06-events/waitlist-system.md)
+- Documentation waitlist : [`docs/06-events/waitlist-system.md`](../../06-events/waitlist-system.md)
 
 ---
 
@@ -667,7 +667,7 @@ Email: order_shipped ✅
 ```
 
 **Références** :
-- Documentation complète : [`docs/09-product/orders-workflow-emails.md`](../09-product/orders-workflow-emails.md)
+- Documentation complète : [`docs/09-product/orders-workflow-emails.md`](../../09-product/orders-workflow-emails.md)
 - Modèle Order : [`app/models/order.rb`](../app/models/order.rb) (callback `notify_status_change` ligne 20, méthode `notify_status_change` lignes 57-78)
 - Controller Orders : [`app/controllers/orders_controller.rb`](../app/controllers/orders_controller.rb) (action `create` ligne 76)
 - Service HelloAsso : [`app/services/helloasso_service.rb`](../app/services/helloasso_service.rb) (synchronisation statuts paiement)
@@ -821,7 +821,7 @@ Email: order_shipped ✅
 ```
 
 **Références** :
-- Documentation complète : [`docs/09-product/membership-mailer-emails.md`](../09-product/membership-mailer-emails.md)
+- Documentation complète : [`docs/09-product/membership-mailer-emails.md`](../../09-product/membership-mailer-emails.md)
 - Rake tasks : [`lib/tasks/memberships.rake`](../lib/tasks/memberships.rake)
 - Modèle Membership : [`app/models/membership.rb`](../app/models/membership.rb) (callback `activate_if_paid` lignes 184-189)
 - Service HelloAsso : [`app/services/helloasso_service.rb`](../app/services/helloasso_service.rb) (synchronisation paiements lignes 400-450)
@@ -858,7 +858,7 @@ Email: order_shipped ✅
 - **Note** : Devise envoie automatiquement l'email de confirmation via `:confirmable` (voir [`app/models/user.rb`](../app/models/user.rb) ligne 169)
 
 **Références** :
-- Documentation : [`docs/04-rails/setup/user-mailer-welcome.md`](../04-rails/setup/user-mailer-welcome.md)
+- Documentation : [`docs/04-rails/setup/user-mailer-welcome.md`](../setup/user-mailer-welcome.md)
 - Modèle User : [`app/models/user.rb`](../app/models/user.rb) (callback ligne 29, méthode `send_welcome_email_and_confirmation` lignes 166-171)
 
 ---
@@ -888,8 +888,8 @@ Email: order_shipped ✅
 - ✅ Mobile-friendly
 
 **Références** :
-- Documentation complète : [`docs/04-rails/setup/email-confirmation.md`](../04-rails/setup/email-confirmation.md)
-- Sécurité : [`docs/04-rails/security/email-security-service.md`](../04-rails/security/email-security-service.md)
+- Documentation complète : [`docs/04-rails/setup/email-confirmation.md`](../setup/email-confirmation.md)
+- Sécurité : [`docs/04-rails/security/email-security-service.md`](../security/email-security-service.md)
 
 ---
 
@@ -1009,7 +1009,7 @@ smtp:
 **Fichier** : [`config/credentials.yml.enc`](../config/credentials.yml.enc) (chiffré, nécessite `RAILS_MASTER_KEY`)
 
 **Références** :
-- Documentation credentials : [`docs/04-rails/setup/credentials.md`](../04-rails/setup/credentials.md)
+- Documentation credentials : [`docs/04-rails/setup/credentials.md`](../setup/credentials.md)
 - Script d'édition : [`bin/edit-credentials`](../bin/edit-credentials)
 
 ---
@@ -1058,7 +1058,7 @@ smtp:
 - Chaque email contient les détails de l'initiation et le nom de l'enfant concerné
 
 **Références** :
-- Documentation complète : [`docs/06-events/event-reminder-job.md`](../06-events/event-reminder-job.md)
+- Documentation complète : [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md)
 - Architecture : Section 12.3 de ce document
 - Code du job : [`app/jobs/event_reminder_job.rb`](../app/jobs/event_reminder_job.rb)
 - Modèle Attendance : [`app/models/attendance.rb`](../app/models/attendance.rb) (scope `.active`, champ `wants_reminder`, `child_membership_id`)
@@ -1461,7 +1461,7 @@ docker compose -f ops/dev/docker-compose.yml run --rm \
 - ✅ Intégration Sentry (alertes automatiques)
 
 **Références** :
-- Documentation complète : [`docs/04-rails/security/email-security-service.md`](../04-rails/security/email-security-service.md)
+- Documentation complète : [`docs/04-rails/security/email-security-service.md`](../security/email-security-service.md)
 
 ---
 
@@ -2219,20 +2219,20 @@ config.time_zone = "Europe/Paris"
 
 ### Documentation Principale
 
-- **Récapitulatif emails** : [`docs/04-rails/setup/emails-recapitulatif.md`](../04-rails/setup/emails-recapitulatif.md)
-- **Confirmation email** : [`docs/04-rails/setup/email-confirmation.md`](../04-rails/setup/email-confirmation.md)
-- **Welcome email** : [`docs/04-rails/setup/user-mailer-welcome.md`](../04-rails/setup/user-mailer-welcome.md)
-- **Sécurité email** : [`docs/04-rails/security/email-security-service.md`](../04-rails/security/email-security-service.md)
+- **Récapitulatif emails** : [`docs/04-rails/setup/emails-recapitulatif.md`](../setup/emails-recapitulatif.md)
+- **Confirmation email** : [`docs/04-rails/setup/email-confirmation.md`](../setup/email-confirmation.md)
+- **Welcome email** : [`docs/04-rails/setup/user-mailer-welcome.md`](../setup/user-mailer-welcome.md)
+- **Sécurité email** : [`docs/04-rails/security/email-security-service.md`](../security/email-security-service.md)
 
 ### Documentation Événements
 
-- **Emails événements** : [`docs/06-events/email-notifications-implementation.md`](../06-events/email-notifications-implementation.md)
-- **Job rappel** : [`docs/06-events/event-reminder-job.md`](../06-events/event-reminder-job.md)
+- **Emails événements** : [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md)
+- **Job rappel** : [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md)
 
 ### Documentation Produit
 
-- **Emails commandes** : [`docs/09-product/orders-workflow-emails.md`](../09-product/orders-workflow-emails.md)
-- **Emails adhésions** : [`docs/09-product/membership-mailer-emails.md`](../09-product/membership-mailer-emails.md)
+- **Emails commandes** : [`docs/09-product/orders-workflow-emails.md`](../../09-product/orders-workflow-emails.md)
+- **Emails adhésions** : [`docs/09-product/membership-mailer-emails.md`](../../09-product/membership-mailer-emails.md)
 
 ---
 
@@ -2724,10 +2724,9 @@ docker exec grenoble-roller-production bin/rails runner "puts SolidQueue::Job.wh
 - [`spec/requests/event_email_integration_spec.rb`](../spec/requests/event_email_integration_spec.rb) - Tests intégration
 
 ### Documentation
-- [`docs/06-events/email-notifications-implementation.md`](../06-events/email-notifications-implementation.md) - Documentation emails événements
-- [`docs/06-events/event-reminder-job.md`](../06-events/event-reminder-job.md) - Documentation EventReminderJob
-- [`docs/09-product/orders-workflow-emails.md`](../09-product/orders-workflow-emails.md) - Documentation emails commandes
-- [`docs/09-product/membership-mailer-emails.md`](../09-product/membership-mailer-emails.md) - Documentation emails adhésions
+- [`docs/06-events/event-reminder-job.md`](../../06-events/event-reminder-job.md) - Documentation EventReminderJob
+- [`docs/09-product/orders-workflow-emails.md`](../../09-product/orders-workflow-emails.md) - Documentation emails commandes
+- [`docs/09-product/membership-mailer-emails.md`](../../09-product/membership-mailer-emails.md) - Documentation emails adhésions
 - [`docs/04-rails/background-jobs/CRON.md`](../background-jobs/CRON.md) - Documentation complète système jobs récurrents (Solid Queue actif)
 
 ---

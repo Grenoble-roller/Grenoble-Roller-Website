@@ -1,5 +1,6 @@
 # 📋 Parcours Utilisateurs - Gestion des Événements
 
+**Dernière mise à jour** : 2026-08-14
 **Document** : Documentation complète des parcours utilisateurs pour la partie Événements  
 **Date** : Novembre 2025  
 **Version** : 1.0  

@@ -1,5 +1,7 @@
 class Membership < ApplicationRecord
   include Hashid::Rails
+  include Auditable
+include Auditable
 
   belongs_to :user
   belongs_to :payment, optional: true
@@ -274,6 +276,36 @@ class Membership < ApplicationRecord
       MembershipMailer.activated(self).deliver_later
     end
   end
+
+    # Auditable concern methods
+    def audit_actor
+      user
+    end
+
+    def audit_attributes
+      {
+        user_id: user_id,
+        payment_id: payment_id,
+        tshirt_variant_id: tshirt_variant_id,
+        status: status,
+        category: category,
+        season: season,
+        start_date: start_date,
+        end_date: end_date,
+        amount_cents: amount_cents,
+        currency: currency,
+        is_child_membership: is_child_membership,
+        child_first_name: child_first_name,
+        child_last_name: child_last_name,
+        child_date_of_birth: child_date_of_birth,
+        parent_authorization: parent_authorization,
+        rgpd_consent: rgpd_consent,
+        legal_notices_accepted: legal_notices_accepted,
+        ffrs_data_sharing_consent: ffrs_data_sharing_consent,
+        health_questionnaire_status: health_questionnaire_status,
+        goodies_distributed: goodies_distributed
+      }
+    end
 
   # Calculer les jours restants avant expiration
   def days_until_expiry

@@ -1,5 +1,8 @@
 # Vue d’ensemble système
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Monolithe Ruby on Rails 8 avec PostgreSQL. L’application expose des pages publiques, une boutique (catalogue, panier, commandes) et utilise Devise pour l’authentification.
 
 ## Contexte (C4 – Niveau 1)

@@ -378,5 +378,5 @@ Ce document consolide le statut d'implémentation de la feature "Adhésions" pou
 ---
 
 **Date de création** : 2025-01-30  
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-08-14
 

@@ -1,7 +1,10 @@
 # Adhésions - Documentation Complète
 
-**Date** : 2025-01-30  
-**Version** : 4.0  
+**Dernière mise à jour** : 2026-08-14
+
+
+**Date** : 2026-08-14  
+**Version** : 4.1  
 **Status** : ✅ Documentation consolidée et à jour
 
 ---

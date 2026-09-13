@@ -50,7 +50,7 @@ class CheckoutService
             line_type: cart_line.line_type,
             reference: cart_line.reference,
             amount_cents: cart_line.amount_cents,
-            label: cart_line.label,
+            label: CartLineService.truncate_cart_label(cart_line.label),
             quantity: cart_line.quantity,
             metadata: line_metadata
           )

@@ -26,4 +26,4 @@
 **Améliorations futures** : Les améliorations non essentielles ont été retirées de la roadmap. Le focus est maintenant sur les fonctionnalités core de l'application.
 
 **Document créé le** : 2025-01-30  
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-08-14

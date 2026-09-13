@@ -244,7 +244,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
         }
 
         post admin_panel_users_path, params: params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -274,11 +274,11 @@ RSpec.describe 'AdminPanel::Users', type: :request do
     end
 
     context 'when admin tries to assign Super_Admin to another user' do
-      it 'rejects and returns unprocessable_entity' do
+      it 'rejects and returns unprocessable_content' do
         patch admin_panel_user_path(target_user), params: {
           user: { role_id: superadmin_role.id }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'adds error on role_id' do
@@ -291,11 +291,11 @@ RSpec.describe 'AdminPanel::Users', type: :request do
     end
 
     context 'when admin edits their own profile and tries to set role to Super_Admin' do
-      it 'rejects self-elevation with unprocessable_entity' do
+      it 'rejects self-elevation with unprocessable_content' do
         patch admin_panel_user_path(admin_user), params: {
           user: { role_id: superadmin_role.id }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'keeps current role and displays error message' do
@@ -365,7 +365,7 @@ RSpec.describe 'AdminPanel::Users', type: :request do
       patch admin_panel_user_path(superadmin_user), params: {
         user: { role_id: admin_role_record.id }
       }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
       expect(response.body).to include('retirer votre propre rôle super administrateur')
     end
 

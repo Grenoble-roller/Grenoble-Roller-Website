@@ -3,7 +3,7 @@ title: "Shape Up Methodology"
 status: "active"
 version: "1.0"
 created: "2025-01-20"
-updated: "2025-11-14"
+updated: "2026-08-14"
 authors: ["FlowTech"]
 tags: ["shape-up", "methodology", "agile", "trello"]
 ---
@@ -13,7 +13,7 @@ tags: ["shape-up", "methodology", "agile", "trello"]
 **Complete reference** for Shape Up methodology and its implementation with Trello.
 
 > **Related Documents** :
-> - Current cycle planning : [`building/cycle-01-building-log.md`](building/cycle-01-building-log.md)
+> - Current cycle planning : le suivi du cycle 01 est archivé (voir git history)
 
 This document explains the **Shape Up methodology** and how to implement it with **Trello**.  
 For detailed planning, sprints and progress tracking, see the main cycle log.
@@ -88,7 +88,7 @@ For detailed planning, sprints and progress tracking, see the main cycle log.
 **Objectif : Livrer une feature shippable**
 
 #### Exemple de Structure Building (Référence)
-> **📋 Pour le planning détaillé** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md) sections "PHASE 2 - ÉVÉNEMENTS"
+> **📋 Pour le planning détaillé** : Voir le suivi du cycle 01 (archivé dans git) sections "PHASE 2 - ÉVÉNEMENTS"
 
 **Semaine 1-2** : Get One Piece Done (CRUD Événements, Inscriptions, Calendrier)  
 **Semaine 3** : Map Scopes (ActiveAdmin, Permissions, Notifications, ressources ecommerce secondaires + batch/exports)  
@@ -226,7 +226,7 @@ For detailed planning, sprints and progress tracking, see the main cycle log.
 
 ### Exemples de Cartes par Phase
 
-> **📋 Pour les cartes détaillées et l'état d'avancement** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md)
+> **📋 Pour les cartes détaillées et l'état d'avancement** : Voir le suivi du cycle (archivé dans git)
 
 #### **PHASE 1 : SHAPING** (2-3 jours)
 Exemples de cartes :
@@ -242,7 +242,7 @@ Exemples de cartes :
 - Décision finale
 
 #### **PHASE 3 : BUILDING** (3 semaines)
-> **📋 Pour le détail des cartes et l'état** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md) sections "PHASE 2 - ÉVÉNEMENTS"
+> **📋 Pour le détail des cartes et l'état** : Voir le suivi du cycle (archivé dans git) sections "PHASE 2 - ÉVÉNEMENTS"
 
 #### **PHASE 4 : COOLDOWN** (1 semaine)
 Exemples de cartes :
@@ -288,7 +288,7 @@ Downhill (Descente) = Exécution, certitude
 ```
 
 ### Exemple d'Utilisation
-> **📋 Pour l'état d'avancement actuel** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md) section "SUIVI D'AVANCEMENT"
+> **📋 Pour l'état d'avancement actuel** : Voir le suivi du cycle (archivé dans git) section "SUIVI D'AVANCEMENT"
 
 **Principe** : Suivre la position sur la montée/descente pour chaque scope
 - **Uphill** = Découverte, incertitude (OK en début)
@@ -324,7 +324,7 @@ Downhill (Descente) = Exécution, certitude
 ## 🎯 CRITÈRES DE "DONE"
 
 ### Critères Généraux de "Done"
-> **📋 Pour les critères spécifiques au projet** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md)
+> **📋 Pour les critères spécifiques au projet** : Voir le suivi du cycle (archivé dans git)
 
 Une feature est "Done" quand :
 - ✅ Tests passent (coverage >70%)
@@ -350,7 +350,7 @@ Une feature est "Done" quand :
 - **Hill Chart** : Position montée/descente
 
 ### Exemple de Répartition
-> **📋 Pour l'état d'avancement actuel** : Voir [`building/cycle-01-building-log.md`](../building/cycle-01-building-log.md) section "SUIVI D'AVANCEMENT"
+> **📋 Pour l'état d'avancement actuel** : Voir le suivi du cycle (archivé dans git) section "SUIVI D'AVANCEMENT"
 
 **Principe** : Suivre les points par semaine et ajuster le scope si nécessaire
 

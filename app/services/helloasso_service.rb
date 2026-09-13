@@ -12,11 +12,68 @@ class HelloassoService
   HELLOASSO_SANDBOX_API_BASE_URL = "https://api.helloasso-sandbox.com/v5"
   HELLOASSO_PRODUCTION_API_BASE_URL = "https://api.helloasso.com/v5"
 
+  # HelloAsso checkout-intent itemName hard limit (HTTP 400 beyond this).
+  ITEM_NAME_MAX_LENGTH = 250
+  # Soft ceiling for checkout-intent metadata JSON size (HelloAsso rejects oversized payloads).
+  METADATA_MAX_BYTES = 18_000
+
   class << self
     # Raw helloasso config from Rails credentials
     def config
       Rails.application.credentials.helloasso || {}
     end
+
+    # Join label parts for checkout-intent itemName, clamping to ITEM_NAME_MAX_LENGTH.
+    # Prefer the joined labels when short enough; otherwise use a short panier fallback.
+    def clamp_item_name(parts, fallback:)
+      joined = Array(parts).map(&:to_s).reject(&:blank?).join(", ")
+      candidate = joined.presence || fallback.to_s
+      return candidate if candidate.length <= ITEM_NAME_MAX_LENGTH
+
+      short = fallback.to_s.presence || "Panier Grenoble Roller"
+      return short if short.length <= ITEM_NAME_MAX_LENGTH
+
+      "#{short[0, ITEM_NAME_MAX_LENGTH - 1]}…"
+    end
+
+    # Shrink metadata so to_json stays under METADATA_MAX_BYTES while keeping ids.
+    def compact_checkout_metadata(metadata)
+      meta = metadata.deep_dup
+      return meta if meta.to_json.bytesize <= METADATA_MAX_BYTES
+
+      items_key = if meta.key?(:items)
+        :items
+      elsif meta.key?("items")
+        "items"
+      end
+
+      if items_key
+        meta[items_key] = Array(meta[items_key]).map { |item| slim_metadata_item(item) }
+      end
+
+      return meta if meta.to_json.bytesize <= METADATA_MAX_BYTES
+
+      meta.delete(items_key) if items_key
+      meta
+    end
+
+    def slim_metadata_item(item)
+      slim = item.deep_dup
+      slim = slim.stringify_keys if slim.respond_to?(:stringify_keys)
+      slim.delete("metadata")
+      slim.delete(:metadata)
+      name = (slim["name"] || slim[:name]).to_s
+      if name.length > 120
+        truncated = "#{name[0, 119]}…"
+        if slim.key?("name")
+          slim["name"] = truncated
+        else
+          slim[:name] = truncated
+        end
+      end
+      slim
+    end
+    private :slim_metadata_item
 
     # Resolves which HelloAsso API environment to use (sandbox vs production)
     # Safe default: HelloAsso **sandbox** unless production is explicit (deploy flags, credentials helloasso.environment: production, or HELLOASSO_USE_PRODUCTION).
@@ -172,22 +229,26 @@ class HelloassoService
       # We may try items first and handle 400 fallback
 
       total_cents = items.sum { |item| item[:amount] * item[:quantity] }
+      item_name_parts = items.map { |i| "#{i[:name]} x#{i[:quantity]}" }
 
       # checkout-intents structure (validated in earlier integration tests)
       {
         totalAmount: total_cents,
         initialAmount: total_cents,
-        itemName: items.any? ? items.map { |i| "#{i[:name]} x#{i[:quantity]}" }.join(", ") : "Commande ##{order.id}",
+        itemName: clamp_item_name(
+          item_name_parts,
+          fallback: "Commande ##{order.id} — Boutique Grenoble Roller"
+        ),
         backUrl: back_url,
         errorUrl: error_url,
         returnUrl: return_url,
         containsDonation: donation.positive?,
-        metadata: {
+        metadata: compact_checkout_metadata(
           localOrderId: order.id,
           environment: environment,
           donationCents: donation,
           items: items # keep line items in metadata for reference
-        }
+        )
       }
     end
 
@@ -241,15 +302,23 @@ class HelloassoService
       product_variant_ids = lines.select { |l| l.line_type.to_s == "product_variant" }.map(&:reference_id)
       local_order_ids = [ checkout.metadata&.dig("order_id") ].compact
 
+      item_name_parts = items.map { |i| "#{i[:name]} x#{i[:quantity]}" }
+      n = items.size
+      item_name_fallback = if items.any?
+        "Panier Grenoble Roller (#{n} article#{'s' if n != 1})"
+      else
+        "Checkout ##{checkout.id}"
+      end
+
       {
         totalAmount: total_cents,
         initialAmount: total_cents,
-        itemName: items.any? ? items.map { |i| "#{i[:name]} x#{i[:quantity]}" }.join(", ") : "Checkout ##{checkout.id}",
+        itemName: clamp_item_name(item_name_parts, fallback: item_name_fallback),
         backUrl: back_url,
         errorUrl: error_url,
         returnUrl: return_url,
         containsDonation: donation.positive?,
-        metadata: {
+        metadata: compact_checkout_metadata(
           checkoutId: checkout.id,
           lineTypes: lines.map { |l| l.line_type.to_s }.uniq,
           localOrderIds: local_order_ids,
@@ -259,7 +328,7 @@ class HelloassoService
           donationCents: donation,
           environment: environment,
           items: items
-        }
+        )
       }
     end
 
@@ -317,6 +386,12 @@ class HelloassoService
         success: response.is_a?(Net::HTTPSuccess),
         body: body
       }
+
+      unless result[:success]
+        Rails.logger.error(
+          "[HelloassoService] create_unified_checkout_intent ERROR (#{result[:status]}): #{response.body}"
+        )
+      end
 
       if result[:success] && body["id"].present?
         checkout.update!(
@@ -773,7 +848,10 @@ class HelloassoService
         item_name_parts << "T-shirt Grenoble Roller (#{tshirt_size})"
       end
 
-      item_name = item_name_parts.join(", ")
+      item_name = clamp_item_name(
+        item_name_parts,
+        fallback: "Cotisation Grenoble Roller — Saison #{season_name}"
+      )
 
       payload = {
         organizationSlug: organization_slug,
@@ -926,7 +1004,11 @@ class HelloassoService
         end
       end
 
-      item_name = item_name_parts.join(", ")
+      count = memberships.size
+      item_name = clamp_item_name(
+        item_name_parts,
+        fallback: "#{count} cotisation(s) Grenoble Roller — Saison #{season_name}"
+      )
 
       payload = {
         organizationSlug: organization_slug,

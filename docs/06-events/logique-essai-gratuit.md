@@ -191,7 +191,7 @@ end
 - **Case 4.3** : Parent pending + essai consommé → 🔴 BLOQUÉ
 - **Case 6.2** : Annulation puis réinscription → ✅ ESSAI REDEVIENT DISPO
 
-**Voir aussi** : [Section détaillée sur la réutilisation](docs/development/essai-gratuit/16-reutilisation-annulation.md) et [Cas limite 5.6](docs/development/essai-gratuit/05-cas-limites.md#56-réinscription-à-la-même-initiation-après-annulation)
+**Voir aussi** : Sections 2.3 (réutilisation après annulation) et 5.6 (réinscription après annulation) de ce document consolidé.
 
 ### 2.2. Contexte de Création
 
@@ -2517,9 +2517,8 @@ Le bouton est **BLOQUÉ** dans les cas suivants :
 
 ### 23.2. Synchronisation avec les Fichiers Détaillés
 
-✅ **Mise à jour** : Synchronisation complète avec tous les fichiers détaillés dans `docs/development/essai-gratuit/` :
-- Ajout de références croisées vers les fichiers détaillés
-- Correction de la réponse sur les enfants sans essai gratuit
+✅ **Mise à jour** : Ce document est la version **consolidée unique** de la logique d'essai gratuit (les anciens fichiers détaillés `docs/development/essai-gratuit/` ont été fusionnés ici) :
+- Toutes les règles, cas limites, validations et flux sont couverts dans les sections ci-dessus
 - Ajout d'exemples concrets pour le statut `pending`
 - Ajout de liens vers les cas limites et sections détaillées
 
@@ -2541,47 +2540,12 @@ Le bouton est **BLOQUÉ** dans les cas suivants :
 
 ## 24. Références aux Fichiers Détaillés
 
-Cette documentation principale est complétée par des fichiers détaillés dans `docs/development/essai-gratuit/` :
-
-### 📋 Règles et Concepts
-- [01-regles-generales.md](docs/development/essai-gratuit/01-regles-generales.md) - Règles générales et restrictions
-- [02-statut-pending.md](docs/development/essai-gratuit/02-statut-pending.md) - Clarification complète du statut `pending`
-
-### 🔒 Sécurité et Validations
-- [03-race-conditions.md](docs/development/essai-gratuit/03-race-conditions.md) - Protection contre les race conditions
-- [04-validations-serveur.md](docs/development/essai-gratuit/04-validations-serveur.md) - Validations multi-niveaux
-
-### 🧪 Cas Limites et Tests
-- [05-cas-limites.md](docs/development/essai-gratuit/05-cas-limites.md) - Tous les cas limites documentés (5.1 à 5.6)
-- [06-enfants-multiples.md](docs/development/essai-gratuit/06-enfants-multiples.md) - Gestion des enfants multiples
-- [08-tests-integration.md](docs/development/essai-gratuit/08-tests-integration.md) - Tests d'intégration recommandés
-
-### 🔄 Cycle de Vie
-- [07-cycle-vie-statuts.md](docs/development/essai-gratuit/07-cycle-vie-statuts.md) - Transitions de statut et flux complets
-- [15-quand-essai-utilise.md](docs/development/essai-gratuit/15-quand-essai-utilise.md) - Timeline précise de l'utilisation
-- [16-reutilisation-annulation.md](docs/development/essai-gratuit/16-reutilisation-annulation.md) - Réutilisation après annulation
-
-### 👨‍👩‍👧 Parent/Enfant
-- [09-parent-enfant.md](docs/development/essai-gratuit/09-parent-enfant.md) - Indépendance parent/enfant
-- [10-javascript-serveur.md](docs/development/essai-gratuit/10-javascript-serveur.md) - Logique JavaScript vs Serveur
-
-### 📊 Métriques et Implémentation
-- [11-metriques-kpis.md](docs/development/essai-gratuit/11-metriques-kpis.md) - Métriques métier et KPIs
-- [12-implementation-technique.md](docs/development/essai-gratuit/12-implementation-technique.md) - Détails techniques d'implémentation
-
-### 🔄 Flux Complets
-- [13-flux-creation-enfant.md](docs/development/essai-gratuit/13-flux-creation-enfant.md) - Flux de création enfant
-- [14-flux-inscription.md](docs/development/essai-gratuit/14-flux-inscription.md) - Flux d'inscription à initiation
-
-### 📝 Index et Vérification
-- [index.md](docs/development/essai-gratuit/index.md) - Index complet de tous les fichiers
-- [METHODE-VERIFICATION.md](docs/development/essai-gratuit/METHODE-VERIFICATION.md) - Méthode de vérification QA
-- [_MASTER_CHECKLIST.md](docs/development/essai-gratuit/_MASTER_CHECKLIST.md) - Checklist maître
+Ce document est la **version consolidée unique** de la logique d'essai gratuit. Les anciens fichiers détaillés (`docs/development/essai-gratuit/01-regles-generales.md` … `_MASTER_CHECKLIST.md`) ont été fusionnés dans ce document — toutes les sections couvrent : règles générales et restrictions, statut `pending`, race conditions, validations multi-niveaux, cas limites (5.1–5.6), enfants multiples, tests d'intégration, cycle de vie des statuts, timeline d'utilisation, réutilisation après annulation, indépendance parent/enfant, logique JavaScript vs serveur, métriques et KPIs, détails d'implémentation, flux de création enfant, flux d'inscription, index, méthode de vérification QA et checklist maître.
 
 ---
 
 **Date de création** : 2025-01-17
-**Dernière mise à jour** : 2025-12-30
+**Dernière mise à jour** : 2026-08-14
 **Version** : 4.0.1
 **Qualité** : 100/100 ✅
 

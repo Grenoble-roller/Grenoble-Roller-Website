@@ -3,7 +3,7 @@ title: "État des Fonctionnalités - Grenoble Roller"
 status: "active"
 version: "1.0"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["features", "status", "implementation", "roadmap"]
 ---
 
@@ -265,9 +265,8 @@ Ce document centralise l'état de toutes les fonctionnalités prévues, impléme
 
 ## 🔗 Références
 
-- **Todo restant détaillé** : [`docs/development/ux-improvements/todo-restant.md`](../development/ux-improvements/todo-restant.md)
-- **Backlog UX complet** : [`docs/development/ux-improvements/ux-improvements-backlog.md`](../development/ux-improvements/ux-improvements-backlog.md)
-- **Améliorations implémentées** : [`docs/09-product/ameliorations-implementees.md`](../09-product/ameliorations-implementees.md)
+- **Todo restant détaillé** : [`docs/09-product/todo-restant.md`](../09-product/todo-restant.md)
+- **Backlog UX complet** : [`docs/09-product/ux-improvements-backlog.md`](../09-product/ux-improvements-backlog.md)
 
 ---
 

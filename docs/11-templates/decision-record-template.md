@@ -3,7 +3,7 @@ title: "DR-XXX: [Short Title]"
 status: "proposed|accepted|deprecated|superseded"
 version: "1.0"
 created: "YYYY-MM-DD"
-updated: "YYYY-MM-DD"
+updated: "2026-08-14"
 authors: ["Author Name"]
 tags: ["product", "decision", "dr-xxx"]
 superseded_by: "DR-YYY" # if status is "superseded"

@@ -9,13 +9,11 @@
       <% full_map_src = route_map_image_path(route) %>
       <%= link_to(
             full_map_src,
-            class: "event-loop-card__media route-image-container",
-            target: "_blank",
-            rel: "noopener noreferrer",
+            class: "event-loop-card__media route-image-container pswp-gallery-item",
             data: route_map_viewer_data(route, title: "Boucle #{loop_number}"),
             aria: { label: "Agrandir la carte du parcours, boucle #{loop_number}" }
           ) do %>
-        <%= image_tag(
+        <%= lazy_image_tag(
               route_map_image_path(route, resize_to: [800, 450]),
               alt: "Carte du parcours, boucle #{loop_number}",
               class: "route-image event-loop-card__img"

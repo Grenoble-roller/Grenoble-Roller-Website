@@ -1,15 +1,15 @@
 ---
 title: "Ways of Working - Grenoble Roller"
 status: "active"
-version: "1.0"
+version: "1.1"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["workflow", "git", "pr", "conventions", "team"]
 ---
 
 # Ways of Working - Grenoble Roller
 
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-08-14
 
 Ce document définit les règles d'équipe, conventions Git, workflows PR, et pratiques de développement pour le projet Grenoble Roller.
 
@@ -20,8 +20,9 @@ Ce document définit les règles d'équipe, conventions Git, workflows PR, et pr
 ### Branches
 
 #### Branches Principales
-- **`main`** : Branche de production (stable, toujours déployable)
-- **`staging`** : Branche de staging (test avant production)
+- **`main`** : Branche de production (stable, toujours déployable) — `grenoble-roller.org`
+- **`staging`** : Branche de staging (test avant production, déployée via Dokploy)
+- **`Dev`** : Branche d'intégration — les branches de fonctionnalité fusionnent ici en premier
 
 #### Convention de Nommage des Branches
 ```
@@ -34,20 +35,22 @@ Types :
 - docs/       : Documentation uniquement
 - test/       : Ajout/modification de tests
 - chore/      : Tâches de maintenance (deps, config)
+- ux/         : Améliorations UX (parcours, densité, pages)
 
 Exemples :
 - feature/add-pagination-events
 - fix/cart-persistent-storage
 - docs/update-deployment-guide
 - refactor/extract-order-service
+- ux/pages-verification
 ```
 
 ### Workflow Git Flow Simplifié
 
-1. **Créer une branche** depuis `main` (ou `staging` si travail sur staging)
+1. **Créer une branche** depuis `Dev` (branche d'intégration)
    ```bash
-   git checkout main
-   git pull origin main
+   git checkout Dev
+   git pull origin Dev
    git checkout -b feature/my-feature
    ```
 
@@ -63,8 +66,10 @@ Exemples :
    ```
 
 4. **Merge** après review et validation des tests
-   - PR mergée dans `staging` pour tests
-   - PR mergée dans `main` pour production
+   - PR de fonctionnalité → `Dev` (intégration)
+   - PR **`Dev` → `staging`** pour tests (mettre à jour [`release-dev-to-staging-2026-06.md`](../10-decisions-and-changelog/release-dev-to-staging-2026-06.md) + CHANGELOG avant)
+   - Merge `staging` → `main` pour production **après validation humaine**
+   - CI : `.github/workflows/ci.yml` (Brakeman, importmap audit, RuboCop, `bin/rails test test:system`) sur PR + push sur `main`
 
 ---
 
@@ -312,7 +317,7 @@ chore(deps): update rails to 8.1.1
 - **Overview projet** : [`docs/00-overview/README.md`](../00-overview/README.md)
 - **Shape Up** : [`docs/02-shape-up/README.md`](../02-shape-up/README.md)
 - **Conventions Rails** : [`docs/04-rails/conventions/README.md`](../04-rails/conventions/README.md)
-- **Tests** : [`docs/05-testing/strategy.md`](../05-testing/strategy.md)
+- **Tests** : [`docs/05-testing/rspec/README.md`](../05-testing/rspec/README.md)
 
 ---
 

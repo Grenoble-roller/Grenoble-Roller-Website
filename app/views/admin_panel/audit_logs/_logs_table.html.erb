@@ -1,0 +1,59 @@
+<% if @logs.any? %>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Action</th>
+          <th scope="col">Cible</th>
+          <th scope="col">Acteur</th>
+          <th scope="col">Métadonnées</th>
+          <th scope="col" class="text-end">Détail</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @logs.each do |log| %>
+          <tr>
+            <td class="text-nowrap">
+              <span title="<%= l(log.created_at, format: :long) %>">
+                <%= l(log.created_at, format: :short) %>
+              </span>
+            </td>
+            <td>
+              <span class="badge badge-liquid-secondary"><%= log.action %></span>
+            </td>
+            <td class="text-nowrap">
+              <code><%= log.target_type %>#<%= log.target_id %></code>
+            </td>
+            <td>
+              <% if log.actor_user %>
+                <%= log.actor_user.display_name.presence || log.actor_user.email %>
+              <% else %>
+                <span class="text-muted">Système</span>
+              <% end %>
+            </td>
+            <td>
+              <% if log.metadata.present? %>
+                <span class="text-muted small"><%= truncate(log.metadata.to_json, length: 80) %></span>
+              <% else %>
+                <span class="text-muted">-</span>
+              <% end %>
+            </td>
+            <td class="text-end">
+              <%= link_to admin_panel_audit_log_path(log),
+                  class: "btn btn-sm btn-outline-primary",
+                  aria: { label: "Voir le détail du log ##{log.id}" } do %>
+                <i class="bi bi-eye" aria-hidden="true"></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="p-4 text-center text-muted">
+    <i class="bi bi-inbox fs-3 d-block mb-2" aria-hidden="true"></i>
+    Aucun log d'audit ne correspond à ces critères.
+  </div>
+<% end %>

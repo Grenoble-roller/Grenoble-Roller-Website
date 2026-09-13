@@ -29,5 +29,9 @@ FactoryBot.define do
       needs_equipment { true }
       roller_size { '38' }
     end
+
+    trait :free_trial do
+      free_trial_used { true }
+    end
   end
 end

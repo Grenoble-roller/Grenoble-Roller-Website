@@ -3,6 +3,7 @@ title: "Workflow Commandes - Statuts et Emails"
 status: "active"
 version: "1.0"
 created: "2025-01-26"
+updated: "2026-08-14"
 tags: ["orders", "emails", "workflow", "status"]
 ---
 
@@ -372,6 +373,6 @@ default from: "noreply@grenoble-roller.org"
 
 ---
 
-**Dernière mise à jour** : 2025-01-26  
+**Dernière mise à jour** : 2026-08-14  
 **Version** : 1.0
 

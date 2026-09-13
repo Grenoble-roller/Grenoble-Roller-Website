@@ -1,7 +1,7 @@
 # 📧 Récapitulatif Complet des Emails - Grenoble Roller
 
 **Date de création** : 2025-01-20  
-**Dernière mise à jour** : 2025-12-07  
+**Dernière mise à jour** : 2026-08-14  
 **Statut** : ✅ **100% COMPLÉTÉ** - Tous les templates texte créés, tous les tests RSpec créés, tests d'intégration ajoutés
 
 > 📖 **Pour la documentation complète de la confirmation email** : voir [`email-confirmation.md`](email-confirmation.md)

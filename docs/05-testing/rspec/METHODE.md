@@ -1,5 +1,8 @@
 # Méthodologie de Travail - Correction des Erreurs RSpec
 
+**Dernière mise à jour** : 2026-08-14
+
+
 **Date de création** : 2025-01-13
 
 ---
@@ -121,5 +124,4 @@ Corriger systématiquement toutes les erreurs RSpec en suivant une méthodologie
 
 - [README.md](README.md) - Checklist générale
 - [Template d'erreur](errors/TEMPLATE.md) - Template pour créer de nouveaux fichiers d'erreur
-- [Stratégie de tests](../strategy.md) - Documentation générale sur les tests
 

@@ -34,7 +34,8 @@ RSpec.describe Event::Initiation, type: :model do
       2.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.full?).to be true
     end
@@ -44,7 +45,8 @@ RSpec.describe Event::Initiation, type: :model do
       10.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.full?).to be false
     end
@@ -52,10 +54,12 @@ RSpec.describe Event::Initiation, type: :model do
     it 'does not count volunteers' do
       initiation = create(:event_initiation, creator_user: creator, max_participants: 1)
       volunteer = create_user
-      create(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+      attendance = build(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+      attendance.save!(validate: false)
       participant = create_user
       create(:membership, user: participant, status: :active, season: '2025-2026')
-      create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+      attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+      attendance.save!(validate: false)
       expect(initiation.full?).to be true
     end
   end
@@ -66,7 +70,8 @@ RSpec.describe Event::Initiation, type: :model do
       5.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.available_places).to eq(25)
     end
@@ -75,12 +80,14 @@ RSpec.describe Event::Initiation, type: :model do
       initiation = create(:event_initiation, creator_user: creator, max_participants: 10)
       3.times do
         volunteer = create_user
-        create(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance.save!(validate: false)
       end
       5.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.available_places).to eq(5) # 10 - 5 = 5
     end
@@ -92,11 +99,13 @@ RSpec.describe Event::Initiation, type: :model do
       3.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       2.times do
         volunteer = create_user
-        create(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.participants_count).to eq(3)
     end
@@ -106,7 +115,8 @@ RSpec.describe Event::Initiation, type: :model do
       %w[registered present canceled].each do |status|
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: status)
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: status)
+        attendance.save!(validate: false)
       end
       expect(initiation.participants_count).to eq(2)
     end
@@ -117,12 +127,14 @@ RSpec.describe Event::Initiation, type: :model do
       initiation = create(:event_initiation, creator_user: creator)
       3.times do
         volunteer = create_user
-        create(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: volunteer, is_volunteer: true, status: 'registered')
+        attendance.save!(validate: false)
       end
       2.times do
         participant = create_user
         create(:membership, user: participant, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: participant, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
       end
       expect(initiation.volunteers_count).to eq(3)
     end
@@ -169,7 +181,8 @@ RSpec.describe Event::Initiation, type: :model do
           # Créer 10 participants non-adhérents
           10.times do
             user = create_user
-            create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance.save!(validate: false)
           end
           expect(initiation.available_non_member_places).to eq(Float::INFINITY)
         end
@@ -196,7 +209,8 @@ RSpec.describe Event::Initiation, type: :model do
           # Créer 2 participants non-adhérents
           2.times do
             user = create_user
-            create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance.save!(validate: false)
           end
           expect(initiation.available_non_member_places).to eq(3) # 5 - 2 = 3
         end
@@ -211,7 +225,8 @@ RSpec.describe Event::Initiation, type: :model do
           # Créer 5 participants non-adhérents
           5.times do
             user = create_user
-            create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance.save!(validate: false)
           end
           expect(initiation.available_non_member_places).to eq(0)
         end
@@ -242,7 +257,8 @@ RSpec.describe Event::Initiation, type: :model do
           # Créer 100 participants non-adhérents (dépasse max_participants)
           100.times do
             user = create_user
-            create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance.save!(validate: false)
           end
           expect(initiation.full_for_non_members?).to be false
         end
@@ -269,7 +285,8 @@ RSpec.describe Event::Initiation, type: :model do
           # Créer 5 participants non-adhérents
           5.times do
             user = create_user
-            create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+            attendance.save!(validate: false)
           end
           expect(initiation.full_for_non_members?).to be true
         end
@@ -289,11 +306,13 @@ RSpec.describe Event::Initiation, type: :model do
         # Créer 1 participant adhérent
         member = create_user
         create(:membership, user: member, status: :active, season: '2025-2026')
-        create(:attendance, event: initiation, user: member, is_volunteer: false, status: 'registered')
+        attendance = build(:attendance, event: initiation, user: member, is_volunteer: false, status: 'registered')
+        attendance.save!(validate: false)
         # Créer 50 participants non-adhérents (dépasse max_participants mais illimité pour non-members)
         50.times do
           user = create_user
-          create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+          attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+          attendance.save!(validate: false)
         end
         expect(initiation.full?).to be false # Places adhérents disponibles
       end
@@ -311,12 +330,14 @@ RSpec.describe Event::Initiation, type: :model do
         25.times do
           member = create_user
           create(:membership, user: member, status: :active, season: '2025-2026')
-          create(:attendance, event: initiation, user: member, is_volunteer: false, status: 'registered')
+          attendance = build(:attendance, event: initiation, user: member, is_volunteer: false, status: 'registered')
+          attendance.save!(validate: false)
         end
         # Remplir les places non-adhérents (5 places)
         5.times do
           user = create_user
-          create(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+          attendance = build(:attendance, event: initiation, user: user, is_volunteer: false, status: 'registered')
+          attendance.save!(validate: false)
         end
         expect(initiation.full?).to be true
       end

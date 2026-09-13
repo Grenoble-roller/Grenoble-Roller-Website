@@ -3,8 +3,8 @@ FactoryBot.define do
     association :user
     status { :active }
     category { :standard }
-    start_date { Date.new(2025, 9, 1) }
-    end_date { Date.new(2026, 8, 31) }
+    start_date { 1.month.ago }
+    end_date { 11.months.from_now }
     amount_cents { 1000 } # 10€
     currency { 'EUR' }
     season { '2025-2026' }

@@ -38,7 +38,7 @@
         <div class="form-text">URL de l'image du logo (optionnel)</div>
         <% if partner.logo_url.present? %>
           <div class="mt-2">
-            <%= image_tag partner.logo_url, height: 80, style: "border-radius: 8px;", alt: "Logo actuel" %>
+            <%= lazy_image_tag partner.logo_url, height: 80, style: "border-radius: 8px;", alt: "Logo actuel" %>
           </div>
         <% end %>
       </div>

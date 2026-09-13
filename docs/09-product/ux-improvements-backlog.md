@@ -2,7 +2,7 @@
 
 **Document Type** : Référence historique des améliorations UX  
 **Status** : ✅ Fonctionnalités essentielles terminées  
-**Dernière mise à jour** : 2025-01-30
+**Dernière mise à jour** : 2026-08-14
 
 ---
 
@@ -70,7 +70,7 @@ Ce document sert de référence historique des améliorations UX identifiées et
 
 Pour plus de détails sur les fonctionnalités terminées, voir :
 - [`todo-restant.md`](todo-restant.md) - Récapitulatif des fonctionnalités essentielles
-- [`quick-wins-helloasso.md`](quick-wins-helloasso.md) - Intégration HelloAsso
+- [`flux-boutique-helloasso.md`](flux-boutique-helloasso.md) - Intégration HelloAsso (flux détaillé, legacy + unified)
 
 ---
 

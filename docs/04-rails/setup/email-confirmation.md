@@ -1,6 +1,6 @@
 # 📧 Confirmation Email - Documentation Complète
 
-**Dernière mise à jour** : 2025-12-07  
+**Dernière mise à jour** : 2026-08-14  
 **Statut** : ✅ **Opérationnel**
 
 ---
@@ -275,7 +275,7 @@ docker compose -f ops/dev/docker-compose.yml run --rm -e RAILS_ENV=test web bund
 
 - **Tous les emails** : [`emails-recapitulatif.md`](emails-recapitulatif.md) - Liste complète de tous les mailers de l'application
 - **Configuration credentials** : [`credentials.md`](credentials.md) - Gestion des credentials Rails (SMTP)
-- **Guide sécurité Devise** : [`devise-email-security-guide.md`](devise-email-security-guide.md) - Référence technique approfondie (1930 lignes, guide complet)
+- **Guide sécurité Devise** : [`../security/email-security-service.md`](../security/email-security-service.md) - Référence technique approfondie (sécurité email Devise)
 
 ---
 

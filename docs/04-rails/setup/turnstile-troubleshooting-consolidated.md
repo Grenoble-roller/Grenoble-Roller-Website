@@ -1,15 +1,15 @@
 ---
 title: "Turnstile - Dépannage et Tests Consolidés"
 status: "active"
-version: "2.0"
+version: "2.1"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["turnstile", "troubleshooting", "testing", "debug"]
 ---
 
 # Turnstile - Dépannage et Tests Consolidés
 
-**Dernière mise à jour** : 2025-01-30  
+**Dernière mise à jour** : 2026-08-14  
 **Document consolidé** : Fusion de 8 fichiers de dépannage et tests Turnstile
 
 ---
@@ -260,7 +260,7 @@ Ce document remplace les fichiers suivants (conservés pour référence mais con
 
 ---
 
-**Version** : 2.0 (consolidée)  
-**Dernière mise à jour** : 2025-01-30
+**Version** : 2.1 (consolidée)  
+**Dernière mise à jour** : 2026-08-14
 
 

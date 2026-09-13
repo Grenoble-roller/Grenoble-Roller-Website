@@ -1,7 +1,7 @@
 # ⏰ Jobs Récurrents et Background Jobs
 
 **Date** : 2025-01-13  
-**Dernière mise à jour** : 2025-01-13  
+**Dernière mise à jour** : 2026-08-14  
 **Statut** : ✅ **Solid Queue actif** | Migration terminée  
 **Version** : 2.0
 
@@ -56,4 +56,4 @@ Ce répertoire contient la documentation complète du système de jobs récurren
 
 ---
 
-**Retour** : [INDEX Rails](../../README.md) | [INDEX principal](../../README.md)
+**Retour** : [README racine](../../../README.md)

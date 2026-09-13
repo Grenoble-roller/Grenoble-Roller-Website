@@ -134,3 +134,46 @@ RSpec.describe User, type: :model do
     end
   end
 end
+describe 'audit trail' do
+  let(:role) { ensure_role(code: 'USER', name: 'Utilisateur', level: 10) }
+
+  it 'creates an audit log on creation' do
+    expect {
+      build_user(role: role, email: 'test@example.com', password: 'password12345', password_confirmation: 'password12345', first_name: 'Test', skill_level: 'beginner').save!
+    }.to change { AuditLog.count }.by(1)
+
+    log = AuditLog.last
+    expect(log.actor_user).to be_a(User)
+    expect(log.action).to eq('created')
+    expect(log.target_type).to eq('User')
+    expect(log.metadata['email']).to eq('test@example.com')
+    expect(log.metadata['first_name']).to eq('Test')
+  end
+
+  it 'updates audit log on update' do
+    user = build_user(role: role, email: 'test@example.com', password: 'password12345', password_confirmation: 'password12345', first_name: 'Test', skill_level: 'beginner')
+    user.save!
+    expect {
+      user.update!(first_name: 'Updated')
+    }.to change { AuditLog.count }.by(1)
+
+    log = AuditLog.last
+    expect(log.action).to eq('updated')
+    expect(log.metadata).to have_key('changes')
+    changes = log.metadata['changes']
+    expect(changes).to be_a(Hash)
+    expect(changes['first_name']).to eq([ 'Test', 'Updated' ])
+  end
+
+  it 'creates an audit log on destruction' do
+    user = build_user(role: role, email: 'test@example.com', password: 'password12345', password_confirmation: 'password12345', first_name: 'Test', skill_level: 'beginner')
+    user.save!
+    expect {
+      user.destroy
+    }.to change { AuditLog.count }.by(1)
+
+    log = AuditLog.last
+    expect(log.action).to eq('destroyed')
+    expect(log.metadata['email']).to eq('test@example.com')
+  end
+end

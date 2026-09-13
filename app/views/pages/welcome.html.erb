@@ -74,7 +74,7 @@
                   <h4 class="alert-heading h5 mb-2">Activez votre compte</h4>
                   <p class="mb-3">
                     Un email de confirmation vous attend dans votre boîte mail. 
-                    Cliquez sur le lien pour activer votre compte, puis connectez-vous pour découvrir nos randonnées urbaines et nos événements à thème !
+                    Activez votre compte en suivant le lien ci-dessous, puis connectez-vous pour découvrir nos randonnées urbaines et nos événements à thème !
                   </p>
                   <div class="d-flex gap-2 flex-wrap">
                     <%= link_to new_user_confirmation_path, class: "btn btn-info" do %>
@@ -100,7 +100,7 @@
               <h4 class="alert-heading h5 mb-2">Confirmez votre adresse email</h4>
               <p class="mb-3">
                 Un email vous attend à <strong><%= @user.email %></strong>. 
-                Cliquez sur le lien pour activer votre compte et découvrir nos randonnées urbaines, nos cours d'initiation et nos événements à thème !
+                Activez votre compte en suivant le lien ci-dessous, puis connectez-vous pour découvrir nos randonnées urbaines et nos événements à thème !
               </p>
               <div class="d-flex gap-2 flex-wrap">
                 <%= link_to new_user_confirmation_path(email: @user.email), class: "btn btn-info" do %>

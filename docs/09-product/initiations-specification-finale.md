@@ -1,6 +1,9 @@
 # Spécification Finale - Module Gestion des Initiations
 
-**Date** : 2025-12-02  
+**Dernière mise à jour** : 2026-08-14
+
+
+**Date** : 2026-08-14  
 **Statut** : ✅ Validé par les bénévoles  
 **Version** : 1.0  
 **Date cible MVP** : Janvier 2026

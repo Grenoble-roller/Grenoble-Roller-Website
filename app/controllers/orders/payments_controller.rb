@@ -38,6 +38,12 @@ module Orders
         return
       end
 
+      # Product Order created by unified Checkout — do not start a legacy product-only intent.
+      if @order.open_unified_checkout
+        resume_or_redirect_unified_checkout!
+        return
+      end
+
       # Créer un nouveau checkout-intent (plus fiable que de réutiliser l'ancien qui peut expirer)
       # Utiliser le don stocké dans l'order
       begin
@@ -135,6 +141,25 @@ module Orders
     end
 
     private
+
+    def resume_or_redirect_unified_checkout!
+      unified = @order.open_unified_checkout
+      payment = unified&.payment || @order.payment
+
+      if payment&.provider == "helloasso" &&
+         payment.status == "pending" &&
+         payment.provider_payment_id.present?
+        redirect_url = HelloassoService.checkout_redirect_url_for_intent(payment.provider_payment_id)
+        if redirect_url.present?
+          redirect_to redirect_url, allow_other_host: true
+          return
+        end
+      end
+
+      redirect_to new_checkout_path,
+                  alert: "Cette commande fait partie d'un panier unifié. " \
+                         "Finalisez le paiement depuis le panier."
+    end
 
     def set_order
       @order = current_user.orders.includes(:payment, order_items: :variant).find(params[:order_id])

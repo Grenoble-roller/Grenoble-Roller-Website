@@ -98,11 +98,13 @@ RSpec.describe 'Events', type: :request do
       expect(response).to have_http_status(:ok)
       expect(response.body).to include('data-controller="route-image-viewer"')
       expect(response.body).to include('hero-image-container--expandable')
+      expect(response.body).to include('pswp-gallery-item')
       expect(response.body).not_to include('click-&gt;route-image-viewer')
-      # Loop maps are real links (native image tab on mobile; lightbox on desktop)
-      expect(response.body).to include('target="_blank"')
+      # Gallery links keep href for no-JS / middle-click; PhotoSwipe intercepts primary click
+      expect(response.body).not_to match(/pswp-gallery-item[^>]*target=["']_blank["']/)
       expect(response.body).to match(/href="[^"]*rails\/active_storage[^"]*"/)
-      expect(response.body.scan('data-controller="route-image-viewer"').size).to be >= 3
+      expect(response.body.scan('data-controller="route-image-viewer"').size).to eq(1)
+      expect(response.body.scan('pswp-gallery-item').size).to be >= 3
     end
 
     it 'redirects visitors trying to view a draft event' do

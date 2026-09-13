@@ -74,7 +74,7 @@ Objectif de sortie : aucune branche d'affichage produit ne dépend de `image_url
 ## Tutoriel bénévoles (résumé)
 
 - Page publique : `/guide-images` (schéma + bonnes pratiques).
-- Doc courte : [`docs/development/guide-images-benevoles.md`](../../development/guide-images-benevoles.md).
+- Doc courte : [`docs/12-development/guide-images-benevoles.md`](../../12-development/guide-images-benevoles.md).
 - Fiche SVG : `/guides/image-upload-reference.svg`.
 
 ---

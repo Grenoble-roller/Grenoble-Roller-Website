@@ -20,20 +20,12 @@ Cette section contient toute la documentation liée à la **méthodologie Shape 
 - **[`shape-up-methodology.md`](shape-up-methodology.md)** : Complete guide for Shape Up methodology and Trello configuration
 - **[`technical-implementation-guide.md`](technical-implementation-guide.md)** : Technical implementation guide for Rails 8 + Bootstrap
 
-### Current Cycles
-- **[`building/cycle-01-building-log.md`](building/cycle-01-building-log.md)** : Cycle 01 - Building phase log (planning, sprints, progress tracking)
-- **[`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)** : Cycle 01 - Phase 2 detailed plan (Events & Admin) ✅ **COMPLETED**
-- **[`building/phase2-migrations-models.md`](building/phase2-migrations-models.md)** : Migrations et modèles Phase 2 ✅ **TERMINÉ**
-
 ### Structure des Cycles
 ```
 02-shape-up/
 ├── shaping/          # Phase Shaping (boundary definition)
 ├── betting/          # Phase Betting Table (prioritization)
 ├── building/         # Phase Building (development)
-│   ├── cycle-01-building-log.md
-│   ├── cycle-01-phase-2-plan.md
-│   └── cycle-XX-build-log.md
 └── cooldown/         # Phase Cooldown (rest, improvement)
 ```
 
@@ -85,8 +77,6 @@ Cette section contient toute la documentation liée à la **méthodologie Shape 
 
 - **Complete methodology** : [`shape-up-methodology.md`](shape-up-methodology.md)
 - **Technical guide** : [`technical-implementation-guide.md`](technical-implementation-guide.md)
-- **Current cycle** : [`building/cycle-01-building-log.md`](building/cycle-01-building-log.md)
-- **Phase 2** : [`building/cycle-01-phase-2-plan.md`](building/cycle-01-phase-2-plan.md)
 
 ---
 
@@ -99,5 +89,5 @@ Cette section contient toute la documentation liée à la **méthodologie Shape 
 
 ---
 
-**Dernière mise à jour** : 2025-11-14
+**Dernière mise à jour** : 2026-08-14
 

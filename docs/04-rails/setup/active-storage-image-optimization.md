@@ -1,5 +1,8 @@
 # Optimisation des images Active Storage
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Ce document couvre les points techniques d'optimisation Active Storage.
 
 La politique de formats (vocabulaire `master/square/banner/story`, matrice surfaces, migration `image_url`) est maintenue dans :

@@ -21,12 +21,15 @@ RSpec.describe AuditLog, type: :model do
   end
 
   describe 'scopes' do
-    # On nettoie la table avant chaque test de scope pour éviter la pollution
-    # par des données créées dans les seeds ou d'autres specs.
-    before do
+    # User includes Auditable — creating users inserts action: "created" rows.
+    # Wipe after all actors exist so scope examples only see intentional logs.
+    def reset_audit_logs!
       AuditLog.delete_all
     end
+
     it 'filters by action' do
+      actor
+      reset_audit_logs!
       matching = AuditLog.create!(actor_user: actor, action: 'event.cancel', target_type: 'Event', target_id: 1)
       AuditLog.create!(actor_user: actor, action: 'user.promote', target_type: 'User', target_id: 2)
 
@@ -34,6 +37,8 @@ RSpec.describe AuditLog, type: :model do
     end
 
     it 'filters by target' do
+      actor
+      reset_audit_logs!
       target_log = AuditLog.create!(actor_user: actor, action: 'event.update', target_type: 'Event', target_id: 42)
       AuditLog.create!(actor_user: actor, action: 'event.update', target_type: 'Event', target_id: 99)
 
@@ -42,6 +47,8 @@ RSpec.describe AuditLog, type: :model do
 
     it 'filters by actor' do
       other_actor = create_user(email: 'other@example.com')
+      actor
+      reset_audit_logs!
       actor_log = AuditLog.create!(actor_user: actor, action: 'event.update', target_type: 'Event', target_id: 1)
       AuditLog.create!(actor_user: other_actor, action: 'event.update', target_type: 'Event', target_id: 2)
 
@@ -49,6 +56,9 @@ RSpec.describe AuditLog, type: :model do
     end
 
     it 'returns logs ordered by recency' do
+      actor
+      reset_audit_logs!
+
       old_log = travel_to(Time.zone.local(2025, 1, 1, 10)) do
         AuditLog.create!(actor_user: actor, action: 'event.create', target_type: 'Event', target_id: 1)
       end
@@ -57,7 +67,7 @@ RSpec.describe AuditLog, type: :model do
         AuditLog.create!(actor_user: actor, action: 'event.publish', target_type: 'Event', target_id: 1)
       end
 
-      expect(AuditLog.recent).to eq([ recent_log, old_log ])
+      expect(AuditLog.recent.to_a).to eq([ recent_log, old_log ])
     end
   end
 end

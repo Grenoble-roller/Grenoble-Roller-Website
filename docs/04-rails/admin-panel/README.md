@@ -1,8 +1,8 @@
 # 📋 Admin Panel - Documentation Complète
 
-**Date** : 2025-01-13 | **Version** : 3.0 | **État** : ✅ **100% complété** | **Dernière mise à jour** : 2025-01-13
+**Date** : 2025-01-13 | **Version** : 3.1 | **État** : ✅ **100% complété** | **Dernière mise à jour** : 2026-08-14
 
-> 📖 **Documentation complète** : Ce dossier contient toute la documentation du panel admin, maintenant **100% implémenté** et migré depuis ActiveAdmin.
+> 📖 **Documentation complète** : Ce dossier contient la documentation du panel admin, maintenant **100% implémenté** et migré depuis ActiveAdmin. Les documents de construction détaillés (migrations, modèles, contrôleurs par module) ont été archivés — le code source (`app/controllers/admin_panel/`, `app/policies/`) est la référence vivante.
 
 ---
 
@@ -14,39 +14,24 @@ Le panel admin est une interface d'administration complète développée en remp
 
 ---
 
-## 📂 Structure de la Documentation
+## 📂 Documentation
 
 ### **Index Principal**
 - [`INDEX.md`](./INDEX.md) - Index complet de tous les modules avec statut d'implémentation
 
 ### **Modules par Thème Métier**
 
-#### 📊 [00 - TABLEAU DE BORD](./00-dashboard/README.md)
-Dashboard principal avec KPIs, statistiques, mode maintenance, intégration Mission Control Jobs.
-
-#### 🛒 [01 - BOUTIQUE](./01-boutique/README.md)
-Gestion des produits, variantes, inventaire et catégories.
-
-#### 📦 [02 - COMMANDES](./02-commandes/README.md)
-Gestion des commandes et workflow stock (reserve/release).
-
-#### 🎓 [03 - INITIATIONS](./03-initiations/README.md)
-Gestion des initiations, participants, bénévoles, liste d'attente.
-
-#### 📅 [04 - ÉVÉNEMENTS](./04-evenements/README.md)
-Gestion des événements (randonnées, sorties), routes, participations, candidatures organisateur.
-
-#### 📧 [05 - MAILING](./05-mailing/README.md)
-Gestion des emails et notifications (futur).
-
-#### 👥 [06 - UTILISATEURS](./06-utilisateurs/README.md)
-Gestion des utilisateurs, rôles, adhésions.
-
-#### 📢 [07 - COMMUNICATION](./07-communication/README.md)
-Gestion des messages de contact et partenaires.
-
-#### ⚙️ [08 - SYSTÈME](./08-systeme/README.md)
-Gestion système : paiements, logs emails, monitoring jobs.
+| Module | Statut |
+| --- | --- |
+| 📊 00 - Tableau de bord | ✅ Implémenté (KPIs, maintenance, Mission Control Jobs) |
+| 🛒 01 - Boutique | ✅ Implémenté (produits, variantes, inventaire, catégories) |
+| 📦 02 - Commandes | ✅ Implémenté (workflow stock reserve/release) |
+| 🎓 03 - Initiations | ✅ Implémenté ([routes](03-initiations/05-routes.md)) |
+| 📅 04 - Événements | ✅ Implémenté ([routes](04-evenements/05-routes.md)) |
+| 📧 05 - Mailing | ⏸️ En attente — voir [`../mailing/`](../mailing/README.md) |
+| 👥 06 - Utilisateurs | ✅ Implémenté (users, rôles, adhésions) |
+| 📢 07 - Communication | ✅ Implémenté (messages contact, partenaires) |
+| ⚙️ 08 - Système | ✅ Implémenté ([vue d'ensemble](08-systeme/README.md), paiements, logs emails, jobs) |
 
 ---
 
@@ -54,17 +39,14 @@ Gestion système : paiements, logs emails, monitoring jobs.
 
 - [`CHANGELOG.md`](./CHANGELOG.md) - Historique des modifications
 - [`PERMISSIONS.md`](./PERMISSIONS.md) - Documentation complète des permissions par grade
-- [`DESACTIVATION_ACTIVEADMIN.md`](./DESACTIVATION_ACTIVEADMIN.md) - Guide de désactivation d'ActiveAdmin
-- [`ARCHIVES/`](./ARCHIVES/) - Éléments archivés
 
 ---
 
 ## 🔗 Liens Utiles
 
-- **Documentation Rails** : [`../README.md`](../README.md)
-- **Recherche initiale** : [`../admin-panel-research.md`](../admin-panel-research.md)
 - **Architecture** : [`../../03-architecture/`](../../03-architecture/)
+- **Conventions Rails** : [`../conventions/README.md`](../conventions/README.md)
 
 ---
 
-**Dernière mise à jour** : 2025-01-13
+**Dernière mise à jour** : 2026-08-14

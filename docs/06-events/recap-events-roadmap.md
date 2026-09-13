@@ -1,5 +1,6 @@
 # 📊 Récapitulatif Événements - Comparaison Roadmap vs Réalité
 
+**Dernière mise à jour** : 2026-08-14
 **Document** : Comparaison détaillée entre la roadmap initiale et l'état actuel  
 **Date** : Novembre 2025  
 **Version** : 1.0

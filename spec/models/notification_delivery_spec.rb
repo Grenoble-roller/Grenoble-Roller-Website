@@ -46,4 +46,37 @@ RSpec.describe NotificationDelivery, type: :model do
       }.not_to raise_error
     end
   end
+
+  describe "audit trail" do
+    it "creates an audit log on creation" do
+      expect {
+        create(:notification_delivery)
+      }.to change { AuditLog.where(target_type: 'NotificationDelivery').count }.by(1)
+
+      log = AuditLog.find_by!(target_type: 'NotificationDelivery', action: 'created')
+      expect(log.actor_user_id).to be_nil
+      expect(log.metadata).to include('event_key', 'status' => 'pending')
+    end
+
+    it "creates an audit log on update" do
+      delivery = create(:notification_delivery)
+
+      expect {
+        delivery.update!(status: 'delivered')
+      }.to change { AuditLog.where(target_type: 'NotificationDelivery').count }.by(1)
+
+      log = AuditLog.find_by!(target_type: 'NotificationDelivery', action: 'updated')
+      expect(log.metadata['changes']).to include('status')
+    end
+
+    it "creates an audit log on destruction" do
+      delivery = create(:notification_delivery)
+
+      expect {
+        delivery.destroy
+      }.to change { AuditLog.where(target_type: 'NotificationDelivery').count }.by(1)
+
+      expect(AuditLog.exists?(target_type: 'NotificationDelivery', action: 'destroyed')).to be(true)
+    end
+  end
 end

@@ -1,3 +1,6 @@
 @use "bootstrap/scss/bootstrap" as *;
 @use "bootstrap-icons/font/bootstrap-icons" as *;
 @use "style" as *;
+
+/* PhotoSwipe 5 — event map / cover overlay viewer */
+@import "vendor/photoswipe";

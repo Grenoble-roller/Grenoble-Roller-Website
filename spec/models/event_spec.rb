@@ -330,4 +330,86 @@ RSpec.describe Event, type: :model do
       expect(event.loop_distance_km_values).to eq([ 5.0, 5.0 ])
     end
   end
+  describe 'audit trail' do
+    let!(:creator) { create_user }
+
+    it 'creates an audit log on creation' do
+      expect {
+        create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.actor_user).to eq(creator)
+      expect(log.action).to eq('created')
+      expect(log.target_type).to eq('Event')
+      expect(log.metadata['title']).to eq('Test Event')
+      expect(log.metadata['status']).to eq('draft')
+    end
+
+    it 'updates audit log on update' do
+      event = create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      expect {
+        event.update!(title: 'Updated Test Event')
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq('updated')
+      expect(log.metadata).to have_key('changes')
+      changes = log.metadata['changes']
+      expect(changes).to be_a(Hash)
+      expect(changes['title']).to eq([ 'Test Event', 'Updated Test Event' ])
+    end
+
+    it 'creates audit log on destruction' do
+      event = create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      expect {
+        event.destroy
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq('destroyed')
+      expect(log.metadata['title']).to eq('Test Event')
+    end
+  end
+  describe 'audit trail' do
+    let!(:creator) { create_user }
+
+    it 'creates an audit log on creation' do
+      expect {
+        create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.actor_user).to eq(creator)
+      expect(log.action).to eq('created')
+      expect(log.target_type).to eq('Event')
+      expect(log.metadata['title']).to eq('Test Event')
+      expect(log.metadata['status']).to eq('draft')
+    end
+
+    it 'updates audit log on update' do
+      event = create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      expect {
+        event.update!(title: 'Updated Test Event')
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq('updated')
+      expect(log.metadata).to have_key('changes')
+      changes = log.metadata['changes']
+      expect(changes).to be_a(Hash)
+      expect(changes['title']).to eq([ 'Test Event', 'Updated Test Event' ])
+    end
+
+    it 'creates audit log on destruction' do
+      event = create_event(creator_user: creator, title: "Test Event", description: "A test event description", start_at: 1.day.from_now, duration_min: 60, location_text: "Test Location", price_cents: 0, currency: "EUR", max_participants: 20, level: "beginner", distance_km: 10.0)
+      expect {
+        event.destroy
+      }.to change { AuditLog.count }.by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq('destroyed')
+      expect(log.metadata['title']).to eq('Test Event')
+    end
+  end
 end

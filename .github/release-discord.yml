@@ -1,14 +1,8 @@
-# Curated Discord release announce (read by CI on push to staging/main).
-# Update this file in every Dev→staging or staging→main release PR.
-# Skip a push: include [skip discord] in the merge commit message.
-#
-# Channel target (ops): Grenoble Roller release salon — see
-# docs/07-ops/runbooks/discord-release-announce.md
-
-version: "2.3.3"
-headline: "Adhésions UX · boutique · commandes · glass/WCAG"
+version: "2.4.10"
+headline: "Navbar PurgeCSS, UI Audit Logs, health, storage purge, admin image proxy"
 bullets:
-  - "Adhésions — jours restants, Réadhérer"
-  - "Boutique — cartes 1:1, PDP galerie, badges stock"
-  - "Commandes — liste dense + chips WCAG"
-  - "Glass dual-theme · fix panier adhésion"
+  - "Navbar PurgeCSS + UI Audit Logs"
+  - "Route form validation / unblock image upload"
+  - "GET /health 503 on Rails 8.1 (migration_context)"
+  - "Purge Active Storage idempotent when object S3 is missing"
+  - "Previews admin Active Storage via app proxy"

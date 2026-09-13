@@ -3,7 +3,7 @@ title: "Service de Sécurité Email (EmailSecurityService) - Grenoble Roller"
 status: "active"
 version: "1.0"
 created: "2025-01-30"
-updated: "2025-01-30"
+updated: "2026-08-14"
 tags: ["security", "email", "monitoring", "sentry"]
 ---
 
@@ -364,7 +364,7 @@ end
 
 - **Service** : `app/services/email_security_service.rb`
 - **Contrôleur** : `app/controllers/confirmations_controller.rb`
-- **Documentation email confirmation** : [`docs/04-rails/setup/email-confirmation.md`](setup/email-confirmation.md)
+- **Documentation email confirmation** : [`docs/04-rails/setup/email-confirmation.md`](../setup/email-confirmation.md)
 - **Sentry** : [Documentation Sentry Ruby](https://docs.sentry.io/platforms/ruby/)
 
 ---

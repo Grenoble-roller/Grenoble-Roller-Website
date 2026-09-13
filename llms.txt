@@ -1,0 +1,111 @@
+# Grenoble Roller Website
+
+> Community platform for the Grenoble rollerblading association: e-commerce shop, events & initiations, memberships (HelloAsso), custom admin panel. Rails 8 monolith, PostgreSQL 16, Devise + Pundit, Bootstrap 5. Docs are French-first (association volunteers); agent-authored artifacts (DRs, runbooks, audits) are English. Gitflow: feature → `Dev` → staging → main.
+
+## Root
+
+- [README.md](README.md): Quick start, roles, Docker ports
+- [AGENTS.md](AGENTS.md): Agent guide — language policy, doc map, gitflow, stack
+
+## Overview & working methods (docs/00–02)
+
+- [docs/00-overview/README.md](docs/00-overview/README.md): Project overview — phases, feature completion, backlog (start here)
+- [docs/00-overview/features-status.md](docs/00-overview/features-status.md): Feature implementation status
+- [docs/01-ways-of-working/README.md](docs/01-ways-of-working/README.md): Git workflow, branches (Dev/staging/main), PR rules, code review
+- [docs/02-shape-up/README.md](docs/02-shape-up/README.md): Shape Up methodology — cycles, appetite, cooldown
+- [docs/02-shape-up/shape-up-methodology.md](docs/02-shape-up/shape-up-methodology.md): Shape Up + Trello configuration guide
+- [docs/02-shape-up/technical-implementation-guide.md](docs/02-shape-up/technical-implementation-guide.md): Rails 8 + Bootstrap technical guide
+
+## Architecture (docs/03)
+
+- [docs/03-architecture/system-overview.md](docs/03-architecture/system-overview.md): Monolith boundaries, environments, NFRs
+- [docs/03-architecture/domain/models.md](docs/03-architecture/domain/models.md): Domain models & relationships (verify against `db/schema.rb`)
+
+## Rails (docs/04)
+
+- [docs/04-rails/conventions/README.md](docs/04-rails/conventions/README.md): Controllers, models, CSS, security conventions
+- [docs/04-rails/routes.md](docs/04-rails/routes.md): Public + admin-panel routes reference
+- [docs/04-rails/setup/local-development.md](docs/04-rails/setup/local-development.md): Local setup with Docker, credentials, seeds
+- [docs/04-rails/setup/credentials.md](docs/04-rails/setup/credentials.md): Rails credentials (SMTP, MinIO, Turnstile, HelloAsso)
+- [docs/04-rails/setup/README.md](docs/04-rails/setup/README.md): Setup index — MinIO, Active Storage, emails, Turnstile
+- [docs/04-rails/setup/turnstile-setup.md](docs/04-rails/setup/turnstile-setup.md): Cloudflare Turnstile configuration
+- [docs/04-rails/setup/turnstile-troubleshooting-consolidated.md](docs/04-rails/setup/turnstile-troubleshooting-consolidated.md): Turnstile troubleshooting & tests (consolidated)
+- [docs/04-rails/admin-panel/README.md](docs/04-rails/admin-panel/README.md): Admin panel modules overview (replaces ActiveAdmin)
+- [docs/04-rails/admin-panel/PERMISSIONS.md](docs/04-rails/admin-panel/PERMISSIONS.md): Pundit + role levels (cross-check `AdminPanel::BaseController`)
+- [docs/04-rails/mailing/README.md](docs/04-rails/mailing/README.md): Automatic email system — mailers, jobs, Solid Queue
+- [docs/04-rails/background-jobs/README.md](docs/04-rails/background-jobs/README.md): Recurring jobs — Solid Queue active
+- [docs/04-rails/background-jobs/CRON.md](docs/04-rails/background-jobs/CRON.md): Recurring jobs reference (`config/recurring.yml`)
+- [docs/04-rails/security/email-security-service.md](docs/04-rails/security/email-security-service.md): Email security service
+- [docs/04-rails/pwa/README.md](docs/04-rails/pwa/README.md): PWA state (validated — study archived)
+
+## Testing (docs/05)
+
+- [docs/05-testing/rspec/README.md](docs/05-testing/rspec/README.md): RSpec entry point — methodology, Docker command
+- [docs/05-testing/rspec/PLAN.md](docs/05-testing/rspec/PLAN.md): RSpec & refactoring plan (open items)
+- [docs/05-testing/rspec/METHODE.md](docs/05-testing/rspec/METHODE.md): Error-fixing methodology
+- [docs/05-testing/rspec/coverage-gaps.md](docs/05-testing/rspec/coverage-gaps.md): Spec coverage gaps
+- [docs/05-testing/rspec/spec-failures-audit.md](docs/05-testing/rspec/spec-failures-audit.md): Spec failure audit
+
+## Events domain (docs/06)
+
+- [docs/06-events/README.md](docs/06-events/README.md): Events domain index — waitlist, roller stock, free trial, reminders
+- [docs/06-events/waitlist-system.md](docs/06-events/waitlist-system.md): Waitlist system
+- [docs/06-events/logique-essai-gratuit.md](docs/06-events/logique-essai-gratuit.md): Free-trial logic (consolidated — nominative rules)
+- [docs/06-events/event-reminder-job.md](docs/06-events/event-reminder-job.md): Event reminder job
+- [docs/06-events/event-loop-routes.md](docs/06-events/event-loop-routes.md): Multiple loop routes support
+- [docs/06-events/recap-events-roadmap.md](docs/06-events/recap-events-roadmap.md): Events roadmap vs reality
+
+## Ops & runbooks (docs/07)
+
+- [docs/07-ops/deployment.md](docs/07-ops/deployment.md): Automatic deployment — watchdog, backup, rollback
+- [docs/07-ops/runbooks/](docs/07-ops/runbooks/): Local, staging, production, Dokploy runbooks
+- [docs/07-ops/runbooks/production-setup.md](docs/07-ops/runbooks/production-setup.md): Production setup runbook
+- [docs/07-ops/runbooks/staging-troubleshooting.md](docs/07-ops/runbooks/staging-troubleshooting.md): Staging troubleshooting
+- [docs/07-ops/runbooks/dokploy-setup.md](docs/07-ops/runbooks/dokploy-setup.md): Dokploy setup
+- [docs/07-ops/runbooks/watchdog/watchdog.md](docs/07-ops/runbooks/watchdog/watchdog.md): Watchdog script reference
+- [docs/07-ops/runbooks/discord-release-announce.md](docs/07-ops/runbooks/discord-release-announce.md): Discord release announce runbook
+
+## Security, privacy & legal (docs/08)
+
+- [docs/08-security-privacy/README.md](docs/08-security-privacy/README.md): RGPD, cookies, WCAG, legal pages index
+- [docs/08-security-privacy/accessibility-final-report.md](docs/08-security-privacy/accessibility-final-report.md): Accessibility final report (WCAG 2.1 AA, Pa11y 6/6)
+- [docs/08-security-privacy/legal-pages-guide.md](docs/08-security-privacy/legal-pages-guide.md): Legal pages guide
+- [docs/08-security-privacy/legal-pages-implementation.md](docs/08-security-privacy/legal-pages-implementation.md): Legal pages & cookies implementation
+- [docs/08-security-privacy/umami-analytics.md](docs/08-security-privacy/umami-analytics.md): Umami analytics — ENV vars, consent, events
+
+## Product & UX (docs/09)
+
+- [docs/09-product/README.md](docs/09-product/README.md): Product index — HelloAsso, memberships, orders, backlog
+- [docs/09-product/helloasso-setup.md](docs/09-product/helloasso-setup.md): HelloAsso OAuth setup, polling, sandbox vs prod
+- [docs/09-product/flux-boutique-helloasso.md](docs/09-product/flux-boutique-helloasso.md): HelloAsso shop flow (legacy + unified checkout)
+- [docs/09-product/unified-cart-ux.md](docs/09-product/unified-cart-ux.md): Unified cart + checkout UX, partial pay, donation
+- [docs/09-product/adhesions-complete.md](docs/09-product/adhesions-complete.md): Memberships — strategy, flows, rules, automation
+- [docs/09-product/todo-restant.md](docs/09-product/todo-restant.md): Remaining essential features
+- [docs/09-product/ux-improvements-backlog.md](docs/09-product/ux-improvements-backlog.md): UX improvements backlog (historical)
+- [docs/09-product/deployment-cron.md](docs/09-product/deployment-cron.md): Legacy cron/whenever — superseded by Solid Queue
+
+## Decisions, changelog & templates (docs/10–11)
+
+- [docs/10-decisions-and-changelog/CHANGELOG.md](docs/10-decisions-and-changelog/CHANGELOG.md): Release journal
+- [docs/10-decisions-and-changelog/DR-001-unified-checkout-cart.md](docs/10-decisions-and-changelog/DR-001-unified-checkout-cart.md): Decision record — unified cart
+- [docs/10-decisions-and-changelog/DR-002-discord-webhook-notifications.md](docs/10-decisions-and-changelog/DR-002-discord-webhook-notifications.md): Decision record — Discord webhooks
+- [docs/10-decisions-and-changelog/PLAN-unified-checkout-MASTER.md](docs/10-decisions-and-changelog/PLAN-unified-checkout-MASTER.md): Unified checkout master plan (agent SSOT)
+- [docs/11-templates/decision-record-template.md](docs/11-templates/decision-record-template.md): ADR template (DR-XXX format)
+
+## WIP development (docs/12)
+
+- [docs/12-development/README.md](docs/12-development/README.md): WIP staging area — lifecycle, current items
+- [docs/12-development/homepage-carousel.md](docs/12-development/homepage-carousel.md): Homepage carousel (implemented)
+- [docs/12-development/homepage-implementation-plan.md](docs/12-development/homepage-implementation-plan.md): Homepage implementation plan
+- [docs/12-development/images-harmonisation-PLAN.md](docs/12-development/images-harmonisation-PLAN.md): Image formats harmonisation plan
+- [docs/12-development/social-network.md](docs/12-development/social-network.md): Social network module plan (open)
+
+## Optional
+
+- [docs/10-decisions-and-changelog/release-dev-to-staging-2026-06.md](docs/10-decisions-and-changelog/release-dev-to-staging-2026-06.md): Release note — Dev → staging 2026-06 (update before each staging PR)
+- [docs/10-decisions-and-changelog/release-staging-to-main-2026-08.md](docs/10-decisions-and-changelog/release-staging-to-main-2026-08.md): Release note — staging → main 2026-08
+- [docs/06-events/user-journeys-events.md](docs/06-events/user-journeys-events.md): Event user journeys
+- [docs/09-product/user-journeys-analysis.md](docs/09-product/user-journeys-analysis.md): 9 user journeys analysis with friction points
+- [docs/09-product/orders-workflow-emails.md](docs/09-product/orders-workflow-emails.md): Order workflow emails
+- [docs/09-product/membership-mailer-emails.md](docs/09-product/membership-mailer-emails.md): Membership mailer emails
+- [docs/12-development/guide-images-benevoles.md](docs/12-development/guide-images-benevoles.md): Volunteer image guide (FR)

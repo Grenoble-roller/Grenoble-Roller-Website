@@ -12,6 +12,9 @@ Rails.application.routes.draw do
     # Logs des emails (SUPERADMIN uniquement)
     resources :mail_logs, path: "mail-logs", only: [ :index, :show ]
 
+    # Journal d'audit, lecture seule (SUPERADMIN uniquement)
+    resources :audit_logs, path: "audit-logs", only: [ :index, :show ]
+
     # Notifications Discord (SUPERADMIN uniquement)
     resources :notification_channels, path: "notification-channels" do
       member do
@@ -185,6 +188,11 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
   root "pages#index"
+
+  # Crawlability (must not live under public/ — static files would win)
+  get "/robots.txt", to: "seo#robots", as: :robots
+  get "/sitemap.xml", to: "seo#sitemap", as: :sitemap, defaults: { format: :xml }
+  get "/llms.txt", to: "seo#llms", as: :llms
 
   # Static pages
   get "/welcome", to: "pages#welcome", as: "welcome"

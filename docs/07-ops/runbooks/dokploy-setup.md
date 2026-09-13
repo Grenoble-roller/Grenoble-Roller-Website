@@ -3,7 +3,7 @@ title: "Déploiement Dokploy (staging & production)"
 status: "active"
 version: "1.3"
 created: "2026-03-26"
-updated: "2026-03-26"
+updated: "2026-08-14"
 authors: ["FlowTech Lab"]
 tags: ["dokploy", "deployment", "docker", "staging", "production"]
 ---

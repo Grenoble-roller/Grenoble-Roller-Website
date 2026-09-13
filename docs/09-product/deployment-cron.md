@@ -1,8 +1,19 @@
 # ⏰ Gestion Automatique du Crontab
 
+**Dernière mise à jour** : 2026-08-14
+
+
+> ⚠️ **SUPERSÉDÉ (2026-08-14)** : Le cron hôte/whenever décrit ci-dessous est **remplacé par Solid Queue**.
+> Tous les jobs récurrents sont désormais gérés via [`config/recurring.yml`](../../config/recurring.yml)
+> (chargé par l'app — rappels événements, sync HelloAsso, adhésions expirées, rappels renouvellement,
+> retour rollers, expiration panier) et monitorés via Mission Control (`/admin-panel/jobs`).
+> Voir [`docs/04-rails/background-jobs/CRON.md`](../04-rails/background-jobs/CRON.md) et
+> [`docs/04-rails/mailing/README.md`](../04-rails/mailing/README.md) pour la documentation à jour.
+> `config/schedule.rb` et `config/crontab` sont conservés **pour référence uniquement** (supercronic déprécié).
+
 ## 📋 Vue d'ensemble
 
-Le système de rappels et de tâches planifiées utilise **whenever** pour générer et installer automatiquement le crontab sur l'hôte (machine physique), **pas dans le container Docker**.
+Le système de rappels et de tâches planifiées utilisait **whenever** pour générer et installer automatiquement le crontab sur l'hôte (machine physique), **pas dans le container Docker**. Ce document est conservé comme historique de l'ancienne approche.
 
 ## 🎯 Pourquoi sur l'hôte et pas dans le container ?
 

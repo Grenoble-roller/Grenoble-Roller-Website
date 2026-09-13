@@ -312,4 +312,111 @@ RSpec.describe Membership, type: :model do
       end
     end
   end
+
+  describe 'audit trail' do
+    let(:role) { Role.find_or_create_by!(code: 'USER') { |r| r.name = 'User'; r.level = 10 } }
+    let(:user) do
+      User.create!(
+        first_name: 'Test',
+        last_name: 'User',
+        email: 'test@example.com',
+        password: 'password12345',
+        skill_level: 'beginner',
+        role: role
+      )
+    end
+
+    it 'creates an audit log on creation' do
+      membership = nil
+      expect {
+        membership = Membership.create!(
+          user: user,
+          status: :active,
+          category: :standard,
+          start_date: Date.new(2025, 9, 1),
+          end_date: Date.new(2026, 8, 31),
+          amount_cents: 1000,
+          currency: 'EUR',
+          season: '2025-2026',
+          is_child_membership: false,
+          rgpd_consent: true,
+          legal_notices_accepted: true
+        )
+      }.to change { AuditLog.where(target_type: 'Membership').count }.by(1)
+
+      log = AuditLog.where(target_type: 'Membership').last
+      expect(log.action).to eq('created')
+      expect(log.target_type).to eq('Membership')
+      expect(log.target_id).to eq(membership.id)
+      expect(log.actor_user_id).to eq(user.id)
+      expect(log.metadata).to include(
+        'user_id' => user.id,
+        'status' => 'active',
+        'category' => 'standard'
+      )
+    end
+
+    it 'creates an audit log on update' do
+      membership = Membership.create!(
+        user: user,
+        status: :active,
+        category: :standard,
+        start_date: Date.new(2025, 9, 1),
+        end_date: Date.new(2026, 8, 31),
+        amount_cents: 1000,
+        currency: 'EUR',
+        season: '2025-2026',
+        is_child_membership: false,
+        rgpd_consent: true,
+        legal_notices_accepted: true
+      )
+
+      expect {
+        membership.update!(status: :expired)
+      }.to change { AuditLog.where(target_type: 'Membership').count }.by(1)
+
+      log = AuditLog.where(target_type: 'Membership').last
+      expect(log.action).to eq('updated')
+      expect(log.target_type).to eq('Membership')
+      expect(log.target_id).to eq(membership.id)
+      expect(log.actor_user_id).to eq(user.id)
+      expect(log.metadata).to include(
+        'id' => membership.id,
+        'status' => 'expired',
+        'category' => 'standard'
+      )
+      expect(log.metadata['changes']).to include('status')
+    end
+
+    it 'creates an audit log on destruction' do
+      membership = Membership.create!(
+        user: user,
+        status: :active,
+        category: :standard,
+        start_date: Date.new(2025, 9, 1),
+        end_date: Date.new(2026, 8, 31),
+        amount_cents: 1000,
+        currency: 'EUR',
+        season: '2025-2026',
+        is_child_membership: false,
+        rgpd_consent: true,
+        legal_notices_accepted: true
+      )
+
+      expect {
+        membership.destroy
+      }.to change { AuditLog.where(target_type: 'Membership').count }.by(1)
+
+      log = AuditLog.where(target_type: 'Membership').last
+      expect(log.action).to eq('destroyed')
+      expect(log.target_type).to eq('Membership')
+      expect(log.target_id).to eq(membership.id)
+      expect(log.actor_user_id).to eq(user.id)
+      expect(log.metadata).to include(
+        'user_id' => user.id,
+        'status' => 'active',
+        'category' => 'standard'
+      )
+    end
+  end
 end

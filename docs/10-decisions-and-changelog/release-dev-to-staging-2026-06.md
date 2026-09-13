@@ -1,17 +1,34 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.3.2"
+version: "2.4.11"
 created: "2026-06-07"
-updated: "2026-08-03"
-tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux"]
+updated: "2026-09-13"
+tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf"]
 ---
 
 # Release Dev → staging (June 2026)
 
-**Target branch:** merge `Dev` → `staging` (PR)  
-**Commit range:** `2201eefa` … `0f16a913` (`origin/staging` … `Dev`) — **v2.3.1 slice only** (3 commits ahead of current staging tip)  
-**Head on Dev:** `0f16a913` — `fix(events): show organizers their own draft events on index`
+> **Current promotion (2026-09-13) — v2.4.11 follow-up**
+> **Target:** `Dev` → `staging`
+> **Staging baseline:** `3677a97b` — v2.4.11 merged via PR #283
+> **Migrations:** none
+> **New ENV:** none
+>
+> The v2.4.11 Active Storage application fix is already on `staging`.
+> This promotion synchronizes the remaining `Dev` changes:
+> - Ruby LSP development tooling (`64c92279`)
+> - v2.4.11 changelog/release documentation
+> - correction of the malformed v2.4.11/v2.4.10 changelog structure
+>
+> Existing staging safety variables remain required:
+> `MAIL_DELIVERY_METHOD=test`, `MAIL_DELIVERY_ENABLED=false`, `SUPERCRONIC_ENABLED=false`
+>
+> **Patch note:** [`release-v2.4.11.md`](release-v2.4.11.md)
+
+**Comparison:** `origin/staging...origin/Dev`
+**Staging head before promotion:** `3677a97b`
+**Dev head before documentation correction:** `9fb3046f`
 
 **Agent SSOT for checkout epic:** [`PLAN-unified-checkout-MASTER.md`](PLAN-unified-checkout-MASTER.md) (Waves 0–6 complete on `Dev`).  
 **Agent SSOT for Discord notifications:** [`DR-002-discord-webhook-notifications.md`](DR-002-discord-webhook-notifications.md) (implemented 2026-06-09).
@@ -36,6 +53,40 @@ tags: ["release", "staging", "changelog", "unified-checkout", "discord-notificat
 **Migrations:** none  
 **ENV:** none  
 **Rollback:** redeploy previous staging image / revert merge to `2201eefa`
+
+### Staging safety preflight — current promotion
+
+| Commit | Summary |
+|--------|---------|
+| `17138355` | Disable staging email delivery and Supercronic via ENV gates
+
+**Migrations:** none
+
+**Required staging ENV before deployment:**
+
+| Variable | Value |
+| --- | --- |
+| `MAIL_DELIVERY_METHOD` | `test` |
+| `MAIL_DELIVERY_ENABLED` | `false` |
+| `SUPERCRONIC_ENABLED` | `false` |
+
+**Behaviour:**
+- `MAIL_DELIVERY_METHOD=test` routes mail through the test delivery adapter.
+- `MAIL_DELIVERY_ENABLED=false` disables Action Mailer deliveries.
+- `SUPERCRONIC_ENABLED=false` prevents Supercronic startup.
+- If these variables are absent, historical defaults remain enabled.
+
+**Validation already completed:**
+- Ruby syntax: PASS
+- Shell syntax: PASS
+- `git diff --check`: PASS
+- Action Mailer runtime kill switch: PASS
+- Supercronic kill switch: PASS
+
+**Rollback safety:**
+Do not remove the staging safety variables while staging contains production-like data.
+If rollback requires deploying code that does not support these gates, staging must remain stopped/isolated or use a non-production-like database until the protections are restored.
+
 
 ---
 
@@ -254,7 +305,7 @@ bundle exec rspec spec/models/cart_line_spec.rb spec/models/checkout_spec.rb \
 ### Dev tooling
 
 - mise + Ruby 3.4.2, `.env.example`, Dependabot → `Dev`.
-- `AGENT.md` agent guide (replaces `CLAUDE.md`).
+- `AGENTS.md` agent guide (replaces `CLAUDE.md`; formerly `AGENT.md`).
 
 ### Roller stock reservations (v2.3)
 
@@ -448,7 +499,7 @@ Full Dev log since `origin/staging`: `git log origin/staging..Dev --oneline`
 - [`docs/09-product/unified-cart-ux.md`](../09-product/unified-cart-ux.md)
 - [`docs/06-events/roller-stock.md`](../06-events/roller-stock.md)
 - [`docs/08-security-privacy/umami-analytics.md`](../08-security-privacy/umami-analytics.md)
-- [`AGENT.md`](../../AGENT.md) — agent workflow & staging release process
+- [`AGENTS.md`](../../AGENTS.md) — agent workflow & staging release process
 
 ---
 
@@ -459,4 +510,4 @@ When preparing the next **Dev → staging** PR:
 1. Update **commit range** and **head SHA** at the top.
 2. Add new features / migrations / ENV vars / QA items.
 3. Add a line in [`CHANGELOG.md`](CHANGELOG.md) pointing here.
-4. Cross-check [`AGENT.md`](../../AGENT.md) § Release to staging.
+4. Cross-check [`AGENTS.md`](../../AGENTS.md) § Release to staging.

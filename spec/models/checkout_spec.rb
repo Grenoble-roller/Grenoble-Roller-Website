@@ -30,4 +30,40 @@ RSpec.describe Checkout do
       )
     end
   end
+
+  describe "audit trail" do
+    it "creates an audit log on creation" do
+      checkout = nil
+      expect {
+        checkout = create(:checkout)
+      }.to change(AuditLog.where(target_type: "Checkout"), :count).by(1)
+
+      log = AuditLog.where(target_type: "Checkout").last
+      expect(log.action).to eq("created")
+      expect(log.target_type).to eq("Checkout")
+      expect(log.actor_user_id).to eq(checkout.user_id)
+      expect(log.metadata).to include("status" => "pending")
+    end
+
+    it "creates an audit log on update" do
+      checkout = create(:checkout)
+      expect {
+        checkout.update!(status: "paid")
+      }.to change(AuditLog.where(target_type: "Checkout"), :count).by(1)
+
+      log = AuditLog.where(target_type: "Checkout").last
+      expect(log.action).to eq("updated")
+      expect(log.metadata["changes"]).to include("status")
+    end
+
+    it "creates an audit log on destruction" do
+      checkout = create(:checkout)
+      expect {
+        checkout.destroy!
+      }.to change(AuditLog.where(target_type: "Checkout"), :count).by(1)
+
+      log = AuditLog.where(target_type: "Checkout").last
+      expect(log.action).to eq("destroyed")
+    end
+  end
 end

@@ -1,5 +1,8 @@
 # Rebuild Without Cache - Staging
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Guide pour rebuilder les conteneurs Docker sans utiliser le cache, utile pour forcer la recompilation des assets et résoudre les problèmes d'images manquantes.
 
 ## Rebuild Complet Sans Cache

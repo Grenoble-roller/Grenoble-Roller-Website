@@ -2,6 +2,129 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-09-13] - ActiveStorage S3 service identity fix (v2.4.11)
+
+### Fixed
+- **ActiveStorage:** preserve the wrapped S3 service identity for blob validation and uploads.
+- **ActiveStorage:** keep S3 delete idempotent when the object is already absent.
+- **Initializer:** ensure the S3 service wrapper is loaded consistently.
+
+### Documentation
+- Patch note: [`release-v2.4.11.md`](release-v2.4.11.md)
+
+## [2026-09-12] - Navbar PurgeCSS + admin image proxy, health, storage purge, route form validation (v2.4.10)
+
+### Fixed
+- Navbar PurgeCSS + UI Audit Logs
+- Route form validation / unblock image upload
+- GET /health 503 on Rails 8.1 (migration_context)
+- Purge Active Storage idempotent when object S3 is missing
+- Previews admin Active Storage via app proxy
+
+### Documentation
+- Patch note: [Release note v2.4.10](release-navbar-purgecss-admin-proxy-health-storage-route-2026-09.md)
+
+## [2026-09-10] - HelloAsso checkout hardening (v2.4.9)
+
+### Fixed
+- Block legacy Order “Finaliser le paiement” when an open unified Checkout exists (resume HelloAsso intent or redirect to `/checkout`).
+- Compact HelloAsso checkout-intent metadata under ~18KB soft limit.
+- Cap cart/checkout line labels at 200 characters (truncate on create).
+
+### Documentation
+- Patch note: [`release-helloasso-checkout-hardening-2026-09.md`](release-helloasso-checkout-hardening-2026-09.md) (v2.4.9)
+
+## [2026-09-10] - HelloAsso itemName max 250 (v2.4.8)
+
+### Fixed
+- **P0 checkout:** HelloAsso returns HTTP 400 when checkout-intent `itemName` exceeds 250 characters. Multi-membership carts (parent + children) concatenated long labels and failed payment init.
+- Clamp via `HelloassoService.clamp_item_name` with short panier/cotisation fallback; keep line details in metadata.
+- Log unified checkout HelloAsso error bodies (`create_unified_checkout_intent ERROR`) for observability.
+
+### Documentation
+- Patch note: [`release-helloasso-itemname-2026-09.md`](release-helloasso-itemname-2026-09.md) (v2.4.8)
+
+## [2026-09-07] - llms.txt for AI agents (v2.4.7)
+
+### Added
+- Dynamic **`/llms.txt`** (`SeoController#llms`) — site summary + public page links (llmstxt.org style), host-aware.
+
+## [2026-09-07] - Sitemap + robots.txt (v2.4.6)
+
+### Added
+- Dynamic **`/sitemap.xml`**: static public pages + active products + visible events/initiations.
+- Dynamic **`/robots.txt`**: `Allow: /`, Disallow for private areas, `Sitemap:` using the request host (prod/staging).
+
+### Changed
+- Removed static `public/robots.txt` (empty Rails default) so the route is not shadowed.
+
+### Documentation
+- Patch note: [`release-sitemap-robots-2026-09.md`](release-sitemap-robots-2026-09.md)
+
+## [2026-09-07] - Event/initiation card image variants (v2.4.5)
+
+### Changed
+- Event & initiation **cards** use `cover_image_square` (800×450) instead of banner 1200×675, with HTML `width`/`height`.
+- Past-events / past-initiations **table thumbs** use `cover_image_thumb` (400×225) for 71×40 display slots.
+- Show heroes keep `cover_image_banner`.
+
+## [2026-09-07] - Navbar logos + hero variant (v2.4.4)
+
+### Changed
+- Navbar uses `*_nav.png` (200×80) with explicit `width`/`height`, eager load (not lazy) — was 2000×800 full logos.
+- Custom homepage hero Active Storage variant: `resize_to_limit` **1280×720** WebP q80 (was fill 1920×1080 q85).
+
+## [2026-09-07] - PurgeCSS actually applied (v2.4.3)
+
+### Fixed
+- **CSS build:** `build:css:purge` never wrote PurgeCSS output (CLI no-op) → deploys kept ~1.8 MiB Bootstrap. Write results via `scripts/purge-css.mjs`.
+
+### Changed
+- Tighter PurgeCSS safelist (runtime/JS/Pagy/PhotoSwipe only); drop broad `/^btn-/`, `/^bg-/`, `/^text-/` prefixes.
+- Public CSS only purged; leave `active_admin.css` unpurged.
+- Local build: `application.bootstrap.css` **~344 KiB** (was ~1.8 MiB).
+
+### Documentation
+- Patch note: [`release-purgecss-2026-09.md`](release-purgecss-2026-09.md) (v2.4.3)
+- Staging promo note: [`release-perf-bundle-staging-2026-09.md`](release-perf-bundle-staging-2026-09.md) (v2.4.3–2.4.5)
+
+## [2026-09-07] - Fix SEO JSON-LD breaking CSS/JS head (v2.4.2)
+
+### Fixed
+- **P0 layout:** `seo_json_ld` used `tag(:script, content: …)` so JSON sat in a `content=` attribute and left `<script>` open; browsers swallowed stylesheet + importmap → unstyled pages and broken JS. Emit JSON-LD as the script **body** instead.
+- **SEO meta:** restore non-empty `og:description` / `twitter:description` (no longer strip the whole meta tag when deriving OG/Twitter copy).
+
+### Tests
+- Helper + homepage request regression covering script shape and head asset tags.
+
+### Documentation
+- Patch note: [`release-seo-jsonld-head-fix-2026-09.md`](release-seo-jsonld-head-fix-2026-09.md) (v2.4.2)
+
+## [2026-09-06] - Attendance Audit Trail (v2.4.1)
+
+### Added
+- Audit trail for attendance create/update/destroy actions via `AuditLog` model, tracking user, event, status changes, etc.
+
+## [2026-09-05] - SEO/GEO Improvements & Lazy Loading (v2.4.0)
+
+### Added
+- **SEO Helper:** New `seo_head` helper for dynamic meta, OG, Twitter, JSON-LD (Organization+Event).
+- **SEO/GEO Content:** FAQ section (homepage), descriptive anchor text replacements, heading hierarchy fixes.
+- **Performance:** Lazy loading (`loading="lazy"`) extended to all images (`lazy_image_tag`).
+
+### Documentation
+- Patch note: [`release-seo-improvements-2026-09.md`](release-seo-improvements-2026-09.md) (v2.4.0)
+
+## [2026-08-04] - Event map viewer: PhotoSwipe overlay (v2.3.4)
+
+### Changed
+- **Event cover + loop maps:** PhotoSwipe 5 overlay gallery (pinch/wheel zoom) on mobile and desktop — replaces native new-tab open on coarse/narrow viewports and the custom non-zoom lightbox.
+- Importmap pins `photoswipe` + `photoswipe/lightbox`; CSS vendored + PurgeCSS safelist `/^pswp/`.
+
+### Documentation
+- AGENT.md gotcha updated; Discord announce payload bumped to v2.3.4 in `.github/release-discord.yml`.
+- Patch note: [`release-event-map-photoswipe-2026-08.md`](release-event-map-photoswipe-2026-08.md) (v2.3.4)
+
 ## [2026-08-03] - Storefront stock badges (honest + low-stock)
 
 ### Fixed

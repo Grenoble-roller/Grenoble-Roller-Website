@@ -2798,97 +2798,24 @@
     height: 100%;
     object-fit: contain; /* Afficher l'image en entier sans crop */
     object-position: center;
-    pointer-events: none; /* Clic géré par le conteneur viewer */
+    pointer-events: none; /* Clic géré par le lien gallery */
   }
 
-  /* Viewer plein écran — pinch-zoom natif mobile, fermeture explicite */
-  .route-image-viewer {
-    position: fixed;
-    inset: 0;
-    z-index: 1080;
-    background: rgba(0, 0, 0, 0.96);
-    display: flex;
-    flex-direction: column;
+  /* PhotoSwipe tweaks — event maps / cover (library CSS in vendor/photoswipe.css) */
+  .pswp {
+    --pswp-bg: rgba(0, 0, 0, 0.92);
   }
 
-  .route-image-viewer__close {
-    position: fixed;
-    top: max(0.75rem, env(safe-area-inset-top));
-    right: max(0.75rem, env(safe-area-inset-right));
-    z-index: 2;
-    width: 2.75rem;
-    height: 2.75rem;
-    border: none;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
-    color: #fff;
-    font-size: 1.75rem;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  a.pswp-gallery-item {
+    cursor: zoom-in;
   }
 
-  .route-image-viewer__title {
-    position: fixed;
-    top: max(0.875rem, env(safe-area-inset-top));
-    left: max(0.75rem, env(safe-area-inset-left));
-    right: 4rem;
-    z-index: 2;
-    margin: 0;
-    color: #fff;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-    pointer-events: none;
+  a.hero-image-container.pswp-gallery-item {
+    color: inherit;
   }
 
-  .route-image-viewer__scroll {
-    flex: 1;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-    touch-action: pan-x pan-y pinch-zoom;
-    padding:
-      calc(3.25rem + env(safe-area-inset-top))
-      max(0.5rem, env(safe-area-inset-right))
-      max(0.75rem, env(safe-area-inset-bottom))
-      max(0.5rem, env(safe-area-inset-left));
-  }
-
-  .route-image-viewer__img {
-    display: block;
-    width: auto;
-    max-width: min(96vw, 1400px);
-    max-height: calc(100vh - 5.5rem);
-    height: auto;
-    margin: 0 auto;
-    object-fit: contain;
-    border-radius: 0.35rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
-    user-select: none;
-    -webkit-user-drag: none;
-  }
-
-  .route-image-viewer__hint {
-    position: fixed;
-    bottom: max(0.75rem, env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    margin: 0;
-    padding: 0.35rem 0.75rem;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.55);
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 0.75rem;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-
-  body.route-image-viewer-open {
-    overflow: hidden;
+  a.hero-image-container.pswp-gallery-item:hover {
+    color: inherit;
   }
   
   /* Sur mobile : vignette fixe dans la carte (scroll dans le viewer) */
@@ -5551,6 +5478,11 @@
   }
 
   /* Navbar logo theme switching */
+  .navbar-logo {
+    height: 40px;
+    width: auto;
+  }
+
   .navbar-logo-light {
     display: block;
   }
@@ -10312,4 +10244,69 @@ body.admin-panel {
   .admin-panel .card-header.d-flex .btn-group {
     width: 100%;
   }
+}
+/* Lazy loading placeholder spinner */
+.lazy-img {
+  background-color: var(--gr-bg-light);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%23007bff' stroke-width='5' stroke-dasharray='80,200' stroke-dashoffset='0'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='1s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 30px 30px;
+}
+
+/* Dark theme adjustment for spinner */
+[data-bs-theme="dark"] .lazy-img {
+  background-color: #0f131a;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='25' cy='25' r='20' fill='none' stroke='%235aa9fa' stroke-width='5' stroke-dasharray='80,200' stroke-dashoffset='0'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 25 25' to='360 25 25' dur='1s' repeatCount='indefinite'/%3E%3C/circle%3E%3C/svg%3E");
+}
+
+/* Skeleton placeholder for lazy-loaded images */
+.lazy-skeleton {
+  background-color: var(--gr-bg-light);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Dark theme adjustment */
+[data-bs-theme="dark"] .lazy-skeleton {
+  background-color: #0f131a;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+/* Fade-in effect for lazy-loaded images */
+img.lazy-skeleton {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+img.lazy-loaded {
+  opacity: 1;
+}
+
+/* Fade-in effect for lazy-loaded images */
+img.lazy-skeleton {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+img.lazy-loaded {
+  opacity: 1;
+}
+
+img.lazy-skeleton {
+  background-color: var(--gr-bg-light);
+  background-size: 100% 100%;
+  animation: pulse 1.5s ease-in-out infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+img.lazy-loaded {
+  opacity: 1;
+}
+[data-bs-theme="dark"] img.lazy-skeleton {
+  background-color: #0f131a;
 }

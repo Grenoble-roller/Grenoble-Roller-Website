@@ -1,5 +1,8 @@
 # Production Environment Setup
 
+**Dernière mise à jour** : 2026-08-14
+
+
 Ce guide décrit la mise en place et l’exécution de l’environnement de production local simulé via Docker Compose.
 
 ## Pré-requis

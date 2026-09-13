@@ -69,7 +69,7 @@ RSpec.describe 'ContactMessages (Public)', type: :request do
 
       it 'renders new template with errors' do
         post contact_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include('Erreurs à corriger')
       end
     end
@@ -92,7 +92,7 @@ RSpec.describe 'ContactMessages (Public)', type: :request do
         }.not_to change(ContactMessage, :count)
       end
 
-      it 'returns unprocessable entity with security message' do
+      it 'returns unprocessable content with security message' do
         post contact_path, params: {
           contact_message: {
             name: 'John Doe',
@@ -101,7 +101,7 @@ RSpec.describe 'ContactMessages (Public)', type: :request do
             message: 'Message de test suffisamment long.'
           }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(flash[:alert]).to include('Vérification de sécurité')
       end
     end

@@ -111,4 +111,43 @@ RSpec.describe NotificationChannel, type: :model do
       expect(channel.subscribed_event_keys).to eq([ "order.paid" ])
     end
   end
+
+  describe "audit trail" do
+    it "creates an audit log on creation" do
+      expect {
+        create(:notification_channel, name: "Test Channel", enabled: true)
+      }.to change(AuditLog, :count).by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq("created")
+      expect(log.target_type).to eq("NotificationChannel")
+      expect(log.actor_user_id).to be_nil
+      expect(log.metadata).to include("name" => "Test Channel", "enabled" => true)
+    end
+
+    it "creates an audit log on update" do
+      channel = create(:notification_channel, enabled: true)
+
+      expect {
+        channel.update!(enabled: false)
+      }.to change(AuditLog, :count).by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq("updated")
+      expect(log.target_type).to eq("NotificationChannel")
+      expect(log.metadata["changes"]).to include("enabled" => [ true, false ])
+    end
+
+    it "creates an audit log on destruction" do
+      channel = create(:notification_channel)
+
+      expect {
+        channel.destroy!
+      }.to change(AuditLog, :count).by(1)
+
+      log = AuditLog.last
+      expect(log.action).to eq("destroyed")
+      expect(log.target_type).to eq("NotificationChannel")
+    end
+  end
 end

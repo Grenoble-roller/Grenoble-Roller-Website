@@ -68,8 +68,9 @@ class HealthController < ApplicationController
 
     # Vérifier les migrations en attente
     begin
-      migration_context = ActiveRecord::Base.connection.migration_context
-      pending_migrations = migration_context.pending_migrations
+      migration_context = ActiveRecord::Base.connection_pool.migration_context
+      migrator = migration_context.open
+      pending_migrations = migrator.pending_migrations
 
       health_data[:migrations][:pending_count] = pending_migrations.count
 

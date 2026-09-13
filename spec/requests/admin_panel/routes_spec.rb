@@ -149,7 +149,7 @@ RSpec.describe 'AdminPanel::Routes', type: :request do
 
         it 'renders new template' do
           post admin_panel_routes_path, params: invalid_params
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
     end
@@ -219,7 +219,7 @@ RSpec.describe 'AdminPanel::Routes', type: :request do
 
         it 'renders edit template' do
           patch admin_panel_route_path(route), params: invalid_params
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
       end
     end
