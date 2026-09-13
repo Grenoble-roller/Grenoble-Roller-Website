@@ -1,16 +1,18 @@
 # Changelog
 
-## [2026-09-12] - Navbar PurgeCSS + admin image proxy, health, storage purge, route form validation (v2.4.10)
-## [2026-09-12] - ActiveStorage proxy + Spec fixes (v2.4.11)
+Ce fichier documente les changements significatifs du projet Grenoble Roller.
+
+## [2026-09-13] - ActiveStorage S3 service identity fix (v2.4.11)
 
 ### Fixed
-- **ActiveStorage:** S3ServiceWrapper identity preservation + idempotent S3 delete.
-- **Admin:** Render all Active Storage image previews through the app proxy (handles missing objects).
-- **Specs:** Fix RuboCop offenses in health and Active Storage purge specs.
+- **ActiveStorage:** preserve the wrapped S3 service identity for blob validation and uploads.
+- **ActiveStorage:** keep S3 delete idempotent when the object is already absent.
+- **Initializer:** ensure the S3 service wrapper is loaded consistently.
 
 ### Documentation
 - Patch note: [`release-v2.4.11.md`](release-v2.4.11.md)
 
+## [2026-09-12] - Navbar PurgeCSS + admin image proxy, health, storage purge, route form validation (v2.4.10)
 
 ### Fixed
 - Navbar PurgeCSS + UI Audit Logs
@@ -21,8 +23,6 @@
 
 ### Documentation
 - Patch note: [Release note v2.4.10](release-navbar-purgecss-admin-proxy-health-storage-route-2026-09.md)
-
-Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
 ## [2026-09-10] - HelloAsso checkout hardening (v2.4.9)
 
