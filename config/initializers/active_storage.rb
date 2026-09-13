@@ -12,4 +12,4 @@ Rails.application.config.active_storage.track_variants = true
 Rails.application.config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
 # Load S3 service wrapper for idempotent deletes
-require_relative '../../app/services/active_storage/s3_service_wrapper'
+require_relative "../../app/services/active_storage/s3_service_wrapper"
