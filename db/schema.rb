@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_01_204047) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -336,8 +336,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
     t.string "last_test_status"
     t.datetime "last_tested_at"
     t.string "name", null: false
+    t.string "purpose"
     t.datetime "updated_at", null: false
     t.text "webhook_url_ciphertext"
+    t.index ["purpose"], name: "index_notification_channels_on_purpose", unique: true, where: "(purpose IS NOT NULL)"
   end
 
   create_table "notification_deliveries", force: :cascade do |t|

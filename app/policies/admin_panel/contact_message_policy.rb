@@ -7,5 +7,13 @@ module AdminPanel
     # - Toutes les actions : level >= 60 (ADMIN, SUPERADMIN)
     # - Lecture seule (pas de création/édition via AdminPanel)
     # - Les méthodes index?, show?, destroy? héritent de BasePolicy
+
+    def configure_discord?
+      admin_user?
+    end
+
+    def test_discord?
+      admin_user?
+    end
   end
 end

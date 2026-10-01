@@ -145,19 +145,18 @@ class NotificationEventRegistry
 
     # --- Payload helpers ---
 
-    def embed(title:, color: 5_814_783, fields: [], url: nil)
-      payload = {
-        embeds: [
-          {
-            title: title,
-            color: color,
-            fields: fields,
-            footer: { text: "Grenoble Roller Admin" }
-          }
-        ]
+    def embed(title:, color: 5_814_783, fields: [], url: nil, description: nil, timestamp: nil, footer_text: "Grenoble Roller Admin")
+      embed_object = {
+        title: title,
+        color: color,
+        fields: fields,
+        footer: { text: footer_text }
       }
-      payload[:embeds][0][:url] = url if url.present?
-      payload
+      embed_object[:url] = url if url.present?
+      embed_object[:description] = description if description.present?
+      embed_object[:timestamp] = timestamp if timestamp.present?
+
+      { embeds: [ embed_object ] }
     end
 
     def format_money(cents, currency = "EUR")
@@ -291,15 +290,31 @@ class NotificationEventRegistry
     end
 
     def contact_message_received_payload(message)
+      # Discord renders field `name` above `value`. Keep emoji+info on one line by
+      # putting the emoji inside `value` and using a zero-width name.
+      blank = "\u200b"
+      preview = message.message.to_s.truncate(400)
+
       embed(
-        title: "Nouveau message contact",
+        title: "📩 Nouveau message contact",
+        color: 0xE67E22,
         fields: [
-          { name: "De", value: message.name.to_s, inline: true },
-          { name: "Sujet", value: message.subject.to_s.truncate(80), inline: true },
-          { name: "Email", value: message.email.to_s, inline: true }
+          { name: blank, value: "👤 #{message.name}", inline: true },
+          { name: "#{blank} ", value: "✉️ `#{message.email}`", inline: true },
+          { name: "#{blank}#{blank}", value: "📝 **#{message.subject.to_s.truncate(80)}**", inline: false },
+          { name: "#{blank}#{blank}#{blank}", value: contact_message_code_block(preview), inline: false }
         ],
-        url: admin_url(Rails.application.routes.url_helpers.admin_panel_contact_message_path(message))
+        url: admin_url(Rails.application.routes.url_helpers.admin_panel_contact_message_path(message)),
+        timestamp: message.created_at&.utc&.iso8601,
+        footer_text: "Grenoble Roller Admin · ##{message.id}"
       )
+    end
+
+    def contact_message_code_block(preview)
+      text = preview.to_s.strip
+      text = "—" if text.blank?
+      # Fence without a language tag — Discord renders a plain code frame.
+      "```\n#{text.gsub('```', "'''")}\n```"
     end
 
     def organizer_application_submitted_payload(application)

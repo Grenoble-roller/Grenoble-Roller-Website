@@ -2,6 +2,18 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-10-01] - Contact Discord webhook UI + embed (v2.4.13)
+
+### Added
+- **Admin messages de contact :** bouton Discord + modal de config (URL chiffrée, activation, test) réutilisant `NotificationChannel` (DR-002).
+- **Canal dédié** `purpose: contact_messages` (migration) abonné à `contact_message.received`.
+
+### Changed
+- **Embed Discord contact :** format F validé — identité 👤/✉️/📝 sans libellés texte, message en cadre de code en fin d’embed, couleur orange, horodatage.
+
+### Documentation
+- Patch note: [`release-contact-discord-webhook-2026-10.md`](release-contact-discord-webhook-2026-10.md) (v2.4.13)
+
 ## [2026-10-01] - Association bureau/CA + initiations info (v2.4.12)
 
 ### Changed
