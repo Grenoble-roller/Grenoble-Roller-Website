@@ -4,6 +4,7 @@ FactoryBot.define do
     association :event
     child_membership { nil }
     position { 1 }
+    pool { 'member' }
     notified_at { nil }
     status { 'pending' }
     wants_reminder { false }
@@ -11,6 +12,9 @@ FactoryBot.define do
     roller_size { nil }
     use_free_trial { false }
 
+    trait :discovery_pool do
+      pool { 'discovery' }
+    end
     trait :notified do
       status { 'notified' }
       notified_at { 1.hour.ago }

@@ -1,6 +1,6 @@
-version: "2.4.13"
-headline: "Contact Discord webhook (admin modal) + embed F"
+version: "2.4.14"
+headline: "Dual waitlist initiations + association + contact Discord"
 bullets:
-  - "Admin messages de contact : config Discord (URL, activation, test)"
-  - "Canal dédié contact_messages → contact_message.received"
-  - "Embed F : 👤/✉️/📝 + message en cadre de code"
+  - "Initiations découverte : files d'attente séparées adhérents / découverte"
+  - "Notify ciblé par pool quand une place se libère"
+  - "v2.4.12–13 : gouvernance association + webhook Discord contact"

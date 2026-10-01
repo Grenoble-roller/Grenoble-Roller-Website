@@ -119,19 +119,13 @@ class Event::InitiationPolicy < ApplicationPolicy
   # Options may be passed by the controller: { child_membership_id: ... } or via Thread when called by Pundit (2-arg authorize)
   def join_waitlist?(opts = {})
     return false unless user
-    return false unless record.full?
 
-    # Initiations: waitlist is members only (explicit volunteer request)
     child_membership_id = (opts.is_a?(Hash) ? opts[:child_membership_id] : nil) || Thread.current[:initiation_waitlist_child_membership_id]
-    if child_membership_id.present?
-      child_membership = user.memberships.find_by(id: child_membership_id, is_child_membership: true)
-      return false unless child_membership
-      # Only active child membership can join waitlist; trial and pending are not allowed
-      return false unless child_membership.active?
-    else
-      # Parent: must have active adult membership
-      return false unless user.memberships.active_now.where(is_child_membership: false).exists?
-    end
+    pool = WaitlistEntry.pool_for(user: user, event: record, child_membership_id: child_membership_id)
+
+    return false unless WaitlistEntry.pool_full?(record, pool)
+    return false unless eligible_for_waitlist_pool?(pool, child_membership_id)
+
     true
   end
 
@@ -231,6 +225,32 @@ class Event::InitiationPolicy < ApplicationPolicy
   end
 
   private
+
+  def eligible_for_waitlist_pool?(pool, child_membership_id)
+    if pool == "member"
+      if child_membership_id.present?
+        child_membership = user.memberships.find_by(id: child_membership_id, is_child_membership: true)
+        return false unless child_membership
+        # Only active child membership can join member waitlist; trial and pending are not allowed
+        child_membership.active?
+      else
+        user.memberships.active_now.where(is_child_membership: false).exists?
+      end
+    else
+      # Discovery waitlist: only on initiations with discovery slots, and only if free trial still available
+      return false unless record.allow_non_member_discovery?
+      return false if WaitlistEntry.member_for_capacity?(user, child_membership_id: child_membership_id)
+
+      if child_membership_id.present?
+        child_membership = user.memberships.find_by(id: child_membership_id, is_child_membership: true)
+        return false unless child_membership
+        # Pending/trial children may wait for discovery if they have not used free trial yet
+        !user.attendances.active.where(free_trial_used: true, child_membership_id: child_membership_id).exists?
+      else
+        !user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
+      end
+    end
+  end
 
   def owner?
     user.present? && record.creator_user_id == user.id

@@ -12,7 +12,18 @@ module Initiations
       begin
         authorize @initiation, :join_waitlist?
       rescue Pundit::NotAuthorizedError
-        redirect_to initiation_path(@initiation), alert: "La liste d'attente des initiations est réservée aux adhérents."
+        pool = WaitlistEntry.pool_for(
+          user: current_user,
+          event: @initiation,
+          child_membership_id: child_membership_id
+        )
+        alert =
+          if pool == "discovery"
+            "Vous ne pouvez pas rejoindre la liste d'attente découverte (places encore disponibles, essai déjà utilisé, ou non éligible)."
+          else
+            "La liste d'attente adhérents est réservée aux adhérents actifs, et uniquement lorsque les places adhérents sont complètes."
+          end
+        redirect_to initiation_path(@initiation), alert: alert
         return
       ensure
         Thread.current[:initiation_waitlist_child_membership_id] = nil
@@ -110,10 +121,13 @@ module Initiations
         participant_name = waitlist_entry.for_child? ? waitlist_entry.participant_name : "Vous"
         redirect_to initiation_path(@initiation), notice: "#{participant_name} avez été ajouté(e) à la liste d'attente. Vous serez notifié(e) par email si une place se libère."
       else
-        # Vérifier les raisons possibles de l'échec
-        # Utiliser !full? au lieu de has_available_spots? pour être cohérent avec la validation du modèle
-        if !@initiation.full?
-          redirect_to initiation_path(@initiation), alert: "L'événement n'est pas complet. Vous pouvez vous inscrire directement."
+        pool = WaitlistEntry.pool_for(
+          user: current_user,
+          event: @initiation,
+          child_membership_id: child_membership_id
+        )
+        if !WaitlistEntry.pool_full?(@initiation, pool)
+          redirect_to initiation_path(@initiation), alert: "Des places sont encore disponibles pour vous. Vous pouvez vous inscrire directement."
         elsif WaitlistEntry.exists?(
           user: current_user,
           event: @initiation,

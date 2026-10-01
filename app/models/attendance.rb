@@ -321,22 +321,21 @@ class Attendance < ApplicationRecord
     # Recharger l'événement pour avoir le bon comptage après la destruction
     event.reload
 
-    # Vérifier si l'événement a maintenant des places disponibles
-    if event.has_available_spots?
-      # Notifier la première personne en liste d'attente
-      WaitlistEntry.notify_next_in_queue(event, count: 1)
-      Rails.logger.info("Attendance destroyed, notifying waitlist for event #{event.id}")
-    end
+    freed_pool = WaitlistEntry.pool_for_attendance(self)
+    return unless WaitlistEntry.pool_has_available_spot?(event, freed_pool)
+
+    WaitlistEntry.notify_next_in_queue(event, count: 1, pool: freed_pool)
+    Rails.logger.info("Attendance destroyed, notifying #{freed_pool} waitlist for event #{event.id}")
   end
 
   def notify_waitlist_on_cancellation
     # Si l'inscription passe à "canceled", notifier la liste d'attente
     if status == "canceled" && status_before_last_save != "canceled"
-      # Vérifier si l'événement a maintenant des places disponibles
-      if event.has_available_spots?
-        # Notifier la première personne en liste d'attente
-        WaitlistEntry.notify_next_in_queue(event, count: 1)
-      end
+      event.reload
+      freed_pool = WaitlistEntry.pool_for_attendance(self)
+      return unless WaitlistEntry.pool_has_available_spot?(event, freed_pool)
+
+      WaitlistEntry.notify_next_in_queue(event, count: 1, pool: freed_pool)
     end
   end
 

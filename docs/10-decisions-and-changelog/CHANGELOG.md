@@ -2,6 +2,20 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-10-01] - Dual waitlist initiations member/discovery (v2.4.14)
+
+### Fixed
+- **Initiations avec places découverte :** files d’attente séparées `member` / `discovery` (`waitlist_entries.pool`).
+- **Join waitlist :** gate par pool (`full_for_members?` / `full_for_non_members?`) au lieu de `full?` global.
+- **Notify :** une place libérée notifie uniquement la file du pool correspondant (plus de FIFO croisée).
+
+### Added
+- Migration `pool` sur `waitlist_entries` ; specs dual waitlist + policy/request.
+
+### Documentation
+- [`docs/06-events/waitlist-system.md`](../06-events/waitlist-system.md) mis à jour (pool, dual queue).
+- Patch note: [`release-dual-waitlist-2026-10.md`](release-dual-waitlist-2026-10.md) (v2.4.14)
+
 ## [2026-10-01] - Contact Discord webhook UI + embed (v2.4.13)
 
 ### Added
