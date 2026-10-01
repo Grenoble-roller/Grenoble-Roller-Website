@@ -1,8 +1,6 @@
-version: "2.4.10"
-headline: "Navbar PurgeCSS, UI Audit Logs, health, storage purge, admin image proxy"
+version: "2.4.12"
+headline: "Bureau/CA association + info initiations (samedis matin)"
 bullets:
-  - "Navbar PurgeCSS + UI Audit Logs"
-  - "Route form validation / unblock image upload"
-  - "GET /health 503 on Rails 8.1 (migration_context)"
-  - "Purge Active Storage idempotent when object S3 is missing"
-  - "Previews admin Active Storage via app proxy"
+  - "À propos : nouveau président (Gauthier F.) et CA mis à jour"
+  - "Mentions légales : directeur de publication → FOUSSE Gauthier"
+  - "Initiations : fréquence tous les samedis matin, inscription obligatoire"

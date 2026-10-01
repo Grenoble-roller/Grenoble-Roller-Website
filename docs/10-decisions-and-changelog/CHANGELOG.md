@@ -2,6 +2,17 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-10-01] - Association bureau/CA + initiations info (v2.4.12)
+
+### Changed
+- **À propos :** nouveau président (Gauthier F.), secrétaire (Julien P.), et mise à jour du Conseil d’Administration.
+- **Mentions légales :** directeur de publication → FOUSSE Gauthier (Président).
+- **Initiations :** info globale « Fréquence : tous les samedis matin, inscription obligatoire ».
+
+### Documentation
+- Patch note: [`release-association-governance-2026-10.md`](release-association-governance-2026-10.md) (v2.4.12)
+- Related PR: [#291](https://github.com/Grenoble-roller/Grenoble-Roller-Website/pull/291)
+
 ## [2026-09-13] - ActiveStorage S3 service identity fix (v2.4.11)
 
 ### Fixed
