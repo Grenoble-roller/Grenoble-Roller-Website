@@ -133,7 +133,7 @@ module AdminPanel
       if pending_attendance&.update(status: "registered")
         waitlist_entry.update!(status: "converted")
         notify_discord("initiation.waitlist_converted", waitlist_entry)
-        WaitlistEntry.notify_next_in_queue(@initiation) if @initiation.has_available_spots?
+        WaitlistEntry.notify_next_in_queue(@initiation) if WaitlistEntry.pool_has_available_spot?(@initiation, waitlist_entry.pool)
         redirect_to admin_panel_initiation_path(@initiation),
                     notice: "Entrée convertie en inscription"
       else
@@ -183,11 +183,13 @@ module AdminPanel
         @initiation.reload
 
         # Si l'événement était complet et qu'on ajoute un bénévole (libère une place)
-        # Alors notifier la première personne en liste d'attente
-        if was_full && is_adding_volunteer && @initiation.has_available_spots?
-          # Notifier la première personne en liste d'attente
-          WaitlistEntry.notify_next_in_queue(@initiation, count: 1)
-          Rails.logger.info("Volunteer added for attendance #{attendance.id}, notifying waitlist for initiation #{@initiation.id}")
+        # Alors notifier la première personne en liste d'attente du pool libéré
+        if was_full && is_adding_volunteer
+          freed_pool = WaitlistEntry.pool_for_attendance(attendance)
+          if WaitlistEntry.pool_has_available_spot?(@initiation, freed_pool)
+            WaitlistEntry.notify_next_in_queue(@initiation, count: 1, pool: freed_pool)
+            Rails.logger.info("Volunteer added for attendance #{attendance.id}, notifying #{freed_pool} waitlist for initiation #{@initiation.id}")
+          end
         end
 
         status = attendance.is_volunteer? ? "ajouté" : "retiré"

@@ -1,8 +1,6 @@
-version: "2.4.10"
-headline: "Navbar PurgeCSS, UI Audit Logs, health, storage purge, admin image proxy"
+version: "2.4.14"
+headline: "Dual waitlist initiations + association + contact Discord"
 bullets:
-  - "Navbar PurgeCSS + UI Audit Logs"
-  - "Route form validation / unblock image upload"
-  - "GET /health 503 on Rails 8.1 (migration_context)"
-  - "Purge Active Storage idempotent when object S3 is missing"
-  - "Previews admin Active Storage via app proxy"
+  - "Initiations découverte : files d'attente séparées adhérents / découverte"
+  - "Notify ciblé par pool quand une place se libère"
+  - "v2.4.12–13 : gouvernance association + webhook Discord contact"

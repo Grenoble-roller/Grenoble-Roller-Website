@@ -1,0 +1,94 @@
+<%# Discord webhook settings for contact_message.received — reuses NotificationChannel (DR-002) %>
+<div class="modal fade" id="contactDiscordSettingsModal" tabindex="-1"
+     aria-labelledby="contactDiscordSettingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="contactDiscordSettingsModalLabel">
+          <i class="bi bi-discord me-2" aria-hidden="true"></i>
+          Notifications Discord
+        </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+      </div>
+
+      <%= form_with url: update_discord_settings_admin_panel_contact_messages_path,
+                    method: :patch,
+                    scope: :notification_channel,
+                    local: true do |f| %>
+        <div class="modal-body">
+          <p class="text-muted small mb-3">
+            Envoie une alerte Discord à chaque nouveau message du formulaire de contact
+            (<code>contact_message.received</code>).
+          </p>
+
+          <% if @contact_discord_channel.webhook_configured? %>
+            <div class="alert alert-success py-2 mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+              <span>
+                Webhook enregistré :
+                <code><%= @contact_discord_channel.masked_webhook_url %></code>
+              </span>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= f.label :webhook_url,
+                        @contact_discord_channel.webhook_configured? ? "URL du webhook (optionnel)" : "URL du webhook Discord *",
+                        class: "form-label" %>
+            <%= f.password_field :webhook_url,
+                class: "form-control form-control-liquid",
+                required: !@contact_discord_channel.webhook_configured?,
+                autocomplete: "new-password",
+                value: "",
+                placeholder: @contact_discord_channel.webhook_configured? ? "Nouvelle URL (laisser vide pour conserver)" : "https://discord.com/api/webhooks/..." %>
+            <div class="form-text">
+              URL incoming webhook Discord uniquement. Jamais stockée en clair dans le code.
+            </div>
+          </div>
+
+          <div class="form-check form-switch mb-3">
+            <%= f.check_box :enabled, class: "form-check-input", role: "switch",
+                checked: @contact_discord_channel.enabled? %>
+            <%= f.label :enabled, "Activer les notifications", class: "form-check-label" %>
+          </div>
+
+          <% unless Rails.env.production? %>
+            <div class="alert alert-warning py-2 small mb-0">
+              Hors production, il faut aussi
+              <code>ALLOW_DISCORD_NOTIFICATIONS=true</code>
+              dans l’environnement pour que les envois partent réellement.
+            </div>
+          <% end %>
+
+          <% if @contact_discord_channel.last_tested_at.present? %>
+            <p class="small text-muted mt-3 mb-0">
+              Dernier test :
+              <%= l @contact_discord_channel.last_tested_at, format: :short %>
+              —
+              <% if @contact_discord_channel.last_test_status == "success" %>
+                <span class="text-success">succès</span>
+              <% else %>
+                <span class="text-danger">échec</span>
+              <% end %>
+            </p>
+          <% end %>
+        </div>
+
+        <div class="modal-footer flex-wrap gap-2 justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+          <div class="d-flex flex-wrap gap-2">
+            <%= f.button "Tester le webhook",
+                type: "submit",
+                formaction: test_discord_admin_panel_contact_messages_path,
+                formmethod: "post",
+                name: "commit",
+                value: "test",
+                class: "btn btn-outline-liquid-primary",
+                formnovalidate: true %>
+            <%= f.submit "Enregistrer", class: "btn btn-liquid-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

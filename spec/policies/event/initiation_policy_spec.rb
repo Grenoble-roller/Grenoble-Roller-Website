@@ -145,6 +145,59 @@ RSpec.describe Event::InitiationPolicy do
       policy = described_class.new(user, full_initiation)
       expect(policy.join_waitlist?(child_membership_id: 99999)).to be(false)
     end
+
+    context 'with allow_non_member_discovery dual pools' do
+      def fill_member_slots(initiation, count)
+        count.times do
+          member = create_user(role: user_role)
+          create(:membership, user: member, status: :active, season: '2025-2026', is_child_membership: false)
+          att = build(:attendance, event: initiation, user: member, status: 'registered', is_volunteer: false)
+          att.save(validate: false)
+        end
+        initiation.reload
+      end
+
+      def fill_discovery_slots(initiation, count)
+        count.times do
+          guest = create_user(role: user_role)
+          att = build(:attendance, event: initiation, user: guest, status: 'registered', is_volunteer: false, free_trial_used: true)
+          att.save(validate: false)
+        end
+        initiation.reload
+      end
+
+      let(:discovery_initiation) do
+        create_event(
+          type: 'Event::Initiation',
+          status: 'published',
+          max_participants: 4,
+          allow_non_member_discovery: true,
+          non_member_discovery_slots: 2
+        )
+      end
+
+      it 'allows member when only member slots are full' do
+        create(:membership, user: user, status: :active, season: '2025-2026', is_child_membership: false)
+        fill_member_slots(discovery_initiation, 2)
+        policy = described_class.new(user, discovery_initiation)
+        expect(policy.join_waitlist?({})).to be(true)
+      end
+
+      it 'allows non-member when only discovery slots are full and free trial unused' do
+        fill_discovery_slots(discovery_initiation, 2)
+        policy = described_class.new(user, discovery_initiation)
+        expect(policy.join_waitlist?({})).to be(true)
+      end
+
+      it 'denies non-member when discovery slots are full but free trial already used' do
+        fill_discovery_slots(discovery_initiation, 2)
+        other = create_event(type: 'Event::Initiation', status: 'published', max_participants: 10)
+        att = build(:attendance, event: other, user: user, status: 'registered', free_trial_used: true)
+        att.save(validate: false)
+        policy = described_class.new(user, discovery_initiation)
+        expect(policy.join_waitlist?({})).to be(false)
+      end
+    end
   end
 
   describe 'Scope' do

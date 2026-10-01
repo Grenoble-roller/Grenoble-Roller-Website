@@ -4,6 +4,8 @@ class WaitlistEntry < ApplicationRecord
   include Hashid::Rails
   include Auditable
 
+  POOLS = %w[member discovery].freeze
+
   belongs_to :user
   belongs_to :event
   belongs_to :child_membership, class_name: "Membership", optional: true
@@ -16,6 +18,7 @@ class WaitlistEntry < ApplicationRecord
   }, validate: true
 
   validates :position, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :pool, presence: true, inclusion: { in: POOLS }
   validates :user_id, uniqueness: {
     scope: [ :event_id, :child_membership_id ],
     message: "est déjà en liste d'attente pour cet événement",
@@ -30,10 +33,12 @@ class WaitlistEntry < ApplicationRecord
   # Scopes
   scope :active, -> { where(status: [ "pending", "notified" ]) }
   scope :for_event, ->(event) { where(event: event) }
+  scope :for_pool, ->(pool) { where(pool: pool) }
   scope :ordered_by_position, -> { order(:position, :created_at) }
   scope :pending_notification, -> { where(status: "pending", notified_at: nil) }
 
   # Callbacks
+  before_validation :assign_pool, on: :create
   before_create :set_position
   after_create :log_waitlist_addition
 
@@ -46,10 +51,18 @@ class WaitlistEntry < ApplicationRecord
       user_id: user_id,
       event_id: event_id,
       position: position,
-      status: status
+      status: status,
+      pool: pool
     }
   end
 
+  def member_pool?
+    pool == "member"
+  end
+
+  def discovery_pool?
+    pool == "discovery"
+  end
   # ==================== MÉTHODES MÉTIER ====================
 
   def participant_name
@@ -212,13 +225,63 @@ class WaitlistEntry < ApplicationRecord
 
   # ==================== MÉTHODES DE CLASSE ====================
 
+  # Align with Attendance capacity: adult active membership for parent, child.active? for child.
+  def self.member_for_capacity?(user, child_membership_id: nil)
+    return false unless user
+
+    if child_membership_id.present?
+      membership = user.memberships.find_by(id: child_membership_id, is_child_membership: true)
+      membership&.active?
+    else
+      user.memberships.active_now.where(is_child_membership: false).exists?
+    end
+  end
+
+  def self.pool_for(user:, event:, child_membership_id: nil)
+    if event.is_a?(Event::Initiation) && event.allow_non_member_discovery?
+      member_for_capacity?(user, child_membership_id: child_membership_id) ? "member" : "discovery"
+    else
+      "member"
+    end
+  end
+
+  def self.pool_full?(event, pool)
+    if event.is_a?(Event::Initiation) && event.allow_non_member_discovery?
+      pool.to_s == "discovery" ? event.full_for_non_members? : event.full_for_members?
+    else
+      event.full?
+    end
+  end
+
+  def self.pool_has_available_spot?(event, pool)
+    if event.is_a?(Event::Initiation) && event.allow_non_member_discovery?
+      if pool.to_s == "discovery"
+        places = event.available_non_member_places
+        places == Float::INFINITY || places.to_i > 0
+      else
+        event.available_member_places.to_i > 0
+      end
+    else
+      event.has_available_spots?
+    end
+  end
+
+  # Pool of an attendance for waitlist notify (member vs discovery).
+  def self.pool_for_attendance(attendance)
+    return "member" unless attendance&.event.is_a?(Event::Initiation) && attendance.event.allow_non_member_discovery?
+
+    pool_for(
+      user: attendance.user,
+      event: attendance.event,
+      child_membership_id: attendance.child_membership_id
+    )
+  end
+
   def self.add_to_waitlist(user, event, child_membership_id: nil, needs_equipment: false, roller_size: nil, wants_reminder: false, use_free_trial: false)
     return nil if event.requires_online_payment?
 
-    # Utiliser !full? au lieu de !has_available_spots? pour être cohérent avec la validation event_is_full
-    # Pour les initiations, full? utilise available_places qui inclut les "pending" dans participants_count
-    # has_available_spots? exclut les "pending", ce qui crée une incohérence
-    return nil unless event.full?
+    pool = pool_for(user: user, event: event, child_membership_id: child_membership_id)
+    return nil unless pool_full?(event, pool)
 
     # Vérifier si déjà en liste d'attente
     existing = find_by(
@@ -229,7 +292,6 @@ class WaitlistEntry < ApplicationRecord
     )
     return existing if existing
 
-    # Créer l'entrée avec toutes les informations
     create!(
       user: user,
       event: event,
@@ -237,32 +299,44 @@ class WaitlistEntry < ApplicationRecord
       needs_equipment: needs_equipment,
       roller_size: roller_size,
       wants_reminder: wants_reminder,
-      use_free_trial: use_free_trial
+      use_free_trial: use_free_trial,
+      pool: pool
     )
   end
 
-  def self.notify_next_in_queue(event, count: 1)
-    # Notifier les N premières personnes en liste d'attente
-    # Notifier si l'événement a des places disponibles (une place vient de se libérer)
-    # Ne pas notifier si l'événement est encore complet (pas de place disponible)
-    return if event.full?
+  def self.notify_next_in_queue(event, count: 1, pool: nil)
+    pools_to_notify =
+      if pool.present?
+        [ pool.to_s ]
+      elsif event.is_a?(Event::Initiation) && event.allow_non_member_discovery?
+        POOLS.select { |p| pool_has_available_spot?(event, p) }
+      else
+        return if event.full?
 
-    entries = for_event(event)
-              .pending_notification
-              .ordered_by_position
-              .limit(count)
+        [ "member" ]
+      end
 
-    entries.each(&:notify!)
-  end
+    pools_to_notify.each do |target_pool|
+      next unless pool_has_available_spot?(event, target_pool)
 
-  def self.reorganize_positions(event)
-    # Réorganiser les positions après une annulation
-    entries = for_event(event).active.ordered_by_position
-    entries.each_with_index do |entry, index|
-      entry.update_column(:position, index) if entry.position != index
+      entries = for_event(event)
+                .for_pool(target_pool)
+                .pending_notification
+                .ordered_by_position
+                .limit(count)
+
+      entries.each(&:notify!)
     end
   end
 
+  def self.reorganize_positions(event)
+    POOLS.each do |target_pool|
+      entries = for_event(event).for_pool(target_pool).active.ordered_by_position
+      entries.each_with_index do |entry, index|
+        entry.update_column(:position, index) if entry.position != index
+      end
+    end
+  end
   # ==================== MÉTHODES PRIVÉES ====================
 
   private
@@ -332,9 +406,22 @@ class WaitlistEntry < ApplicationRecord
     Rails.logger.error("Failed in #{action} for WaitlistEntry #{id}: #{error_msg} (user: #{user_id}, event: #{event_id})")
   end
 
+  def assign_pool
+    return if user.nil? || event.nil?
+
+    # Always derive from eligibility (DB default "member" must not short-circuit discovery users)
+    self.pool = self.class.pool_for(
+      user: user,
+      event: event,
+      child_membership_id: child_membership_id
+    )
+  end
+
   def set_position
-    # Position = nombre d'entrées actives pour cet événement
-    max_position = WaitlistEntry.for_event(event).active.maximum(:position) || -1
+    # Position within this pool only (FIFO per member / discovery queue)
+    scope = WaitlistEntry.for_event(event).active
+    scope = scope.for_pool(pool) if pool.present?
+    max_position = scope.maximum(:position) || -1
     self.position = max_position + 1
   end
 
@@ -346,13 +433,16 @@ class WaitlistEntry < ApplicationRecord
       return
     end
 
-    # Vérifier que l'événement est complet (en excluant les inscriptions "pending")
-    # car on peut rejoindre la liste d'attente même s'il y a des places "pending" verrouillées
-    unless event.full?
+    target_pool = pool.presence || self.class.pool_for(
+      user: user,
+      event: event,
+      child_membership_id: child_membership_id
+    )
+
+    unless self.class.pool_full?(event, target_pool)
       errors.add(:event, "L'événement n'est pas complet, vous pouvez vous inscrire directement")
     end
   end
-
   def user_not_already_registered
     return if user.nil? || event.nil?
 
@@ -375,6 +465,6 @@ class WaitlistEntry < ApplicationRecord
   end
 
   def log_waitlist_addition
-    Rails.logger.info("WaitlistEntry created - User: #{user.id}, Event: #{event.id}, Position: #{position}, Child: #{child_membership_id}")
+    Rails.logger.info("WaitlistEntry created - User: #{user.id}, Event: #{event.id}, Pool: #{pool}, Position: #{position}, Child: #{child_membership_id}")
   end
 end

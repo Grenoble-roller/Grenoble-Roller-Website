@@ -27,6 +27,12 @@ RSpec.describe 'AdminPanel::ContactMessages', type: :request do
         expect(response.body).to include('Messages de contact')
       end
 
+      it 'shows Discord settings button and modal' do
+        get admin_panel_contact_messages_path
+        expect(response.body).to include('contactDiscordSettingsModal')
+        expect(response.body).to include('Notifications Discord')
+      end
+
       it 'filters by name' do
         message1 = create(:contact_message, name: 'John Doe')
         message2 = create(:contact_message, name: 'Jane Smith')
@@ -167,6 +173,117 @@ RSpec.describe 'AdminPanel::ContactMessages', type: :request do
         expect {
           delete admin_panel_contact_message_path(contact_message)
         }.not_to change(ContactMessage, :count)
+      end
+    end
+  end
+
+  describe 'PATCH /admin-panel/contact-messages/update_discord_settings' do
+    let(:webhook_url) { DiscordNotificationHelpers::DISCORD_WEBHOOK_URL }
+
+    context 'when user is admin (level 60)' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { login_user(admin_user) }
+
+      it 'creates a dedicated contact messages notification channel' do
+        expect {
+          patch update_discord_settings_admin_panel_contact_messages_path, params: {
+            notification_channel: {
+              webhook_url: webhook_url,
+              enabled: '1'
+            }
+          }
+        }.to change(NotificationChannel, :count).by(1)
+
+        channel = NotificationChannel.find_by!(purpose: NotificationChannel::CONTACT_MESSAGES_PURPOSE)
+        expect(channel.enabled).to be(true)
+        expect(channel.webhook_configured?).to be(true)
+        expect(channel.subscribed_event_keys).to eq([ NotificationChannel::CONTACT_MESSAGES_EVENT_KEY ])
+        expect(response).to redirect_to(admin_panel_contact_messages_path)
+        expect(flash[:notice]).to include('activées')
+      end
+
+      it 'updates an existing contact messages channel without replacing the webhook when blank' do
+        channel = create(
+          :notification_channel,
+          purpose: NotificationChannel::CONTACT_MESSAGES_PURPOSE,
+          name: NotificationChannel::CONTACT_MESSAGES_NAME,
+          enabled: false,
+          webhook_url: webhook_url
+        )
+        channel.ensure_contact_messages_subscription!
+
+        patch update_discord_settings_admin_panel_contact_messages_path, params: {
+          notification_channel: {
+            webhook_url: '',
+            enabled: '1'
+          }
+        }
+
+        expect(channel.reload.enabled).to be(true)
+        expect(channel.webhook_configured?).to be(true)
+        expect(flash[:notice]).to include('activées')
+      end
+    end
+
+    context 'when user is organizer (level 40)' do
+      let(:organizer_user) { create(:user, :organizer) }
+
+      before { login_user(organizer_user) }
+
+      it 'rejects access' do
+        patch update_discord_settings_admin_panel_contact_messages_path, params: {
+          notification_channel: { webhook_url: webhook_url, enabled: '1' }
+        }
+        expect(response).to redirect_to(root_path)
+        expect(NotificationChannel.where(purpose: NotificationChannel::CONTACT_MESSAGES_PURPOSE)).to be_empty
+      end
+    end
+  end
+
+  describe 'POST /admin-panel/contact-messages/test_discord' do
+    let(:webhook_url) { DiscordNotificationHelpers::DISCORD_WEBHOOK_URL }
+
+    context 'when user is admin and channel is configured' do
+      let(:admin_user) { create(:user, :admin) }
+      let!(:channel) do
+        create(
+          :notification_channel,
+          purpose: NotificationChannel::CONTACT_MESSAGES_PURPOSE,
+          name: NotificationChannel::CONTACT_MESSAGES_NAME,
+          webhook_url: webhook_url,
+          enabled: true
+        ).tap(&:ensure_contact_messages_subscription!)
+      end
+
+      before { login_user(admin_user) }
+
+      it 'posts a test payload to Discord' do
+        expect(DiscordWebhookClient).to receive(:post!).with(webhook_url, hash_including(:embeds))
+
+        post test_discord_admin_panel_contact_messages_path
+
+        expect(response).to redirect_to(admin_panel_contact_messages_path)
+        expect(flash[:notice]).to include('test')
+        expect(channel.reload.last_test_status).to eq('success')
+      end
+    end
+
+    context 'when user is admin and submits a webhook URL without saving' do
+      let(:admin_user) { create(:user, :admin) }
+
+      before { login_user(admin_user) }
+
+      it 'posts a test payload using the submitted URL' do
+        expect(DiscordWebhookClient).to receive(:post!).with(webhook_url, hash_including(:embeds))
+
+        post test_discord_admin_panel_contact_messages_path, params: {
+          notification_channel: { webhook_url: webhook_url }
+        }
+
+        expect(response).to redirect_to(admin_panel_contact_messages_path)
+        expect(flash[:notice]).to include('test')
+        expect(NotificationChannel.where(purpose: NotificationChannel::CONTACT_MESSAGES_PURPOSE)).to be_empty
       end
     end
   end

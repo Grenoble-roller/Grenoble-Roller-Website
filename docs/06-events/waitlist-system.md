@@ -47,8 +47,9 @@ Le système de liste d'attente permet aux utilisateurs de s'inscrire sur une lis
 | `user_id` | bigint | Utilisateur en liste d'attente |
 | `event_id` | bigint | Événement concerné |
 | `child_membership_id` | bigint (optional) | Adhésion enfant (si inscription pour enfant) |
+| `pool` | string | File : `member` (défaut) ou `discovery` (initiations avec places découverte) |
 | `status` | enum | Statut de l'entrée (voir ci-dessous) |
-| `position` | integer | Position dans la liste (0 = première) |
+| `position` | integer | Position dans **la file du pool** (0 = première) |
 | `notified_at` | timestamp | Date de notification (quand place disponible) |
 | `needs_equipment` | boolean | Besoin d'équipement |
 | `roller_size` | string | Taille rollers demandée |
@@ -92,6 +93,7 @@ pending → cancelled (annulé manuellement)
 
 - `active` : Statuts `pending` ou `notified` (exclut converted et cancelled)
 - `for_event(event)` : Pour un événement donné
+- `for_pool(pool)` : File `member` ou `discovery`
 - `ordered_by_position` : Tri par position puis date création
 - `pending_notification` : En attente de notification (pending, notified_at nil)
 
@@ -108,9 +110,10 @@ pending → cancelled (annulé manuellement)
 
 ##### Classe
 
-- `add_to_waitlist(...)` : Ajoute un utilisateur à la liste d'attente
-- `notify_next_in_queue(event, count: 1)` : Notifie les N premières personnes
-- `reorganize_positions(event)` : Réorganise les positions après annulation
+- `add_to_waitlist(...)` : Ajoute un utilisateur à la liste d'attente (gate = pool plein)
+- `notify_next_in_queue(event, count: 1, pool: nil)` : Notifie les N premières personnes du pool (ou déduit les pools avec places)
+- `reorganize_positions(event)` : Réorganise les positions **par pool** après annulation
+- `pool_for(user:, event:, child_membership_id:)` : Détermine `member` / `discovery`
 
 ---
 
@@ -254,7 +257,11 @@ Mêmes routes que pour les événements généraux.
 
 ### Event::InitiationPolicy
 
-- `join_waitlist?` : Utilisateur connecté, événement complet, **et adhérent** (demande bénévoles). Pour les initiations, la liste d'attente est **réservée aux adhérents** : parent = adhésion adulte active ; enfant = adhésion enfant **active** uniquement (trial et pending ne peuvent pas rejoindre la liste d'attente). Les non-adhérents ne peuvent pas rejoindre la liste d'attente (ils peuvent uniquement s'inscrire directement si une place est libre, avec essai gratuit si disponible).
+- `join_waitlist?` : Utilisateur connecté + **pool de l'utilisateur plein** + éligibilité du pool.
+  - **Sans** `allow_non_member_discovery` : événement `full?`, file `member` uniquement — parent = adhésion adulte active ; enfant = adhésion enfant **active** (trial/pending exclus).
+  - **Avec** `allow_non_member_discovery` : double file —
+    - pool `member` si `full_for_members?` et adhérent actif ;
+    - pool `discovery` si `full_for_non_members?` et non-adhérent encore éligible à l'essai / place découverte (essai déjà utilisé ⇒ refus).
 - `leave_waitlist?`, `convert_waitlist_to_attendance?`, `refuse_waitlist?` : comme `EventPolicy`.
 
 ---
@@ -263,7 +270,9 @@ Mêmes routes que pour les événements généraux.
 
 ### Initiations
 
-**Liste d'attente réservée aux adhérents** : Pour les initiations, seuls les adhérents (parent avec adhésion adulte active, ou enfant avec adhésion **active** uniquement) peuvent rejoindre la liste d'attente. Les enfants en trial ou pending ne peuvent pas rejoindre la liste d'attente. Cela évite le contournement : s'inscrire en liste d'attente sans cocher l'essai gratuit, confirmer à la libération d'une place, puis utiliser l'essai gratuit sur une autre initiation.
+**Files d'attente duales (découverte)** : Quand `allow_non_member_discovery` est activé, `WaitlistEntry.pool` vaut `member` ou `discovery`. Les positions FIFO sont **par pool**. Une place adhérent libérée notifie la file `member` ; une place découverte libérée notifie la file `discovery`.
+
+**Sans découverte** : liste d'attente réservée aux adhérents (parent adulte actif, ou enfant **active** uniquement). Les enfants trial/pending ne rejoignent pas la file `member`.
 
 Pour les initiations (`Event::Initiation`), des validations spéciales sont bypassées lors de la conversion :
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_01_214912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -336,8 +336,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
     t.string "last_test_status"
     t.datetime "last_tested_at"
     t.string "name", null: false
+    t.string "purpose"
     t.datetime "updated_at", null: false
     t.text "webhook_url_ciphertext"
+    t.index ["purpose"], name: "index_notification_channels_on_purpose", unique: true, where: "(purpose IS NOT NULL)"
   end
 
   create_table "notification_deliveries", force: :cascade do |t|
@@ -702,6 +704,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
     t.bigint "event_id", null: false
     t.boolean "needs_equipment"
     t.datetime "notified_at"
+    t.string "pool", default: "member", null: false
     t.integer "position", default: 0, null: false
     t.string "roller_size"
     t.string "status", default: "pending", null: false
@@ -710,6 +713,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_06_030000) do
     t.bigint "user_id", null: false
     t.boolean "wants_reminder"
     t.index ["child_membership_id"], name: "index_waitlist_entries_on_child_membership_id"
+    t.index ["event_id", "pool", "status", "position"], name: "index_waitlist_entries_on_event_pool_status_position"
     t.index ["event_id", "status", "position"], name: "index_waitlist_entries_on_event_id_and_status_and_position"
     t.index ["event_id"], name: "index_waitlist_entries_on_event_id"
     t.index ["user_id", "event_id", "child_membership_id"], name: "index_waitlist_entries_on_user_event_child", unique: true

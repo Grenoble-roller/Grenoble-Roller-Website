@@ -65,13 +65,10 @@ class InitiationsController < ApplicationController
         end
         @can_register = can_register?
         @can_register_child = can_register_child?
-        # Waitlist for initiations is members only: adult active or at least one child with active membership (not trial/pending)
-        @can_join_initiation_waitlist = if user_signed_in?
-          current_user.memberships.active_now.where(is_child_membership: false).exists? ||
-            current_user.memberships.where(is_child_membership: true).where(status: Membership.statuses[:active]).exists?
-        else
-          false
-        end
+        # Dual waitlist when discovery is enabled: one flag per pool
+        @can_join_member_waitlist = can_join_member_waitlist?
+        @can_join_discovery_waitlist = can_join_discovery_waitlist?
+        @can_join_initiation_waitlist = @can_join_member_waitlist || @can_join_discovery_waitlist
       end
 
       format.ics do
@@ -194,17 +191,18 @@ class InitiationsController < ApplicationController
 
   def can_register?
     return false unless user_signed_in?
-    return false if @initiation.full?
-    # Permettre l'inscription si le parent n'est pas encore inscrit
     return false if @user_attendance&.persisted?
+
+    if pool_capacity_blocks_adult?
+      return false
+    end
 
     # Les bénévoles peuvent toujours s'inscrire (même sans adhésion)
     return true if current_user.can_be_volunteer?
 
     # Vérifier adhésion ou essai gratuit disponible
-    # Utiliser exists? (optimisé) plutôt que count > 0
     has_membership = current_user.memberships.active_now.exists?
-    has_used_trial = current_user.attendances.active.where(free_trial_used: true).exists?
+    has_used_trial = current_user.attendances.active.where(free_trial_used: true, child_membership_id: nil).exists?
 
     has_membership || !has_used_trial
   end
@@ -213,19 +211,55 @@ class InitiationsController < ApplicationController
   def can_register_child?
     return false unless user_signed_in?
     return false if @initiation.full?
-    # Vérifier qu'il y a des adhésions enfants disponibles (active, trial ou pending)
-    # pending est autorisé car l'enfant peut utiliser l'essai gratuit même si l'adhésion n'est pas encore payée
+
     child_memberships = current_user.memberships.where(is_child_membership: true)
       .where(status: [ Membership.statuses[:active], Membership.statuses[:trial], Membership.statuses[:pending] ])
     return false if child_memberships.empty?
 
-    # Vérifier qu'il reste des enfants non inscrits
     registered_child_ids = @child_attendances.pluck(:child_membership_id).compact
     available_children = child_memberships.where.not(id: registered_child_ids)
+    return false unless available_children.exists?
 
-    available_children.exists?
+    return true unless @initiation.allow_non_member_discovery?
+
+    # With dual pools: at least one available child must fit an open pool
+    available_children.any? do |child|
+      if child.active?
+        !@initiation.full_for_members?
+      else
+        !@initiation.full_for_non_members?
+      end
+    end
   end
   helper_method :can_register_child?
+
+  def can_join_member_waitlist?
+    return false unless user_signed_in?
+    return false unless WaitlistEntry.pool_for(user: current_user, event: @initiation) == "member"
+
+    Event::InitiationPolicy.new(current_user, @initiation).join_waitlist?({})
+  end
+  helper_method :can_join_member_waitlist?
+
+  def can_join_discovery_waitlist?
+    return false unless user_signed_in?
+    return false unless WaitlistEntry.pool_for(user: current_user, event: @initiation) == "discovery"
+
+    Event::InitiationPolicy.new(current_user, @initiation).join_waitlist?({})
+  end
+  helper_method :can_join_discovery_waitlist?
+
+  def pool_capacity_blocks_adult?
+    if @initiation.allow_non_member_discovery?
+      if WaitlistEntry.member_for_capacity?(current_user)
+        @initiation.full_for_members?
+      else
+        @initiation.full_for_non_members?
+      end
+    else
+      @initiation.full?
+    end
+  end
 
   def can_moderate?
     current_user.present? && current_user.role&.level.to_i >= 50 # MODERATOR = 50

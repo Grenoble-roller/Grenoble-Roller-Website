@@ -1,30 +1,39 @@
 ---
 title: "Release Dev → staging (June 2026)"
 status: "active"
-version: "2.4.11"
+version: "2.4.14"
 created: "2026-06-07"
-updated: "2026-09-13"
-tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf"]
+updated: "2026-10-02"
+tags: ["release", "staging", "changelog", "unified-checkout", "discord-notifications", "admin-panel", "memberships", "events", "ux", "seo", "perf", "waitlist"]
 ---
 
 # Release Dev → staging (June 2026)
 
-> **Current promotion (2026-09-13) — v2.4.11 follow-up**
+> **Current promotion (2026-10-02) — v2.4.12 → v2.4.14**
 > **Target:** `Dev` → `staging`
-> **Staging baseline:** `3677a97b` — v2.4.11 merged via PR #283
-> **Migrations:** none
-> **New ENV:** none
+> **Staging baseline:** `9ed7eed2` (last merge from `Dev`)
+> **Dev head (after dual waitlist commit):** see PR
 >
-> The v2.4.11 Active Storage application fix is already on `staging`.
-> This promotion synchronizes the remaining `Dev` changes:
-> - Ruby LSP development tooling (`64c92279`)
-> - v2.4.11 changelog/release documentation
-> - correction of the malformed v2.4.11/v2.4.10 changelog structure
+> ### Migrations
+> | Migration | Feature |
+> | --- | --- |
+> | `20261001204047_add_purpose_to_notification_channels.rb` | Contact Discord channel `purpose` (v2.4.13) |
+> | `20261001214912_add_pool_to_waitlist_entries.rb` | Dual waitlist `pool` column (v2.4.14) |
+>
+> ### New ENV
+> none (optional staging Discord: `ALLOW_DISCORD_NOTIFICATIONS=true`)
+>
+> ### Slice included
+> | Version | Summary | Patch note |
+> | --- | --- | --- |
+> | v2.4.12 | Association bureau/CA + initiations hours | [`release-association-governance-2026-10.md`](release-association-governance-2026-10.md) |
+> | v2.4.13 | Contact Discord webhook UI + embed F | [`release-contact-discord-webhook-2026-10.md`](release-contact-discord-webhook-2026-10.md) |
+> | v2.4.14 | Dual waitlist member/discovery | [`release-dual-waitlist-2026-10.md`](release-dual-waitlist-2026-10.md) |
 >
 > Existing staging safety variables remain required:
 > `MAIL_DELIVERY_METHOD=test`, `MAIL_DELIVERY_ENABLED=false`, `SUPERCRONIC_ENABLED=false`
 >
-> **Patch note:** [`release-v2.4.11.md`](release-v2.4.11.md)
+> **Delta audit:** `staging`-only commits are merge commits from prior `Dev` promotions (no unique code deltas). Safe merge PR.
 
 **Comparison:** `origin/staging...origin/Dev`
 **Staging head before promotion:** `3677a97b`

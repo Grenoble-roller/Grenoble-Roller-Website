@@ -4,13 +4,32 @@ class NotificationChannel < ApplicationRecord
   include Auditable
 
   ALLOWED_WEBHOOK_HOSTS = %w[discord.com discordapp.com www.discord.com].freeze
+  CONTACT_MESSAGES_PURPOSE = "contact_messages"
+  CONTACT_MESSAGES_NAME = "Messages de contact"
+  CONTACT_MESSAGES_EVENT_KEY = "contact_message.received"
 
   has_many :notification_subscriptions, dependent: :destroy
   has_many :notification_deliveries, dependent: :destroy
 
   validates :name, presence: true
+  validates :purpose, uniqueness: true, allow_nil: true
   validate :webhook_url_presence_on_create
   validate :webhook_url_host_allowed, if: -> { webhook_url.present? }
+
+  def self.contact_messages_channel
+    find_or_initialize_by(purpose: CONTACT_MESSAGES_PURPOSE) do |channel|
+      channel.name = CONTACT_MESSAGES_NAME
+      channel.enabled = false
+    end
+  end
+
+  def ensure_contact_messages_subscription!
+    sync_subscriptions!([ CONTACT_MESSAGES_EVENT_KEY ])
+  end
+
+  def contact_messages_notifications_active?
+    enabled? && webhook_configured? && subscribed_event_keys.include?(CONTACT_MESSAGES_EVENT_KEY)
+  end
 
   attr_accessor :webhook_url
 
