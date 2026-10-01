@@ -6,8 +6,10 @@ Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
 ### Changed
 - **À propos :** nouveau président (Gauthier F.), secrétaire (Julien P.), et mise à jour du Conseil d’Administration.
+- **À propos :** ordre du Bureau → Secrétaire | Président | Trésorier (président au centre).
+- **À propos :** icônes du CA alignées sur les rôles (staff / animateur·rice / vice trésorière).
 - **Mentions légales :** directeur de publication → FOUSSE Gauthier (Président).
-- **Initiations :** info globale « Fréquence : tous les samedis matin, inscription obligatoire ».
+- **Initiations :** infos pratiques en grille 2×2 — Fréquence (samedis matin) + Horaires (10h15 – 12h00).
 
 ### Documentation
 - Patch note: [`release-association-governance-2026-10.md`](release-association-governance-2026-10.md) (v2.4.12)
