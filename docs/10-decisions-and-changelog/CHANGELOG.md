@@ -2,6 +2,11 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-10-02] - Production release staging → main (v2.4.14)
+
+### Documentation
+- Production release / patch note: [`release-staging-to-main-2026-10.md`](release-staging-to-main-2026-10.md) — v2.4.12–v2.4.14 (association, contact Discord, dual waitlist), 2 migrations, human sign-off required.
+
 ## [2026-10-01] - Dual waitlist initiations member/discovery (v2.4.14)
 
 ### Fixed
