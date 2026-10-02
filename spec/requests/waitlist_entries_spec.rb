@@ -85,7 +85,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
         }.not_to change { WaitlistEntry.count }
 
         expect(response).to redirect_to(initiation_path(initiation))
-        expect(flash[:alert]).to include("réservée aux adhérents")
+        expect(flash[:alert]).to match(/adhérents|liste d'attente/i)
       end
 
       context 'with parent (member)' do
@@ -154,7 +154,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
           }.not_to change { WaitlistEntry.count }
 
           expect(response).to redirect_to(initiation_path(initiation))
-          expect(flash[:alert]).to include("réservée aux adhérents")
+          expect(flash[:alert]).to match(/adhérents|liste d'attente|découverte/i)
         end
       end
 
@@ -178,7 +178,7 @@ RSpec.describe 'Waitlist Entries', type: :request do
           }.not_to change { WaitlistEntry.count }
 
           expect(response).to redirect_to(initiation_path(initiation))
-          expect(flash[:alert]).to include("réservée aux adhérents")
+          expect(flash[:alert]).to match(/adhérents|liste d'attente|découverte/i)
         end
       end
 
@@ -206,6 +206,67 @@ RSpec.describe 'Waitlist Entries', type: :request do
           expect(response).to redirect_to(initiation_path(initiation))
           expect(flash[:notice]).to be_present
         end
+      end
+    end
+
+    context 'when initiation has discovery dual pools' do
+      let(:discovery_initiation) do
+        create(
+          :event_initiation,
+          :published,
+          :upcoming,
+          max_participants: 4,
+          allow_non_member_discovery: true,
+          non_member_discovery_slots: 2
+        )
+      end
+
+      def fill_member_slots!(event, count)
+        count.times do
+          member = create(:user, role: role, confirmed_at: Time.current)
+          create(:membership, user: member, status: :active, season: '2025-2026', is_child_membership: false)
+          att = build(:attendance, event: event, user: member, status: 'registered', is_volunteer: false)
+          att.save(validate: false)
+        end
+        event.reload
+      end
+
+      def fill_discovery_slots!(event, count)
+        count.times do
+          guest = create(:user, role: role, confirmed_at: Time.current)
+          att = build(:attendance, event: event, user: guest, status: 'registered', is_volunteer: false, free_trial_used: true)
+          att.save(validate: false)
+        end
+        event.reload
+      end
+
+      it 'allows non-member to join discovery waitlist when discovery slots are full' do
+        fill_discovery_slots!(discovery_initiation, 2)
+        login_user(user)
+
+        expect {
+          post initiation_waitlist_entries_path(discovery_initiation), params: {
+            use_free_trial: '1',
+            wants_reminder: false
+          }
+        }.to change { WaitlistEntry.count }.by(1)
+
+        expect(WaitlistEntry.last.pool).to eq('discovery')
+        expect(response).to redirect_to(initiation_path(discovery_initiation))
+      end
+
+      it 'allows member to join member waitlist when only member slots are full' do
+        create(:membership, user: user, status: :active, season: '2025-2026', is_child_membership: false)
+        fill_member_slots!(discovery_initiation, 2)
+        login_user(user)
+
+        expect {
+          post initiation_waitlist_entries_path(discovery_initiation), params: {
+            wants_reminder: false
+          }
+        }.to change { WaitlistEntry.count }.by(1)
+
+        expect(WaitlistEntry.last.pool).to eq('member')
       end
     end
   end

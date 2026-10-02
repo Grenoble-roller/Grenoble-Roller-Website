@@ -2,6 +2,45 @@
 
 Ce fichier documente les changements significatifs du projet Grenoble Roller.
 
+## [2026-10-01] - Dual waitlist initiations member/discovery (v2.4.14)
+
+### Fixed
+- **Initiations avec places découverte :** files d’attente séparées `member` / `discovery` (`waitlist_entries.pool`).
+- **Join waitlist :** gate par pool (`full_for_members?` / `full_for_non_members?`) au lieu de `full?` global.
+- **Notify :** une place libérée notifie uniquement la file du pool correspondant (plus de FIFO croisée).
+
+### Added
+- Migration `pool` sur `waitlist_entries` ; specs dual waitlist + policy/request.
+
+### Documentation
+- [`docs/06-events/waitlist-system.md`](../06-events/waitlist-system.md) mis à jour (pool, dual queue).
+- Patch note: [`release-dual-waitlist-2026-10.md`](release-dual-waitlist-2026-10.md) (v2.4.14)
+
+## [2026-10-01] - Contact Discord webhook UI + embed (v2.4.13)
+
+### Added
+- **Admin messages de contact :** bouton Discord + modal de config (URL chiffrée, activation, test) réutilisant `NotificationChannel` (DR-002).
+- **Canal dédié** `purpose: contact_messages` (migration) abonné à `contact_message.received`.
+
+### Changed
+- **Embed Discord contact :** format F validé — identité 👤/✉️/📝 sans libellés texte, message en cadre de code en fin d’embed, couleur orange, horodatage.
+
+### Documentation
+- Patch note: [`release-contact-discord-webhook-2026-10.md`](release-contact-discord-webhook-2026-10.md) (v2.4.13)
+
+## [2026-10-01] - Association bureau/CA + initiations info (v2.4.12)
+
+### Changed
+- **À propos :** nouveau président (Gauthier F.), secrétaire (Julien P.), et mise à jour du Conseil d’Administration.
+- **À propos :** ordre du Bureau → Secrétaire | Président | Trésorier (président au centre).
+- **À propos :** icônes du CA alignées sur les rôles (staff / animateur·rice / vice trésorière).
+- **Mentions légales :** directeur de publication → FOUSSE Gauthier (Président).
+- **Initiations :** infos pratiques en grille 2×2 — Fréquence (samedis matin) + Horaires (10h15 – 12h00).
+
+### Documentation
+- Patch note: [`release-association-governance-2026-10.md`](release-association-governance-2026-10.md) (v2.4.12)
+- Related PR: [#291](https://github.com/Grenoble-roller/Grenoble-Roller-Website/pull/291)
+
 ## [2026-09-13] - ActiveStorage S3 service identity fix (v2.4.11)
 
 ### Fixed

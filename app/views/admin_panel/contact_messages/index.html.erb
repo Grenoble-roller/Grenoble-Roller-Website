@@ -7,8 +7,37 @@
 <%= render 'admin_panel/shared/breadcrumb', breadcrumb_items: breadcrumb_items %>
 
 <div class="admin-page-header">
-  <h1>Messages de contact</h1>
+  <h1 class="admin-page-title">Messages de contact</h1>
+  <div class="admin-page-actions">
+    <% configured = @contact_discord_channel&.webhook_configured? %>
+    <% active = @contact_discord_channel&.contact_messages_notifications_active? %>
+
+    <% if configured %>
+      <%= button_to test_discord_admin_panel_contact_messages_path,
+          method: :post,
+          class: "btn btn-outline-liquid-primary",
+          form: { class: "d-inline" } do %>
+        <i class="bi bi-send me-1" aria-hidden="true"></i>
+        Tester
+      <% end %>
+    <% end %>
+
+    <button type="button"
+            class="btn <%= active ? 'btn-outline-liquid-success' : 'btn-outline-liquid-secondary' %>"
+            data-bs-toggle="modal"
+            data-bs-target="#contactDiscordSettingsModal">
+      <i class="bi bi-discord me-1" aria-hidden="true"></i>
+      Discord
+      <% if active %>
+        <span class="badge text-bg-success ms-1">ON</span>
+      <% else %>
+        <span class="badge text-bg-secondary ms-1">OFF</span>
+      <% end %>
+    </button>
+  </div>
 </div>
+
+<%= render "admin_panel/contact_messages/discord_settings_modal" %>
 
 <!-- Filtres et recherche -->
 <div class="card card-liquid rounded-liquid shadow-liquid mb-4">

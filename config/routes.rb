@@ -64,7 +64,12 @@ Rails.application.routes.draw do
     resources :checkouts, only: [ :index, :show ]
 
     # Communication
-    resources :contact_messages, path: "contact-messages", only: [ :index, :show, :destroy ]
+    resources :contact_messages, path: "contact-messages", only: [ :index, :show, :destroy ] do
+      collection do
+        patch :update_discord_settings
+        post :test_discord
+      end
+    end
     resources :partners
     resources :event_organizers, path: "event-organizers"
 
