@@ -1248,7 +1248,7 @@
   }
   
   /* === RESPONSIVE === */
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .card-liquid,
     .btn-liquid-primary {
       margin: 0.5rem 0;
@@ -1406,7 +1406,7 @@
   }
   
   /* Mobile : Dropdown intégré dans collapse (monobloc) */
-  @media (max-width: 991px) {
+  @media (max-width: 991.98px) {
     /* Desktop garde le comportement normal, mobile = monobloc dans collapse */
     /* Pas de règles spéciales ici - géré par .navbar-collapse .dropdown-menu */
   }
@@ -1441,7 +1441,7 @@
   }
   
   /* Focus mobile - utiliser box-shadow au lieu d'outline si débordement */
-  @media (max-width: 991px) {
+  @media (max-width: 991.98px) {
     .navbar-grenoble-roller .dropdown-item:focus,
     .navbar-grenoble-roller .dropdown-item:focus-visible {
       outline: none;
@@ -1496,7 +1496,7 @@
   }
   
   /* Responsive - Bonnes pratiques 2025 pour navbar mobile */
-  @media (max-width: 991px) {
+  @media (max-width: 991.98px) {
     .navbar-grenoble-roller {
       --bs-navbar-padding-y: 0.375rem;
       padding-top: 0.375rem;
@@ -1839,7 +1839,7 @@
     padding-bottom: 1rem;
   }
   
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .footer-simple .container > .row > div:first-child {
       padding-bottom: 2rem;
     }
@@ -1853,7 +1853,7 @@
     letter-spacing: -0.02em;
   }
   
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .footer-simple .footer-brand {
       font-size: 1.5rem;
     }
@@ -1994,7 +1994,7 @@
   }
   
   /* Mobile : Socials passent à la ligne suivante */
-  @media (max-width: 576px) {
+  @media (max-width: 575.98px) {
     .footer-simple .footer-nav-social {
       justify-content: space-between;
       gap: 1rem;
@@ -2041,7 +2041,7 @@
   }
   
   /* Responsive mobile - liens légaux */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .footer-simple .footer-legal-links {
       gap: 0.25rem 0;
     }
@@ -2051,14 +2051,14 @@
     }
   }
   
-  @media (max-width: 576px) {
+  @media (max-width: 575.98px) {
     .footer-simple .footer-legal-links .mx-2 {
       margin: 0 0.25rem !important;
     }
   }
   
   /* Responsive - Mobile accessibility (tailles tactiles 44x44px minimum) */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .footer-grenoble-roller .col-6 {
       margin-bottom: 2rem;
     }
@@ -2147,7 +2147,7 @@
   }
   
   /* Responsive amélioré - Tablette (2 colonnes) */
-  @media (min-width: 768px) and (max-width: 991px) {
+  @media (min-width: 768px) and (max-width: 991.98px) {
     .footer-grenoble-roller .col-md-6 {
       margin-bottom: 2.5rem;
     }
@@ -2513,7 +2513,7 @@
     }
 
     /* Mobile : puces 4×4px (flèches + tap au centre pour changer de slide) */
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       .carousel-indicators [data-bs-target] {
         min-width: 0;
         min-height: 0;
@@ -2590,7 +2590,7 @@
       background-color: var(--gr-primary, #007bff);
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       .carousel-indicators [data-bs-target] {
         min-width: 0;
         min-height: 0;
@@ -2649,7 +2649,7 @@
   }
   
   /* Responsive - Bonnes pratiques 2025 pour hero banner mobile */
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .banner-hero {
       min-height: auto; /* Hauteur adaptative selon le contenu */
       padding: 1.5rem 0; /* Padding réduit sur mobile */
@@ -2803,7 +2803,7 @@
     height: 350px;
     border-radius: 0.5rem 0.5rem 0 0; /* Coins arrondis en haut */
     
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
       height: 250px;
     }
   }
@@ -2927,7 +2927,7 @@
   }
   
   /* Sur mobile : vignette fixe dans la carte (scroll dans le viewer) */
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .route-image-container {
       overflow: hidden;
       aspect-ratio: 16 / 9;
@@ -3157,7 +3157,7 @@
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .event-loops-section .event-loop-card__visual {
       aspect-ratio: 16 / 9;
     }
@@ -3197,7 +3197,7 @@
     }
   }
 
-  @media (max-width: 575px) {
+  @media (max-width: 575.98px) {
     .action-row {
       flex-direction: column;
       .btn {
@@ -3300,7 +3300,7 @@
   }
   
   /* Responsive cards */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .card-event:hover,
     .card-user:hover,
     .card-city:hover {
@@ -3404,7 +3404,7 @@
   }
   
   /* Responsive */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .comment {
       flex-direction: column;
       text-align: center;
@@ -3598,7 +3598,7 @@
     color: white;
     z-index: 2;
     
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
       padding: 1.5rem 1rem;
     }
   }
@@ -3612,24 +3612,19 @@
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
     color: white;
     
+    /* Mobile-first ladder, aligned on the Bootstrap grid:
+       >1024 default, <=1024 one step down, <=767.98 (below md) compact,
+       <=320 smallest. The previous ladder carried a dead 2.25rem step that
+       only matched sub-pixel gaps (768-769 and 480-481). */
     @media (max-width: 1024px) {
-      font-size: 2.25rem;
-    }
-    
-    @media (min-width: 769px) and (max-width: 1024px) {
       font-size: 2rem;
     }
-    
-    @media (min-width: 481px) and (max-width: 768px) {
+
+    @media (max-width: 767.98px) {
       font-size: 1.75rem;
       margin-bottom: 0.75rem;
     }
-    
-    @media (min-width: 321px) and (max-width: 480px) {
-      font-size: 1.75rem;
-      margin-bottom: 0.75rem;
-    }
-    
+
     @media (max-width: 320px) {
       font-size: 1.5rem;
       margin-bottom: 0.75rem;
@@ -3643,7 +3638,7 @@
     font-size: 1rem;
     flex-wrap: wrap;
     
-    @media (max-width: 768px) {
+    @media (max-width: 767.98px) {
       gap: 1rem;
       font-size: 0.9rem;
       margin-bottom: 0.75rem;
@@ -4411,7 +4406,7 @@
   }
   
   /* Responsive */
-  @media (max-width: 991px) {
+  @media (max-width: 991.98px) {
     .element-title {
       font-size: 2rem;
     }
@@ -4501,7 +4496,7 @@
   }
   
   /* Responsive */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .calendar-day-name {
       font-size: 0.75rem;
     }
@@ -5081,29 +5076,11 @@
     font-weight: 700;
   }
 
-  /* Tighter grid once thumbnails are square */
-  .shop-catalog-main .product-grid {
-    gap: 12px;
-  }
-
-  @media (min-width: 640px) {
-    .shop-catalog-main .product-grid {
-      gap: 16px;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .shop-catalog-main .product-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1.25rem;
-    }
-  }
-
-  @media (min-width: 1400px) {
-    .shop-catalog-main .product-grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
+  /* Shop catalog grid: columns and gaps come from the single
+     .product-grid ladder below (UI polish fix #5). This block used to
+     declare a second, more specific ladder (.shop-catalog-main) whose
+     boundaries disagreed with it — 4 columns from 1400px here vs 1440px
+     there, plus a competing gap scale — so the two silently fought. */
 
 .spacer { 
   flex: 1 1 auto; 
@@ -5249,23 +5226,28 @@
     font-size: 0.75rem;
   }
 
-  /* Product grid - mobile first per guide (1 / 2 / 3 / 4 cols) */
+  /* Product grid — the ONE column ladder for the catalog (1 / 2 / 3 / 4
+     columns, mobile first). The boundaries are content breakpoints
+     (640 / 1024 / 1400) picked around the sticky filter rail, which only
+     appears at Bootstrap lg — not Bootstrap's own grid steps. The values
+     below are exactly what the removed .shop-catalog-main ladder used to
+     win, so the rendered layout is unchanged (UI polish fix #5). */
   .product-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 16px;
+    gap: 12px;
     padding: 16px 0; /* internal consistency, works inside container-fluid */
   }
 
   @media (min-width: 640px) {
-    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   }
 
   @media (min-width: 1024px) {
-    .product-grid { grid-template-columns: repeat(3, 1fr); }
+    .product-grid { grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
   }
 
-  @media (min-width: 1440px) {
+  @media (min-width: 1400px) {
     .product-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
@@ -5354,7 +5336,7 @@
     flex: 1;
     min-width: 0;
     
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       flex-wrap: wrap;
       gap: 0.75rem;
     }
@@ -5364,19 +5346,19 @@
     flex: 1;
     min-width: 0;
     
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       flex-basis: 100%;
     }
   }
   
   .cart-item-qty {
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       flex-basis: auto;
     }
   }
   
   .cart-item-price {
-    @media (max-width: 767px) {
+    @media (max-width: 767.98px) {
       flex: 1;
       text-align: left;
     }
@@ -5773,7 +5755,7 @@
   }
   
   /* Responsive mobile : icônes et chiffres */
-  @media (max-width: 767px) {
+  @media (max-width: 767.98px) {
     .stat-icon-wrapper {
       width: 60px;
       height: 60px;
@@ -6343,7 +6325,7 @@
   }
   
   /* Mobile - Ajustements cibles tactiles */
-  @media (max-width: 576px) {
+  @media (max-width: 575.98px) {
     .btn {
       min-height: 48px; /* Plus grand sur mobile pour meilleure accessibilité */
       font-size: 1rem;
@@ -6503,7 +6485,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .hero-memberships {
       padding: 2rem 1.5rem;
       
@@ -6578,7 +6560,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .hero-orders {
       padding: 2rem 1.5rem;
       
@@ -6699,7 +6681,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .quick-action-card {
       padding: 0.625rem 0.875rem;
     }
@@ -6762,7 +6744,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .membership-card {
       padding: 1rem;
     }
@@ -6865,7 +6847,7 @@
     border-color: rgba(255, 255, 255, 0.1);
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .empty-state {
       padding: 2rem 1rem;
       
@@ -7017,7 +6999,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .empty-state-modern {
       padding: 2rem 1.5rem;
     }
@@ -7186,7 +7168,7 @@
   }
 
   /* Responsive adjustments */
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .hero-memberships h1 {
       font-size: 1.75rem !important;
     }
@@ -7463,7 +7445,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .hero-form {
       padding: 1.5rem 1rem;
       
@@ -7764,7 +7746,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .form-navigation {
       flex-direction: column;
       
@@ -7879,7 +7861,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .form-control-lg {
       height: 48px;
     }
@@ -7960,7 +7942,7 @@
     }
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 767.98px) {
     .form-check-input {
       width: 24px;
       height: 24px;
@@ -8264,7 +8246,7 @@
   }
 
   /* Responsive Orders - Réutilise styles membreships */
-  @media (max-width: 576px) {
+  @media (max-width: 575.98px) {
     .orders-sidebar .card-body {
       padding: 0.75rem;
     }
@@ -8396,7 +8378,7 @@
 }
 
 /* Responsive - Mobile First (2 colonnes optimisées) */
-@media (max-width: 576px) {
+@media (max-width: 575.98px) {
   .status-table-header {
     gap: 0.5rem;
     padding: 0.625rem 0.75rem;
@@ -8586,7 +8568,7 @@
 }
 
 /* Responsive */
-@media (max-width: 575px) {
+@media (max-width: 575.98px) {
   .initiation-card-modern {
     padding: 1.25rem;
   }
@@ -9158,7 +9140,7 @@ body.admin-panel {
 /* ============================================
    MOBILE SIDEBAR (≤991px)
    ============================================ */
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
   /* Sidebar desktop cachée */
   .admin-sidebar {
     display: none !important;
@@ -10087,7 +10069,7 @@ body.admin-panel {
 
 /* === MOBILE SPECIFIC FIXES === */
 /* S'assurer que le contenu ne déborde jamais */
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
   .admin-panel * {
     max-width: 100%;
     box-sizing: border-box;
