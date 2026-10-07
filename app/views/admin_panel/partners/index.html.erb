@@ -115,7 +115,7 @@
                 <td><%= l partner.updated_at, format: :short %></td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_partner_path(partner), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_partner_path(partner), aria: { label: "Voir le partenaire #{partner.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <%= link_to "Modifier", edit_admin_panel_partner_path(partner), class: "btn btn-outline-liquid-secondary" %>
                     <%= button_to "Supprimer", admin_panel_partner_path(partner), 
                         method: :delete,

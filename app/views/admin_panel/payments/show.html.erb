@@ -118,7 +118,7 @@
                 </td>
                 <td><%= l order.created_at, format: :short %></td>
                 <td>
-                  <%= link_to "Voir", admin_panel_order_path(order), class: "btn btn-sm btn-outline-liquid-primary" %>
+                  <%= link_to "Voir", admin_panel_order_path(order), aria: { label: "Voir la commande #{order.id}" }, class: "btn btn-sm btn-outline-liquid-primary" %>
                 </td>
               </tr>
             <% end %>
@@ -180,7 +180,7 @@
                 </td>
                 <td><%= l membership.created_at, format: :short %></td>
                 <td>
-                  <%= link_to "Voir", admin_panel_membership_path(membership), class: "btn btn-sm btn-outline-liquid-primary" %>
+                  <%= link_to "Voir", admin_panel_membership_path(membership), aria: { label: "Voir l'adhésion #{membership.id}" }, class: "btn btn-sm btn-outline-liquid-primary" %>
                 </td>
               </tr>
             <% end %>
@@ -238,7 +238,7 @@
                 </td>
                 <td><%= l attendance.created_at, format: :short %></td>
                 <td>
-                  <%= link_to "Voir", admin_panel_attendance_path(attendance), class: "btn btn-sm btn-outline-liquid-primary" %>
+                  <%= link_to "Voir", admin_panel_attendance_path(attendance), aria: { label: "Voir la présence #{attendance.id}" }, class: "btn btn-sm btn-outline-liquid-primary" %>
                 </td>
               </tr>
             <% end %>

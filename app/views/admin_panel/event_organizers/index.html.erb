@@ -101,7 +101,7 @@
                 <td><%= l event_organizer.updated_at, format: :short %></td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_event_organizer_path(event_organizer), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_event_organizer_path(event_organizer), aria: { label: "Voir l'organisateur #{event_organizer.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <%= link_to "Modifier", edit_admin_panel_event_organizer_path(event_organizer), class: "btn btn-outline-liquid-secondary" %>
                     <%= button_to "Supprimer", admin_panel_event_organizer_path(event_organizer), 
                         method: :delete,

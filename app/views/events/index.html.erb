@@ -46,7 +46,7 @@
           <div class="d-flex gap-2">
             <%= f.submit "Filtrer", class: "btn btn-liquid-primary btn-sm flex-grow-1" %>
             <% if params[:route_id].present? || params[:level].present? %>
-              <%= link_to events_path, class: "btn btn-outline-liquid-secondary btn-sm" do %>
+              <%= link_to events_path, class: "btn btn-outline-liquid-secondary btn-sm", aria: { label: "Réinitialiser les filtres événements" } do %>
                 <i class="bi bi-x-lg" aria-hidden="true"></i>
               <% end %>
             <% end %>

@@ -80,7 +80,7 @@
                 </td>
                 <td data-label="Date création"><%= user.created_at.strftime('%d/%m/%Y %H:%M') %></td>
                 <td data-label="Actions">
-                  <%= link_to "Voir", admin_panel_user_path(user), class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "Voir", admin_panel_user_path(user), aria: { label: "Voir l'utilisateur #{user.id}" }, class: "btn btn-sm btn-outline-primary" %>
                 </td>
               </tr>
             <% end %>

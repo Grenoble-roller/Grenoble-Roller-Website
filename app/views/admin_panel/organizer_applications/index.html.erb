@@ -114,7 +114,7 @@
                 </td>
                 <td>
                   <div class="d-flex gap-2">
-                    <%= link_to "Voir", admin_panel_organizer_application_path(application), class: "btn btn-sm btn-outline-primary" %>
+                    <%= link_to "Voir", admin_panel_organizer_application_path(application), aria: { label: "Voir la candidature #{application.id}" }, class: "btn btn-sm btn-outline-primary" %>
                     <% if application.pending? %>
                       <%= button_to "Approuver", approve_admin_panel_organizer_application_path(application), 
                           method: :patch, 

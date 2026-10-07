@@ -57,7 +57,7 @@
             <td data-label="Don"><%= format_price(checkout.donation_cents) %></td>
             <td data-label="Créé le"><%= l(checkout.created_at, format: :short) %></td>
             <td data-label="Actions" class="text-end">
-              <%= link_to "Voir", admin_panel_checkout_path(checkout), class: "btn btn-sm btn-outline-primary" %>
+              <%= link_to "Voir", admin_panel_checkout_path(checkout), aria: { label: "Voir le checkout #{checkout.id}" }, class: "btn btn-sm btn-outline-primary" %>
             </td>
           </tr>
         <% end %>
