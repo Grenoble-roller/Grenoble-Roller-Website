@@ -95,10 +95,10 @@
         <% if show_sidebar_join || show_sidebar_add_child %>
           <div class="card card-liquid shadow-sm mb-4">
             <div class="card-body">
-              <h3 class="h6 mb-2">
+              <h2 class="h6 mb-2">
                 <i class="bi bi-lightning-charge text-liquid-primary me-2"></i>
                 Actions rapides
-              </h3>
+              </h2>
 
               <div class="quick-actions-list">
               <% if show_sidebar_join %>
@@ -107,7 +107,7 @@
                     <div class="d-flex align-items-center gap-3">
                       <i class="bi bi-person-badge quick-action-card-icon text-liquid-primary" aria-hidden="true"></i>
                       <div class="flex-grow-1 min-w-0">
-                        <h4 class="h6 mb-0 fw-bold">J'adhère</h4>
+                        <h3 class="h6 mb-0 fw-bold">J'adhère</h3>
                         <small class="text-muted">
                           <% if @pending_membership %>
                             Adhésion en attente
@@ -127,7 +127,7 @@
                     <div class="d-flex align-items-center gap-3">
                       <i class="bi bi-person-plus quick-action-card-icon text-liquid-warning" aria-hidden="true"></i>
                       <div class="flex-grow-1 min-w-0">
-                        <h4 class="h6 mb-0 fw-bold">Ajouter un enfant</h4>
+                        <h3 class="h6 mb-0 fw-bold">Ajouter un enfant</h3>
                         <small class="text-muted">
                           <% if parent_profile_complete_for_child %>
                             <% if children_trial.any? || children_pending.any? %>

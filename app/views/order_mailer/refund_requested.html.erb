@@ -5,7 +5,7 @@
 <p>Votre demande de remboursement pour la commande ##{@order.id} a été enregistrée.</p>
 
 <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
-  <h3 style="margin-top: 0; color: #856404; font-size: 18px;">📋 Détails</h3>
+  <h2 style="margin-top: 0; color: #856404; font-size: 18px;">📋 Détails</h2>
   <p style="margin: 5px 0;"><strong>Commande #<%= @order.id %></strong></p>
   <p style="margin: 5px 0;">Montant : <%= number_to_currency(@order.total_cents / 100.0, unit: "€", separator: ",", delimiter: " ") %></p>
   <p style="margin: 5px 0; color: #856404;"><strong>⏳ Statut : Demande de remboursement en cours</strong></p>

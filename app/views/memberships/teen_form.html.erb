@@ -22,7 +22,7 @@
             <%= hidden_field_tag :payment_method, "helloasso", id: "payment_method_field" %>
             <!-- Étape 1 : Choix de la catégorie -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">1. Choisissez votre adhésion</h3>
+              <h2 class="h5 mb-3">1. Choisissez votre adhésion</h2>
               <div class="row g-3">
                 <% @categories.each do |key, cat| %>
                   <div class="col-md-6">
@@ -50,7 +50,7 @@
 
             <!-- Étape 2 : Informations personnelles -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">2. Vos informations</h3>
+              <h2 class="h5 mb-3">2. Vos informations</h2>
               <div class="row g-3">
                 <div class="col-md-6">
                   <%= f.label :first_name, "Prénom *", class: "form-label" %>
@@ -148,7 +148,7 @@
 
             <!-- Étape 4 : Coordonnées -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">3. Vos coordonnées</h3>
+              <h2 class="h5 mb-3">3. Vos coordonnées</h2>
               <div class="row g-3">
                 <div class="col-12">
                   <%= f.label :address, "Adresse *", class: "form-label" %>
@@ -176,7 +176,7 @@
 
             <!-- Étape 5 : Informations parentales (obligatoire pour 16-17 ans) -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">4. Informations parentales</h3>
+              <h2 class="h5 mb-3">4. Informations parentales</h2>
               <p class="text-muted small mb-3">
                 Vos parents seront informés de votre adhésion par email. Ces informations sont obligatoires.
               </p>
@@ -220,7 +220,7 @@
 
             <!-- Étape 6 : Options -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">5. Options</h3>
+              <h2 class="h5 mb-3">5. Options</h2>
               <div class="form-check mb-3">
                 <%= f.check_box :wants_whatsapp, 
                     { class: "form-check-input", id: "wants_whatsapp" }, 

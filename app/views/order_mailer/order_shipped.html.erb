@@ -5,7 +5,7 @@
 <p>Excellente nouvelle ! Votre commande ##{@order.id} a été expédiée.</p>
 
 <div style="background: #d4edda; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #28a745;">
-  <h3 style="margin-top: 0; color: #155724; font-size: 18px;">🚚 Expédition confirmée</h3>
+  <h2 style="margin-top: 0; color: #155724; font-size: 18px;">🚚 Expédition confirmée</h2>
   <p style="margin: 5px 0;"><strong>Commande #<%= @order.id %></strong></p>
   <p style="margin: 5px 0;">Montant : <%= number_to_currency(@order.total_cents / 100.0, unit: "€", separator: ",", delimiter: " ") %></p>
   <p style="margin: 5px 0; color: #28a745;"><strong>📦 Statut : Expédiée</strong></p>

@@ -49,10 +49,10 @@
 
             <!-- ÉTAPE 1 : CATÉGORIE -->
             <div class="form-section" id="step-category">
-              <h3 class="section-title">
+              <h2 class="section-title">
                 <span class="section-number">1</span>
                 Choisissez l'adhésion
-              </h3>
+              </h2>
               <p class="section-intro">Sélectionnez la formule qui correspond à votre enfant</p>
 
                   <div class="row g-3">
@@ -92,10 +92,10 @@
 
             <!-- ÉTAPE 2 : INFORMATIONS ENFANT -->
             <div class="form-section" id="step-info">
-              <h3 class="section-title">
+              <h2 class="section-title">
                 <span class="section-number">2</span>
                 Informations de votre enfant
-              </h3>
+              </h2>
               <p class="section-intro">Ces informations permettront d'adapter le formulaire d'adhésion</p>
 
                   <% if @old_membership %>
@@ -185,10 +185,10 @@
 
             <!-- ÉTAPE 3 : AUTORISATION PARENTALE -->
             <div class="form-section" id="parent_authorization_section" style="display: none;">
-              <h3 class="section-title">
+              <h2 class="section-title">
                 <span class="section-number">3</span>
                 Autorisation parentale
-              </h3>
+              </h2>
               <p class="section-intro">
                 <i class="bi bi-shield-check me-2"></i>
                 <strong>Obligatoire pour les enfants de moins de 16 ans</strong>
@@ -231,7 +231,7 @@
 
               <div class="card card-liquid mt-3" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                 <div class="card-body">
-                  <h6 class="fw-bold mb-3">Signature digitale</h6>
+                  <h3 class="h6 fw-bold mb-3">Signature digitale</h3>
                   <p class="small mb-2">
                     Je soussigné(e) <strong><%= "#{@user.first_name} #{@user.last_name}" %></strong>
                   </p>
@@ -261,10 +261,10 @@
 
             <!-- ÉTAPE 4 : QUESTIONNAIRE SANTÉ -->
             <div class="form-section" id="step-health">
-              <h3 class="section-title">
+              <h2 class="section-title">
                 <span class="section-number">4</span>
                 Questionnaire de santé
-              </h3>
+              </h2>
               <p class="section-intro" id="health_intro_standard" style="display: none;">
                 Répondez honnêtement aux questions suivantes concernant la santé de votre enfant. Vos réponses nous aident à mieux l'accompagner.
               </p>
