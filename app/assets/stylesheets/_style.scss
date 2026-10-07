@@ -93,6 +93,12 @@
        light-theme grey on a dark surface (see --gr-muted-dark). */
     --btn-neutral-fg: var(--gr-muted);
     --btn-neutral-fill: var(--gr-muted);
+
+    /* Vertical rhythm (UI polish fix #4): one token drives the padding of
+       every page section and the inset of feature/empty-state cards, so
+       sections stop mixing py-4/py-5 and ad-hoc mb-4. */
+    --section-py: 3rem;
+    --card-pad: 1.5rem;
   }
   
   [data-bs-theme=dark] {
@@ -1136,7 +1142,20 @@
   }
   
   /* === LIQUID UTILITIES === */
-  
+
+  /* Vertical rhythm helpers (UI polish fix #4).
+     Both read the tokens declared in :root, so retuning the site-wide
+     rhythm (section padding, feature-card inset) is a one-line change.
+     Prefer these over ad-hoc py-4 / py-5 / mb-4 on sections. */
+  .page-section {
+    padding-top: var(--section-py);
+    padding-bottom: var(--section-py);
+  }
+
+  .card-pad {
+    padding: var(--card-pad);
+  }
+
   /* Liquid text color classes */
   .text-liquid-primary {
     color: var(--gr-primary);

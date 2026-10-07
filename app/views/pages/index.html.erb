@@ -12,7 +12,7 @@
 <!-- Ligne de séparation blanche (pleine largeur) -->
 <div style="height: 2px; background: #ffffff; width: 100%;"></div>
 
-<section class="container pb-5 pt-4">
+<section class="container page-section">
   <% if @highlighted_events.any? %>
     <div class="mb-5">
       <div class="row justify-content-center">
@@ -43,7 +43,7 @@
     </div>
   <% else %>
     <div class="text-center py-5 mb-5">
-      <div class="card card-liquid rounded-liquid shadow-liquid p-5">
+      <div class="card card-liquid rounded-liquid shadow-liquid card-pad">
         <i class="bi bi-calendar-x text-muted" style="font-size: 3rem;"></i>
         <h3 class="h4 fw-bold mt-3 mb-2">Aucun événement à venir</h3>
         <p class="text-body-secondary mb-4">
@@ -62,7 +62,7 @@
 <div style="height: 2px; background: #ffffff; width: 100%;"></div>
 
 <!-- Section À propos -->
-<section class="py-5 section-alt">
+<section class="page-section section-alt">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 text-center">
@@ -90,14 +90,14 @@
 <div style="height: 2px; background: #ffffff; width: 100%;"></div>
 
 <!-- Pourquoi nous rejoindre ? (version minimaliste) -->
-<section class="py-4 mb-4">
+<section class="page-section">
   <div class="container">
     <h2 class="h3 fw-bold text-center mb-4">Pourquoi nous rejoindre ?</h2>
 
     <div class="row g-3">
       <div class="col-md-4">
         <div class="card card-liquid rounded-liquid shadow-sm h-100 border-0">
-          <div class="card-body text-center py-4">
+          <div class="card-body text-center card-pad">
             <i class="bi bi-people fs-1 text-liquid-primary mb-3" aria-hidden="true"></i>
             <h3 class="h6 fw-bold mb-2">Tous niveaux</h3>
             <p class="small text-body-secondary mb-0">
@@ -109,7 +109,7 @@
 
       <div class="col-md-4">
         <div class="card card-liquid rounded-liquid shadow-sm h-100 border-0">
-          <div class="card-body text-center py-4">
+          <div class="card-body text-center card-pad">
             <i class="bi bi-shield-check fs-1 text-liquid-success mb-3" aria-hidden="true"></i>
             <h3 class="h6 fw-bold mb-2">Sécurité</h3>
             <p class="small text-body-secondary mb-0">
@@ -121,7 +121,7 @@
 
       <div class="col-md-4">
         <div class="card card-liquid rounded-liquid shadow-sm h-100 border-0">
-          <div class="card-body text-center py-4">
+          <div class="card-body text-center card-pad">
             <i class="bi bi-calendar-heart fs-1 text-liquid-danger mb-3" aria-hidden="true"></i>
             <h3 class="h6 fw-bold mb-2">20+ ans</h3>
             <p class="small text-body-secondary mb-0">
@@ -142,7 +142,7 @@
 </section>
 
 <!-- FAQ section -->
-<section class="py-5">
+<section class="page-section">
   <div class="container">
     <h2 class="h3 fw-bold text-center mb-4">Questions Fréquemment Posées</h2>
     <div class="accordion accordion-flush" id="faqHomepageAccordion" role="tablist" aria-label="Questions fréquemment posées">
@@ -213,7 +213,7 @@
 </section>
 
 <!-- Chiffres clés (version simplifiée) -->
-<section class="py-4 mb-4 section-alt">
+<section class="page-section section-alt">
   <div class="container">
     <div class="row g-3 text-center">
       <div class="col-6 col-md-3">
