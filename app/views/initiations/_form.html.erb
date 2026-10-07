@@ -12,9 +12,9 @@
 
         <% if initiation.errors.any? %>
           <div class="alert alert-liquid-danger rounded-liquid mb-4">
-            <h4 class="h6 fw-semibold mb-2">
+            <p class="h6 fw-semibold mb-2">
               <%= t("errors.template.header", count: initiation.errors.count) %>
-            </h4>
+            </p>
             <ul class="mb-0 small">
               <% initiation.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
