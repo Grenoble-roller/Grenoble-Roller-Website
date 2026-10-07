@@ -890,8 +890,16 @@
     appearance: none;
     background: linear-gradient(to right, var(--gr-primary), var(--gr-primary-light));
     border-radius: 5px;
+    /* outline:none n'est toléré que remplacé : l'anneau :focus-visible
+       ci-dessous évite tout défaut WCAG 2.4.7 sur ce contrôle */
     outline: none;
     cursor: pointer;
+  }
+
+  input[type="range"]:focus-visible {
+    outline: 3px solid var(--gr-primary);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
   }
 
   input[type="range"]::-webkit-slider-thumb {
@@ -6296,38 +6304,81 @@
     }
   }
   
-  /* 2.4.11 - Focus clairement visible (outline ≥ 3px, contraste ≥ 3:1) */
+  /* 2.4.11 - Focus clairement visible (outline ≥ 3px, contraste ≥ 3:1)
+   *
+   * CONTRAT DE FOCUS — ne pas réunir les deux listes de sélecteurs :
+   *
+   *   1. Champs de saisie (.form-control, .form-check-input) : anneau dès
+   *      `:focus`, souris comprise — dans un champ, le retour doit être
+   *      permanent pendant la saisie.
+   *   2. Contrôles discrets (a, button, .btn) : anneau sur `:focus-visible`
+   *      UNIQUEMENT — un clic souris ne doit pas dessiner d'anneau, mais le
+   *      clavier (Tab / Entrée) doit toujours l'afficher.
+   *
+   * Un sélecteur mixte `:focus, :focus-visible` rend la distinction
+   * impossible : tout focus, souris comprise, affiche l'anneau.
+   * Ces familles couvrent la totalité des éléments focusables du site —
+   * <a>, <button> et les éléments non natifs marqués [role="button"]
+   * (galerie produit), plus les contrôles du carrousel que Bootstrap
+   * couvre d'un `outline: 0` (restauré ci-dessous).
+   */
   .form-control:focus,
-  .form-control:focus-visible,
-  .btn:focus,
-  .btn:focus-visible,
-  button:focus,
-  button:focus-visible,
-  a:focus,
-  a:focus-visible,
-  .form-check-input:focus,
-  .form-check-input:focus-visible {
+  .form-check-input:focus {
     outline: 3px solid var(--gr-primary);
     outline-offset: 2px;
     box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
   }
-  
+
+  /* Contrôles interactifs non natifs : div[role=button] (galerie produit)
+     — le sélecteur natif `button` ne les couvre pas. */
+  .btn:focus-visible,
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 3px solid var(--gr-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+  }
+
+  /* Contrôles du carrousel : Bootstrap déclare
+     `.carousel-control-prev:focus { outline: 0 }` (spécificité 0,2,0 >
+     `button:focus-visible` 0,1,1) et annule ainsi l'anneau du contrat pour
+     le clavier. On le restaure ici (égalité de spécificité, position plus
+     tardive dans le compiled => gagne). Souris : non concernée
+     (`:focus-visible` seul) — le kill souris du bloc carrousel s'applique. */
+  .carousel-control-prev:focus-visible,
+  .carousel-control-next:focus-visible {
+    outline: 3px solid var(--gr-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.25);
+  }
+
   /* Mobile: Réduire outline-offset pour éviter débordement */
   @media (max-width: 480px) {
+    .form-control:focus,
     .form-control:focus-visible,
     .btn:focus-visible,
     button:focus-visible,
+    a:focus-visible,
+    [role="button"]:focus-visible,
+    .carousel-control-prev:focus-visible,
+    .carousel-control-next:focus-visible,
+    .form-check-input:focus,
     .form-check-input:focus-visible {
       outline-offset: 0;
       outline-width: 2px;
     }
   }
-  
-  /* Mode sombre - Focus plus visible */
+
+  /* Mode sombre - Focus plus visible
+     (liens et boutons inclus : sans ça, leur anneau reste au bleu clair
+     de la clairière, moins contrasté sur fond sombre) */
   [data-bs-theme="dark"] .form-control:focus,
-  [data-bs-theme="dark"] .form-control:focus-visible,
-  [data-bs-theme="dark"] .btn:focus,
-  [data-bs-theme="dark"] .btn:focus-visible {
+  [data-bs-theme="dark"] .form-check-input:focus,
+  [data-bs-theme="dark"] .btn:focus-visible,
+  [data-bs-theme="dark"] button:focus-visible,
+  [data-bs-theme="dark"] a:focus-visible,
+  [data-bs-theme="dark"] [role="button"]:focus-visible {
     outline-color: var(--gr-primary-light);
     box-shadow: 0 0 0 4px rgba(90, 169, 250, 0.3);
   }
@@ -7986,8 +8037,9 @@
     &:focus {
       border-color: #2180A9;
       border-width: 2px;
-      box-shadow: 0 0 0 0.2rem rgba(33, 128, 169, 0.15);
-      outline: 0;
+      /* Pas d'outline/box-shadow ici : le CONTRAT DE FOCUS (.form-control:focus
+         plus haut dans ce fichier) fournit l'anneau 3px + halo, il ne faut pas
+         l'écraser (outline: 0 supprimait l'anneau clavier sur ces champs). */
     }
   }
 
@@ -7995,10 +8047,10 @@
     background: var(--liquid-glass-bg);
     border-color: var(--card-border-color);
     color: rgba(255, 255, 255, 0.9);
-    
+
     &:focus {
       border-color: #4d94ff;
-      box-shadow: 0 0 0 0.2rem rgba(77, 148, 255, 0.15);
+      /* Anneau fourni par la règle sombre du CONTRAT DE FOCUS. */
     }
   }
 
