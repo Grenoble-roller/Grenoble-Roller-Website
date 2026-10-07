@@ -5,7 +5,7 @@
 <p>Voici le rapport des participants et du matériel demandé pour l'initiation du <strong><%= l(@initiation.start_at, format: :event_long, locale: :fr) %></strong>.</p>
 
 <div style="background: #fff3cd; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
-  <h3 style="margin-top: 0; color: #333; font-size: 18px;">📅 Détails de l'initiation</h3>
+  <h2 style="margin-top: 0; color: #333; font-size: 18px;">📅 Détails de l'initiation</h2>
   <table style="width: 100%; border-collapse: collapse;">
     <tr>
       <td style="padding: 8px 0; color: #666; width: 120px;">📝 Titre :</td>
@@ -31,7 +31,7 @@
 </div>
 
 <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
-  <h3 style="margin-top: 0; color: #333; font-size: 18px;">👥 Liste des Participants</h3>
+  <h2 style="margin-top: 0; color: #333; font-size: 18px;">👥 Liste des Participants</h2>
   <% if @participants.any? %>
     <table style="width: 100%; border-collapse: collapse; border: 1px solid #dee2e6;">
       <thead>
@@ -74,7 +74,7 @@
 
 <% if @participants_with_equipment.any? %>
   <div style="background: #d1ecf1; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #0c5460;">
-    <h3 style="margin-top: 0; color: #333; font-size: 18px;">📦 Résumé Matériel Demandé</h3>
+    <h2 style="margin-top: 0; color: #333; font-size: 18px;">📦 Résumé Matériel Demandé</h2>
     <table style="width: 100%; border-collapse: collapse;">
       <% @participants_with_equipment.group_by(&:roller_size).sort.each do |size, attendances| %>
         <tr>

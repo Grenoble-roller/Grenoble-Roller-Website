@@ -4,14 +4,14 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header <%= @membership.active? ? 'bg-success text-white' : 'bg-warning text-dark' %>">
-          <h5 class="modal-title" id="membershipInfoModalLabel">
+          <h2 class="h5 modal-title" id="membershipInfoModalLabel">
             <i class="bi <%= @membership.active? ? 'bi-check-circle' : 'bi-exclamation-triangle' %> me-2"></i>
             <% if @membership.active? %>
               Adhésion déjà active
             <% else %>
               Adhésion en attente
             <% end %>
-          </h5>
+          </h2>
           <button type="button" class="btn-close <%= @membership.active? ? 'btn-close-white' : '' %>" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -188,7 +188,7 @@
               <div class="col-12">
                 <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                   <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">Informations de l'enfant</h6>
+                    <p class="h6 card-subtitle mb-2 text-muted">Informations de l'enfant</p>
                     <p class="card-text">
                       <strong><%= @membership.child_full_name %></strong><br>
                       Date de naissance : <%= l(@membership.child_date_of_birth, format: :long) if @membership.child_date_of_birth.present? %><br>
@@ -201,7 +201,7 @@
             <div class="col-12 col-md-6">
               <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                 <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">Catégorie</h6>
+                  <p class="h6 card-subtitle mb-2 text-muted">Catégorie</p>
                   <p class="card-text h5">
                     <%= @membership.category == 'standard' ? 'Cotisation Adhérent Grenoble Roller' : 'Cotisation Adhérent Grenoble Roller + Licence FFRS' %>
                   </p>
@@ -211,7 +211,7 @@
             <div class="col-12 col-md-6">
               <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                 <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">Montant adhésion</h6>
+                  <p class="h6 card-subtitle mb-2 text-muted">Montant adhésion</p>
                   <p class="card-text h5">
                     <%= number_to_currency(@membership.amount_cents / 100.0, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %>
                   </p>
@@ -227,7 +227,7 @@
               <div class="col-12">
                 <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                   <div class="card-body">
-                    <h6 class="card-subtitle mb-2 text-muted">T-shirt</h6>
+                    <p class="h6 card-subtitle mb-2 text-muted">T-shirt</p>
                     <p class="card-text">
                       <% size = @membership.tshirt_variant&.option_values&.find { |ov| 
                            ov.option_type.name.downcase.include?('taille') || 
@@ -243,7 +243,7 @@
             <div class="col-12 col-md-6">
               <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                 <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">Date de début</h6>
+                  <p class="h6 card-subtitle mb-2 text-muted">Date de début</p>
                   <p class="card-text"><%= l(@membership.start_date, format: :long) %></p>
                 </div>
               </div>
@@ -251,7 +251,7 @@
             <div class="col-12 col-md-6">
               <div class="card card-liquid" style="background: var(--liquid-glass-bg); border: 1px solid var(--card-border-color);">
                 <div class="card-body">
-                  <h6 class="card-subtitle mb-2 text-muted">Date de fin</h6>
+                  <p class="h6 card-subtitle mb-2 text-muted">Date de fin</p>
                   <p class="card-text"><%= l(@membership.end_date, format: :long) %></p>
                 </div>
               </div>

@@ -16,7 +16,7 @@
           <%= form_with model: @membership, url: membership_path(@membership), method: :patch, local: true, data: { turbo: false } do |f| %>
             <!-- Étape 1 : Choix de la catégorie -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">1. Choisissez l'adhésion</h3>
+              <h2 class="h5 mb-3">1. Choisissez l'adhésion</h2>
               <div class="row g-3">
                 <% @categories.each do |key, cat| %>
                   <div class="col-md-6">
@@ -44,7 +44,7 @@
 
             <!-- Étape 2 : Informations enfant -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">2. Informations de l'enfant</h3>
+              <h2 class="h5 mb-3">2. Informations de l'enfant</h2>
               <div class="row g-3">
                 <div class="col-md-6">
                   <%= f.label :child_first_name, "Prénom de l'enfant *", class: "form-label" %>
@@ -121,7 +121,7 @@
 
             <!-- Étape 3 : Autorisation parentale (si < 16 ans) -->
             <div class="mb-4" id="parent_authorization_section" style="display: none;">
-              <h3 class="h5 mb-3">3. Autorisation parentale</h3>
+              <h2 class="h5 mb-3">3. Autorisation parentale</h2>
               <div class="alert alert-warning">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 <strong>Obligatoire pour les enfants de moins de 16 ans</strong>
@@ -145,13 +145,13 @@
 
             <!-- Étape 4 : Santé -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">4. Questionnaire de santé</h3>
+              <h2 class="h5 mb-3">4. Questionnaire de santé</h2>
               <%= render "health_questionnaire", f: f, form_id: "_edit", record: @membership %>
             </div>
 
             <!-- Étape 5 : Options -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">5. Options</h3>
+              <h2 class="h5 mb-3">5. Options</h2>
               <div class="form-check mb-3">
                 <%= f.check_box :wants_whatsapp, 
                     { class: "form-check-input", id: "wants_whatsapp", checked: @membership.wants_whatsapp }, 
@@ -172,7 +172,7 @@
 
             <!-- Étape 6 : Consentements -->
             <div class="mb-4">
-              <h3 class="h5 mb-3">6. Consentements</h3>
+              <h2 class="h5 mb-3">6. Consentements</h2>
               <div class="form-check mb-3">
                 <%= f.check_box :rgpd_consent, 
                     { class: "form-check-input", id: "rgpd_consent", required: true, checked: @membership.rgpd_consent }, 

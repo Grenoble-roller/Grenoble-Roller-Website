@@ -5,7 +5,7 @@
 <p>Votre commande ##{@order.id} est maintenant en cours de préparation !</p>
 
 <div style="background: #d1ecf1; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #17a2b8;">
-  <h3 style="margin-top: 0; color: #0c5460; font-size: 18px;">📦 Préparation en cours</h3>
+  <h2 style="margin-top: 0; color: #0c5460; font-size: 18px;">📦 Préparation en cours</h2>
   <p style="margin: 5px 0;"><strong>Commande #<%= @order.id %></strong></p>
   <p style="margin: 5px 0;">Montant : <%= number_to_currency(@order.total_cents / 100.0, unit: "€", separator: ",", delimiter: " ") %></p>
   <p style="margin: 5px 0; color: #17a2b8;"><strong>⚙️ Statut : En préparation</strong></p>

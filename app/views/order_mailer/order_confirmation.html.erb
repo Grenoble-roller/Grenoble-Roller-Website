@@ -5,7 +5,7 @@
 <p>Votre commande a été créée avec succès !</p>
 
 <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107;">
-  <h3 style="margin-top: 0; color: #333; font-size: 18px;">📋 Détails de la commande</h3>
+  <h2 style="margin-top: 0; color: #333; font-size: 18px;">📋 Détails de la commande</h2>
   <p style="margin: 5px 0;"><strong>Commande #<%= @order.id %></strong></p>
   <p style="margin: 5px 0;">Date : <%= l(@order.created_at, format: :long) %></p>
   <p style="margin: 5px 0;">Total : <%= number_to_currency(@order.total_cents / 100.0, unit: "€", separator: ",", delimiter: " ") %></p>

@@ -16,10 +16,10 @@
     <% if @volunteers.any? %>
       <div class="card mb-4">
         <div class="card-header bg-success text-white">
-          <h3 class="h5 mb-0">
+          <h2 class="h5 mb-0">
             <i class="bi bi-heart-fill me-2" aria-hidden="true"></i>
             Bénévoles encadrants (<%= @volunteers.count %>)
-          </h3>
+          </h2>
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -84,10 +84,10 @@
     <!-- Section Participants -->
     <div class="card mb-4">
       <div class="card-header">
-        <h3 class="h5 mb-0">
+        <h2 class="h5 mb-0">
           <i class="bi bi-people me-2" aria-hidden="true"></i>
           Participants (<%= @participants.count %>)
-        </h3>
+        </h2>
       </div>
       <div class="card-body">
         <% if @participants.any? %>
@@ -197,10 +197,10 @@
 
   <div class="card">
     <div class="card-header">
-      <h3 class="h5 mb-0">
+      <h2 class="h5 mb-0">
         <i class="bi bi-bar-chart me-2" aria-hidden="true"></i>
         Statistiques
-      </h3>
+      </h2>
     </div>
     <div class="card-body">
       <div class="row">
