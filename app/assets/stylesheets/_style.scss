@@ -3399,12 +3399,6 @@
   
   /* Responsive cards */
   @media (max-width: 767.98px) {
-    .card-event:hover,
-    .card-user:hover,
-    .card-city:hover {
-      transform: none;
-    }
-    
     .card-user .card-body {
       flex-direction: column;
       text-align: center;
@@ -3940,18 +3934,22 @@
     }
   }
 
-  /* Hover states améliorés pour bouton primaire */
   .btn-liquid-primary {
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    
+    /* Hover states améliorés pour bouton primaire.
+       Route the elevation through the shared hover tokens like every other
+       surface: the hardcoded rgba(0,0,0,…) shadow this block used to carry
+       was invisible on dark cards, so the lift read as a glitch there
+       (fix #13). */
+    transition: var(--transition-liquid);
+
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-hover-lg);
     }
-    
+
     &:active {
       transform: scale(0.97);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: var(--shadow-hover);
     }
     
     /* Respect de prefers-reduced-motion */
@@ -4678,6 +4676,22 @@
   a.card-product:focus-visible {
     outline: 2px solid var(--bs-primary, #0d6efd);
     outline-offset: 3px;
+  }
+
+  /* Hover lifts are a pointer-device affordance, not a breakpoint one.
+     This used to live behind @media (max-width: 767.98px), which let a
+     touch tablet keep a lift that sticks after a tap while a narrow
+     desktop window lost it — and .card-product was never in the list, so
+     it lifted on touch too. Gate on hover capability and cover every card
+     that lifts. Placed after all the lift rules so it wins on order
+     (fix #13). */
+  @media (hover: none) {
+    .card-event:hover,
+    .card-user:hover,
+    .card-city:hover,
+    .card-product:hover {
+      transform: none;
+    }
   }
 
   /* Catalog cards: fixed square thumbnails (ecommerce shelf).
