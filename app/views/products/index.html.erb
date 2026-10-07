@@ -10,7 +10,7 @@
       <p class="text-body-secondary mb-0 small">Produits et accessoires Grenoble Roller</p>
     </div>
     <div class="col-12 col-md-auto mt-3 mt-md-0">
-      <%= link_to cart_path, class: "btn btn-outline-primary" do %>
+      <%= link_to cart_path, class: "btn btn-outline-liquid-primary" do %>
         <i class="bi bi-basket me-1" aria-hidden="true"></i>Voir le panier
       <% end %>
     </div>
@@ -27,7 +27,7 @@
         <%= link_to "https://www.helloasso.com/associations/grenoble-roller/boutiques/boutique", 
             target: "_blank", 
             rel: "noopener noreferrer",
-            class: "btn btn-sm btn-outline-primary flex-shrink-0" do %>
+            class: "btn btn-sm btn-outline-liquid-primary flex-shrink-0" do %>
           <i class="bi bi-box-arrow-up-right me-1" aria-hidden="true"></i>
           Accéder à la boutique HelloAsso
         <% end %>
@@ -59,7 +59,7 @@
                 <%= @selected_category.name %>
                 <span class="badge bg-secondary ms-2"><%= @products.count %> produit<%= 's' if @products.count > 1 %></span>
               </h2>
-              <%= link_to products_path, class: "btn btn-sm btn-outline-secondary" do %>
+              <%= link_to products_path, class: "btn btn-sm btn-outline-liquid-secondary" do %>
                 <i class="bi bi-x-circle me-1" aria-hidden="true"></i>Effacer le filtre
               <% end %>
             </div>

@@ -63,7 +63,7 @@
         <!-- Theme toggle -->
         <button 
           type="button"
-            class="btn btn-outline-primary theme-toggle navbar-icon-btn" 
+            class="btn btn-outline-liquid-primary theme-toggle navbar-icon-btn" 
           id="theme-toggle"
           aria-label="Basculer vers le thème clair"
           aria-pressed="true"
@@ -73,7 +73,7 @@
           <span class="visually-hidden">Changer le thème</span>
         </button>
         
-          <%= link_to cart_path, class: "btn btn-outline-primary cart-button navbar-icon-btn", id: "cart-button", "aria-label" => "Voir le panier" do %>
+          <%= link_to cart_path, class: "btn btn-outline-liquid-primary cart-button navbar-icon-btn", id: "cart-button", "aria-label" => "Voir le panier" do %>
           <i class="bi bi-basket" aria-hidden="true"></i>
           <% if cart_items_count > 0 %>
             <span class="badge text-bg-danger cart-badge" id="cartCount" data-cart-count="<%= cart_items_count %>"><%= cart_items_count %></span>
@@ -86,7 +86,7 @@
         <!-- Ligne 2 : Menu utilisateur ou boutons connexion (pleine largeur) -->
         <% if user_signed_in? %>
           <div class="dropdown navbar-user-menu">
-            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu utilisateur">
+            <button class="btn btn-outline-liquid-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu utilisateur">
               <i class="bi bi-person-circle me-2" aria-hidden="true"></i>
               <%= current_user.first_name.presence || current_user.email %>
             </button>
@@ -167,7 +167,7 @@
         <% else %>
           <!-- Boutons côte à côte sur desktop, empilés sur mobile -->
           <div class="navbar-auth-buttons d-flex flex-column flex-lg-row gap-2">
-            <%= link_to new_user_registration_path, class: "btn btn-outline-primary" do %>
+            <%= link_to new_user_registration_path, class: "btn btn-outline-liquid-primary" do %>
               <i class="bi bi-person-plus me-2" aria-hidden="true"></i>S'inscrire
             <% end %>
             <%= link_to new_user_session_path, class: "btn btn-liquid-primary" do %>

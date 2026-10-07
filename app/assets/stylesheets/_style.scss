@@ -87,6 +87,12 @@
     --shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.15);
     --shadow-hover-lg: 0 4px 8px rgba(0, 0, 0, 0.2);
     --shadow-hover-card: 0 6px 12px rgba(0, 0, 0, 0.15);
+
+    /* Neutral ("secondary") liquid button — light theme.
+       Overridden in the dark block so the fill/text never uses the
+       light-theme grey on a dark surface (see --gr-muted-dark). */
+    --btn-neutral-fg: var(--gr-muted);
+    --btn-neutral-fill: var(--gr-muted);
   }
   
   [data-bs-theme=dark] {
@@ -113,6 +119,12 @@
     --shadow-hover: 0 2px 4px rgba(255, 255, 255, 0.15);
     --shadow-hover-lg: 0 4px 8px rgba(255, 255, 255, 0.2);
     --shadow-hover-card: 0 6px 12px rgba(255, 255, 255, 0.15);
+
+    /* Neutral ("secondary") liquid button — dark theme.
+       --gr-muted (#5a6268) only reaches 2.96:1 on #0f131a, so the dark
+       theme swaps to the already-validated --gr-muted-dark (#a0a0a0, 7.0:1). */
+    --btn-neutral-fg: var(--gr-muted-dark);
+    --btn-neutral-fill: var(--gr-muted-dark);
     
     /* Card borders - Mode sombre (blanc) */
     --card-border-color: rgba(255, 255, 255, 0.3); /* Blanc avec transparence pour mode sombre */
@@ -292,6 +304,30 @@
     align-items: center;
   }
 
+  /* =====================================================================
+     BUTTON SYSTEM — single source of truth (UI polish fix #2)
+     ---------------------------------------------------------------------
+     Two families exist; never mix them inside one component.
+
+       LIQUID (canonical — public pages, layouts and new markup):
+         filled primary CTA .... btn-liquid-primary
+         filled success ......... btn-liquid-success
+         filled warning ......... btn-liquid-warning
+         filled danger .......... btn-liquid-danger
+         filled neutral ......... btn-liquid-secondary
+         outline primary ........ btn-outline-liquid-primary
+         outline neutral ........ btn-outline-liquid-secondary
+
+       RAW BOOTSTRAP (btn-primary / btn-outline-primary / btn-info /
+       btn-secondary / btn-outline-secondary) is legacy. Do not add it to
+       public markup; it is tolerated only in AdminPanel while that surface
+       migrates. Destructive confirmations may keep btn-danger until a
+       liquid-danger review covers them.
+
+     Component rule: ONE filled variant for the single primary action of the
+     component, outline liquid variants for every other action.
+     ===================================================================== */
+
   /* Liquid buttons */
   .btn-liquid-primary {
     background: var(--gradient-liquid-primary);
@@ -394,6 +430,38 @@
     background: var(--gr-primary);
     color: white;
     border-color: var(--gr-primary);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Neutral liquid variants — defined because views already reference them
+     (admin scope filters, cookie banner, "retour" links). They used to fall
+     back to plain .btn styling. Colours come from --btn-neutral-* so the dark
+     theme swaps to a light grey automatically. */
+  .btn-liquid-secondary {
+    background: var(--btn-neutral-fill);
+    border: none;
+    /* --bs-body-bg inverts with the theme, so the label keeps ≥5.6:1 on the
+       neutral fill in both light (grey fill) and dark (light-grey fill). */
+    color: var(--bs-body-bg);
+    transition: var(--transition-liquid);
+  }
+
+  .btn-liquid-secondary:hover {
+    color: var(--bs-body-bg);
+    box-shadow: var(--shadow-hover-lg);
+  }
+
+  .btn-outline-liquid-secondary {
+    background: transparent;
+    border: 2px solid var(--btn-neutral-fg);
+    color: var(--btn-neutral-fg);
+    transition: var(--transition-liquid);
+  }
+
+  .btn-outline-liquid-secondary:hover {
+    background: var(--btn-neutral-fill);
+    color: var(--bs-body-bg);
+    border-color: var(--btn-neutral-fill);
     box-shadow: var(--shadow-hover);
   }
 
