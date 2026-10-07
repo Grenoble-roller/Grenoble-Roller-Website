@@ -775,6 +775,35 @@
     border-radius: 1rem 1rem 0 0;
   }
 
+  /* Modal internal rhythm + footer buttons (fix #14).
+     The custom 1rem radii on .modal-content/.modal-header never reached
+     .modal-footer, which still derived Bootstrap's calc(0.5rem - 1px), so
+     modals came out round on top and nearly square at the bottom. Pin all
+     four corners through the Bootstrap variable instead of patching one
+     half of the box. */
+  .modal {
+    --bs-modal-border-radius: 1rem;
+    --bs-modal-inner-border-radius: 1rem;
+  }
+
+  /* Header and body both pad 1rem; the footer inherited Bootstrap's
+     0.75rem padding plus 0.5rem child margins, so its optical rhythm was
+     off. Use one padding and one explicit gap, and drop the trailing
+     child margin that doubled the body→footer gap. */
+  .modal-footer {
+    padding: 1rem;
+    gap: 1rem;
+    border-radius: 0 0 1rem 1rem;
+  }
+
+  .modal-footer > * {
+    margin: 0;
+  }
+
+  .modal-body > :last-child {
+    margin-bottom: 0;
+  }
+
   .modal-backdrop {
     background-color: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(4px);

@@ -42,9 +42,9 @@
           <% end %>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Fermer</button>
           <% if @membership.pending? %>
-            <%= link_to "Finaliser le paiement", membership_path(@membership), class: "btn btn-primary" %>
+            <%= link_to "Finaliser le paiement", membership_path(@membership), class: "btn btn-liquid-primary" %>
           <% end %>
         </div>
       </div>
