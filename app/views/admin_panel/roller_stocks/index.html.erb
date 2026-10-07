@@ -89,7 +89,7 @@
                 </td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_roller_stock_path(stock), class: "btn btn-outline-primary" %>
+                    <%= link_to "Voir", admin_panel_roller_stock_path(stock), aria: { label: "Voir le stock de rollers #{stock.id}" }, class: "btn btn-outline-primary" %>
                     <%= link_to "Éditer", edit_admin_panel_roller_stock_path(stock), class: "btn btn-outline-secondary" %>
                   </div>
                 </td>

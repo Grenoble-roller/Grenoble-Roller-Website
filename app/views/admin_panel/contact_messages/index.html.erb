@@ -99,7 +99,7 @@
                 <td><%= l message.created_at, format: :short %></td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_contact_message_path(message), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_contact_message_path(message), aria: { label: "Voir le message #{message.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <%= link_to "Répondre", "mailto:#{message.email}?subject=#{ERB::Util.url_encode("Re: #{message.subject}")}", 
                         class: "btn btn-outline-liquid-success", target: "_blank" %>
                     <%= button_to "Supprimer", admin_panel_contact_message_path(message), 

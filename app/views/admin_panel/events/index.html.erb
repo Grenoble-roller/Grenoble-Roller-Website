@@ -127,7 +127,7 @@
                 </td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_event_path(event), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_event_path(event), aria: { label: "Voir l'événement #{event.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <% if current_user&.role&.level.to_i >= 60 %>
                       <%= link_to "Modifier", edit_event_path(event), class: "btn btn-outline-secondary" %>
                     <% end %>
@@ -211,7 +211,7 @@
                 </td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_event_path(event), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_event_path(event), aria: { label: "Voir l'événement #{event.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <% if current_user&.role&.level.to_i >= 60 %>
                       <%= link_to "Modifier", edit_event_path(event), class: "btn btn-outline-secondary" %>
                     <% end %>

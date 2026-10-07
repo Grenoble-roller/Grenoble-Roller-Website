@@ -118,7 +118,7 @@
                 </td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_initiation_path(initiation), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_initiation_path(initiation), aria: { label: "Voir l'initiation #{initiation.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <%= link_to "Présences", presences_admin_panel_initiation_path(initiation), class: "btn btn-outline-info" %>
                   </div>
                 </td>
@@ -188,7 +188,7 @@
                 </td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_initiation_path(initiation), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_initiation_path(initiation), aria: { label: "Voir l'initiation #{initiation.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <%= link_to "Présences", presences_admin_panel_initiation_path(initiation), class: "btn btn-outline-info" %>
                   </div>
                 </td>

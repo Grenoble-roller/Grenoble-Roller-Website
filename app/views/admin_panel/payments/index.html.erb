@@ -128,7 +128,7 @@
                 </td>
                 <td>
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_payment_path(payment), class: "btn btn-outline-liquid-primary" %>
+                    <%= link_to "Voir", admin_panel_payment_path(payment), aria: { label: "Voir le paiement #{payment.id}" }, class: "btn btn-outline-liquid-primary" %>
                     <% if policy([:admin_panel, payment]).destroy? %>
                       <%= button_to "Supprimer", admin_panel_payment_path(payment), 
                           method: :delete,

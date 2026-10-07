@@ -140,7 +140,7 @@
                 </td>
                 <td>
                   <div class="d-flex gap-2">
-                    <%= link_to "Voir", admin_panel_attendance_path(attendance), class: "btn btn-sm btn-outline-primary" %>
+                    <%= link_to "Voir", admin_panel_attendance_path(attendance), aria: { label: "Voir la présence #{attendance.id}" }, class: "btn btn-sm btn-outline-primary" %>
                     <%= link_to "Modifier", edit_admin_panel_attendance_path(attendance), class: "btn btn-sm btn-outline-secondary" %>
                   </div>
                 </td>

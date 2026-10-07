@@ -62,7 +62,7 @@
                 </td>
                 <td data-label="Description"><%= role.description&.truncate(50) || "-" %></td>
                 <td data-label="Actions">
-                  <%= link_to "Voir", admin_panel_role_path(role), class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "Voir", admin_panel_role_path(role), aria: { label: "Voir le rôle #{role.id}" }, class: "btn btn-sm btn-outline-primary" %>
                 </td>
               </tr>
             <% end %>

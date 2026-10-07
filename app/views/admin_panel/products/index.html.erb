@@ -84,7 +84,7 @@
                 <td data-label="Statut"><%= active_badge(product.is_active) %></td>
                 <td data-label="Actions">
                   <div class="btn-group btn-group-sm">
-                    <%= link_to "Voir", admin_panel_product_path(product), class: "btn btn-outline-primary" %>
+                    <%= link_to "Voir", admin_panel_product_path(product), aria: { label: "Voir le produit #{product.id}" }, class: "btn btn-outline-primary" %>
                     <%= link_to "Modifier", edit_admin_panel_product_path(product), class: "btn btn-outline-secondary" %>
                     <%= link_to "Supprimer", admin_panel_product_path(product), 
                         method: :delete, 

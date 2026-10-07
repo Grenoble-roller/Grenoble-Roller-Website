@@ -155,7 +155,7 @@
                   <% end %>
                 </td>
                 <td data-label="Actions">
-                  <%= link_to "Voir", admin_panel_membership_path(membership), class: "btn btn-sm btn-outline-primary" %>
+                  <%= link_to "Voir", admin_panel_membership_path(membership), aria: { label: "Voir l'adhésion #{membership.id}" }, class: "btn btn-sm btn-outline-primary" %>
                 </td>
               </tr>
             <% end %>
