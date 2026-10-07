@@ -230,7 +230,28 @@
   }
   
   /* === LIQUID TYPOGRAPHY === */
-  
+
+  /* ---------------------------------------------------------------------
+     TYPOGRAPHY RULE (UI polish fix #3)
+     ---------------------------------------------------------------------
+     h1-h6 elements OWN the document outline; this theme gives them their
+     own mobile-first scale below (2.5rem -> 3.5rem for h1, ...), and the
+     Bootstrap .h1-.h6 classes override that scale when present.
+
+     Therefore a heading element may only be used when the text really is a
+     section of the page outline. When text merely has to LOOK like a label
+     (alert titles, in-card or inside-a-link titles), do NOT reach for an
+     <hN>: it silently rewrites the outline and creates level skips.
+
+     Use a <p>/<span> with the size utility instead — the rendering is
+     identical because .hN carries font-size, font-weight and line-height:
+
+         <p class="h6 fw-bold mb-3">Titre de carte</p>
+
+     Plain fs-* / fw-* utilities are also fine when you need a non-heading
+     scale (e.g. fs-5 fw-bold). Reserve .hN for "heading look, no semantics".
+     --------------------------------------------------------------------- */
+
   h1 {
     font-family: 'Poppins', system-ui, BlinkMacSystemFont, sans-serif;
     font-size: 2.5rem; /* Mobile first */
