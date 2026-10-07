@@ -1086,6 +1086,21 @@
     background-color: #00819b !important; /* Corrigé pour contraste 4.5:1 (Bootstrap default: #0dcaf0) */
     color: white;
   }
+
+  /* Status badges — WCAG AA (≥4.5:1) audit (UI polish fix #7).
+     .badge ships --bs-badge-color: #fff, so every label starts white:
+       bg-primary    #0d6efd / #fff  -> 4.50:1   ok
+       bg-secondary  #6c757d / #fff  -> 4.69:1   ok
+       bg-success    #198754 / #fff  -> 4.53:1   ok
+       bg-danger     #dc3545 / #fff  -> 4.53:1   ok
+       bg-info       #00819b / #fff  -> 4.56:1   ok (override above)
+       bg-warning    #ffc107 / #fff  -> 1.63:1   FAIL  <-- pinned below
+     --bs-warning-rgb is declared once in :root, so the amber fill is the
+     same in both themes; the label must therefore be a fixed dark
+     (#212529 -> 9.46:1) and never depend on a theme-relative utility. */
+  .badge.bg-warning {
+    color: #212529 !important;
+  }
   
   .badge-liquid-success {
     background: var(--gradient-liquid-success);
@@ -1102,7 +1117,10 @@
   /* Orange urgency (low stock) — dark text for WCAG on amber fills */
   .badge-liquid-warning {
     background: linear-gradient(135deg, #e65100 0%, #ff9800 100%);
-    color: #fff;
+    /* was #fff: only 2.16:1 on the #ff9800 end of the gradient.
+       #000 gives 5.54:1 (worst stop, #e65100) to 9.74:1 (#ff9800),
+       matching .bg-liquid-warning below (UI polish fix #7). */
+    color: #000;
     border: none;
   }
   
@@ -1114,6 +1132,36 @@
   [data-bs-theme="dark"] .bg-liquid-warning {
     background: linear-gradient(135deg, #FFB74D 0%, #FFCC80 100%) !important;
     color: #000 !important;
+  }
+
+  /* Missing liquid label surfaces (UI polish fix #7).
+     Views referenced .badge-liquid-info / .bg-liquid-info /
+     .bg-liquid-secondary / .bg-liquid-primary but _style.scss never
+     declared them, so those badges fell back to .badge (white label,
+     no background) and rendered white-on-transparent — about 1.04:1 on
+     the light body. Colours reuse the palette already validated above:
+       #2978c9 -> 4.54:1   #6c757d -> 4.69:1   #00819b -> 4.56:1
+     (white label on each fill, in both themes: the hexes are declared
+     once, so they do not flip with the theme.) */
+  .badge-liquid-info {
+    background: #00819b;
+    color: #fff;
+    border: none;
+  }
+
+  .bg-liquid-info {
+    background: #00819b !important;
+    color: #fff !important;
+  }
+
+  .bg-liquid-secondary {
+    background: #6c757d !important;
+    color: #fff !important;
+  }
+
+  .bg-liquid-primary {
+    background: #2978c9 !important;
+    color: #fff !important;
   }
   
   /* === LIQUID ANIMATIONS === */
