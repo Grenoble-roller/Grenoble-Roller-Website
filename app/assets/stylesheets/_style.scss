@@ -562,8 +562,10 @@
   .card,
   .card-liquid {
     --bs-card-bg: var(--liquid-glass-bg);
+    /* the shorthand already paints background-color; the separate
+       background-color declaration that used to follow it was a
+       no-op override (fix #12) */
     background: var(--liquid-glass-bg) !important;
-    background-color: var(--liquid-glass-bg) !important;
     backdrop-filter: var(--liquid-blur);
     -webkit-backdrop-filter: var(--liquid-blur);
     box-shadow: var(--bs-box-shadow);
@@ -1491,11 +1493,9 @@
     /* Bootstrap 5 gère la hauteur naturelle - meilleur en 2025 */
   }
   
-  /* Mobile : Dropdown intégré dans collapse (monobloc) */
-  @media (max-width: 991.98px) {
-    /* Desktop garde le comportement normal, mobile = monobloc dans collapse */
-    /* Pas de règles spéciales ici - géré par .navbar-collapse .dropdown-menu */
-  }
+  /* Mobile : Dropdown intégré dans collapse — handled by
+     .navbar-collapse .dropdown-menu below; the wrapper media query used
+     to sit here with only comments inside (dead code, fix #12). */
   
   .navbar-grenoble-roller .dropdown-item {
     transition: var(--transition-liquid-fast) !important;
