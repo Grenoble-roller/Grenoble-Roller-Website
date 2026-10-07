@@ -131,6 +131,34 @@
        theme swaps to the already-validated --gr-muted-dark (#a0a0a0, 7.0:1). */
     --btn-neutral-fg: var(--gr-muted-dark);
     --btn-neutral-fill: var(--gr-muted-dark);
+
+    /* Dark-mode parity for tokens that were only set in :root
+       (UI polish fix #9):
+       - the light elevation is a BLACK blur, which is invisible on the
+         #0f131a surface, so cards lost their elevation entirely; flip it
+         to the same soft white glow the --shadow-hover-* tokens below use.
+       - image/skeleton placeholders must not stay light-grey either. */
+    --bs-box-shadow: 0 2px 6px rgba(255, 255, 255, 0.08);
+    --bs-box-shadow-lg: 0 4px 12px rgba(255, 255, 255, 0.12);
+    --gr-bg-light: #1a1f27;
+
+    /* --gr-muted is a light-theme grey: 14 rules use it as TEXT, where it
+       only reaches 2.96:1 on the #0f131a dark surface. Flip the token for
+       dark (-> #a0a0a0, 7.0:1). One rule paints it as a FILL instead
+       (.btn-secondary below, white label), so that pairing is re-stated
+       here with a dark label — white on #a0a0a0 would be 2.6:1. */
+    --gr-muted: var(--gr-muted-dark);
+
+    .btn-secondary {
+      background: var(--gr-muted-dark);
+      border-color: var(--gr-muted-dark);
+      color: #0f131a;
+    }
+
+    .btn-secondary:hover {
+      background: #c5c8cb;
+      color: #0f131a;
+    }
     
     /* Card borders - Mode sombre (blanc) */
     --card-border-color: rgba(255, 255, 255, 0.3); /* Blanc avec transparence pour mode sombre */
