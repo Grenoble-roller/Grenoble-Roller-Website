@@ -1495,6 +1495,23 @@
     border-color: var(--liquid-glass-border);
   }
   
+  /* Navbar action cluster (UI polish fix #6).
+     Theme toggle, cart, user menu and the auth buttons must share one
+     control box so the three groups line up on the same row: icon-only
+     buttons previously collapsed to Bootstrap's default 36px on desktop
+     (the 44px rule only existed inside the mobile media query) while the
+     theme toggle stayed at 44px, so the row was visibly uneven. */
+  .navbar-grenoble-roller .navbar-actions .btn {
+    min-height: 44px; /* WCAG 2.5.8 target, at every breakpoint */
+  }
+
+  .navbar-grenoble-roller .navbar-icon-btn {
+    min-width: 44px; /* Zone tactile minimale WCAG 2.5.8 */
+    min-height: 44px;
+    padding: 0.5rem;
+    flex-shrink: 0;
+  }
+
   /* Responsive - Bonnes pratiques 2025 pour navbar mobile */
   @media (max-width: 991.98px) {
     .navbar-grenoble-roller {
@@ -1559,14 +1576,9 @@
       align-items: center;
     }
     
-    /* Boutons icônes - taille compacte */
-    .navbar-grenoble-roller .navbar-icon-btn {
-      min-width: 44px; /* Zone tactile minimale WCAG 2.5.8 */
-      min-height: 44px;
-      padding: 0.5rem;
-      flex-shrink: 0;
-    }
-    
+    /* Boutons icônes : taille portée par la règle de base
+       .navbar-icon-btn (44px à tous les breakpoints — fix #6) */
+
     /* Menu utilisateur ou boutons auth - pleine largeur sur mobile uniquement */
     .navbar-grenoble-roller .navbar-user-menu {
       width: 100%;
