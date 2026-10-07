@@ -3824,7 +3824,7 @@
     /* Boutons secondaires */
     .btn-outline-primary,
     .btn-outline-secondary {
-      transition: all 0.2s ease;
+      transition: var(--transition-liquid-fast);
       
       &:hover {
         transform: translateY(-1px);
@@ -3836,7 +3836,7 @@
     .btn-link {
       padding: 0.5rem 0.75rem;
       font-size: 0.875rem;
-      transition: all 0.2s ease;
+      transition: var(--transition-liquid-fast);
       
       &:hover {
         text-decoration: underline !important;
@@ -5722,7 +5722,7 @@
   .section-cta {
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: var(--transition-liquid);
   }
   
   /* Bordures adaptatives - mode clair */
@@ -6458,7 +6458,7 @@
   /* Skill Level Cards (Bootstrap .btn-check) */
   .skill-level-btn {
     border-width: 2px;
-    transition: all 0.2s ease;
+    transition: var(--transition-liquid-fast);
     cursor: pointer;
   }
   
@@ -6964,7 +6964,7 @@
     border-radius: 1rem;
     padding: 2.5rem 2rem;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: var(--transition-liquid);
     
     &:hover {
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -7035,7 +7035,7 @@
     background: rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    transition: all 0.2s ease;
+    transition: var(--transition-liquid-fast);
     
     &:hover {
       background: rgba(255, 255, 255, 0.7);
@@ -7079,7 +7079,7 @@
     padding: 0.875rem 2rem;
     font-weight: 600;
     border-radius: 0.75rem;
-    transition: all 0.3s ease;
+    transition: var(--transition-liquid);
     display: inline-flex;
     align-items: center;
     
