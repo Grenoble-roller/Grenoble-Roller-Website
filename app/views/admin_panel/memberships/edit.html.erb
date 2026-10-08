@@ -20,7 +20,7 @@
         <%= form_with model: [:admin_panel, @membership], local: true do |f| %>
           <% if @membership.errors.any? %>
             <div class="alert alert-danger">
-              <h5>Erreurs:</h5>
+              <h2 class="h5">Erreurs:</h2>
               <ul class="mb-0">
                 <% @membership.errors.full_messages.each do |message| %>
                   <li><%= message %></li>
@@ -30,7 +30,7 @@
           <% end %>
 
           <div class="mb-4">
-            <h5>Informations de base</h5>
+            <h3 class="h5">Informations de base</h3>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <%= f.label :user_id, "Utilisateur *", class: "form-label" %>
@@ -111,7 +111,7 @@
           </div>
 
           <div class="mb-4">
-            <h5>Type d'adhésion</h5>
+            <h4 class="h5">Type d'adhésion</h4>
             <div class="mb-3">
               <%= f.label :is_child_membership, class: "form-check-label" do %>
                 <%= f.check_box :is_child_membership, class: "form-check-input", id: "membership_is_child_membership" %>

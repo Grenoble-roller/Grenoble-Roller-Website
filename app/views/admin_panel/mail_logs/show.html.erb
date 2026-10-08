@@ -13,7 +13,7 @@
 
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Informations Générales</h5>
+      <h2 class="h5 mb-0">Informations Générales</h2>
     </div>
     <div class="card-body">
       <div class="row">
@@ -93,7 +93,7 @@
   <% if @log.error_message.present? || @failed_execution %>
     <div class="card card-liquid rounded-liquid shadow-liquid mb-4 border-danger">
       <div class="card-header" style="background: var(--gradient-liquid-danger); color: white;">
-        <h5 class="mb-0">❌ Erreur</h5>
+        <h3 class="h5 mb-0">❌ Erreur</h3>
       </div>
       <div class="card-body">
         <pre class="p-3 rounded border"><%= @log.error_message.presence || @failed_execution&.error %></pre>
@@ -103,7 +103,7 @@
 
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Arguments</h5>
+      <h4 class="h5 mb-0">Arguments</h4>
     </div>
     <div class="card-body">
       <pre class="p-3 rounded border"><%= JSON.pretty_generate(@log.arguments) %></pre>

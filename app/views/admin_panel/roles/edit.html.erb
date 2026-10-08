@@ -20,7 +20,7 @@
         <%= form_with model: [:admin_panel, @role], local: true do |f| %>
           <% if @role.errors.any? %>
             <div class="alert alert-danger">
-              <h5>Erreurs:</h5>
+              <h2 class="h5">Erreurs:</h2>
               <ul class="mb-0">
                 <% @role.errors.full_messages.each do |message| %>
                   <li><%= message %></li>

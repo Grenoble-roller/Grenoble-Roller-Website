@@ -20,7 +20,7 @@
         <%= form_with model: [:admin_panel, @route], local: true, multipart: true do |f| %>
           <% if @route.errors.any? %>
             <div class="alert alert-danger">
-              <h5>Erreurs:</h5>
+              <h2 class="h5">Erreurs:</h2>
               <ul class="mb-0">
                 <% @route.errors.full_messages.each do |message| %>
                   <li><%= message %></li>
@@ -30,7 +30,7 @@
           <% end %>
 
           <div class="mb-4">
-            <h5>Informations principales</h5>
+            <h3 class="h5">Informations principales</h3>
             <div class="row">
               <div class="col-12 mb-3">
                 <%= f.label :name, "Nom *", class: "form-label" %>
@@ -71,7 +71,7 @@
           </div>
 
           <div class="mb-4">
-            <h5>Carte</h5>
+            <h4 class="h5">Carte</h4>
             <div class="row">
               <% if @route.map_image.attached? %>
                 <div class="col-12 mb-3">

@@ -19,7 +19,7 @@
         <%= form_with model: [:admin_panel, @user], local: true do |f| %>
           <% if @user.errors.any? %>
             <div class="alert alert-danger">
-              <h5>Erreurs:</h5>
+              <h2 class="h5">Erreurs:</h2>
               <ul class="mb-0">
                 <% @user.errors.full_messages.each do |message| %>
                   <li><%= message %></li>
@@ -29,7 +29,7 @@
           <% end %>
 
           <div class="mb-4">
-            <h5>Informations personnelles</h5>
+            <h3 class="h5">Informations personnelles</h3>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <%= f.label :email, "Email *", class: "form-label" %>
@@ -65,7 +65,7 @@
           </div>
 
           <div class="mb-4">
-            <h5>Authentification</h5>
+            <h4 class="h5">Authentification</h4>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <%= f.label :password, "Mot de passe *", class: "form-label" %>

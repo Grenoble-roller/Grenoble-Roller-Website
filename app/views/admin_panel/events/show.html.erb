@@ -24,7 +24,7 @@
 <!-- Détails Événement -->
 <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
   <div class="card-header">
-    <h5 class="mb-0">Détails</h5>
+    <h2 class="h5 mb-0">Détails</h2>
   </div>
   <div class="card-body">
     <div class="row">
@@ -101,7 +101,7 @@
 <!-- Panel Inscriptions -->
 <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Inscriptions (<%= @attendances.count %>)</h5>
+    <h3 class="h5 mb-0">Inscriptions (<%= @attendances.count %>)</h3>
   </div>
   <div class="card-body">
     <% if @attendances.any? %>
@@ -161,7 +161,7 @@
 <!-- Panel Liste d'attente -->
 <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
   <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Liste d'attente (<%= @waitlist_entries.count %>)</h5>
+    <h4 class="h5 mb-0">Liste d'attente (<%= @waitlist_entries.count %>)</h4>
   </div>
   <div class="card-body">
     <% if @waitlist_entries.any? %>

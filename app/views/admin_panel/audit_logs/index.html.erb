@@ -12,7 +12,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Total</h5>
+          <h2 class="h5 card-title text-muted small">Total</h2>
           <h3 class="mb-0"><%= @stats[:total] %></h3>
         </div>
       </div>
@@ -20,7 +20,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Actions distinctes</h5>
+          <h4 class="h5 card-title text-muted small">Actions distinctes</h4>
           <h3 class="mb-0"><%= @stats[:actions] %></h3>
         </div>
       </div>
@@ -28,7 +28,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Types de cible</h5>
+          <h4 class="h5 card-title text-muted small">Types de cible</h4>
           <h3 class="mb-0"><%= @stats[:targets] %></h3>
         </div>
       </div>
@@ -36,7 +36,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Acteurs distincts</h5>
+          <h4 class="h5 card-title text-muted small">Acteurs distincts</h4>
           <h3 class="mb-0"><%= @stats[:actors] %></h3>
         </div>
       </div>
@@ -46,7 +46,7 @@
   <!-- FILTRES -->
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Filtres</h5>
+      <h4 class="h5 mb-0">Filtres</h4>
     </div>
     <div class="card-body">
       <%= form_with url: admin_panel_audit_logs_path, method: :get, local: true, class: "row g-3" do |f| %>

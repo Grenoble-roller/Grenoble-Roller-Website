@@ -30,7 +30,7 @@
 <!-- Informations principales -->
 <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
   <div class="card-header bg-liquid-primary text-white">
-    <h5 class="mb-0">Informations du paiement</h5>
+    <h2 class="h5 mb-0">Informations du paiement</h2>
   </div>
   <div class="card-body">
     <div class="row">
@@ -86,7 +86,7 @@
 <% if @orders.any? %>
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header bg-liquid-info text-white">
-      <h5 class="mb-0">Commandes associées (<%= @orders.count %>)</h5>
+      <h3 class="h5 mb-0">Commandes associées (<%= @orders.count %>)</h3>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -133,7 +133,7 @@
 <% if @memberships.any? %>
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header bg-liquid-success text-white">
-      <h5 class="mb-0">Adhésions associées (<%= @memberships.count %>)</h5>
+      <h4 class="h5 mb-0">Adhésions associées (<%= @memberships.count %>)</h4>
     </div>
     <div class="card-body">
       <div class="table-responsive">

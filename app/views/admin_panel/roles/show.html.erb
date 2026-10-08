@@ -20,7 +20,7 @@
     <!-- Informations rôle -->
     <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
       <div class="card-header">
-        <h5 class="mb-0">Informations</h5>
+        <h2 class="h5 mb-0">Informations</h2>
       </div>
       <div class="card-body">
         <dl class="row">
@@ -54,7 +54,7 @@
     <% if @users.any? %>
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-header">
-          <h5 class="mb-0">Utilisateurs associés (<%= @role.users.count %>)</h5>
+          <h3 class="h5 mb-0">Utilisateurs associés (<%= @role.users.count %>)</h3>
         </div>
         <div class="card-body">
           <div class="table-responsive">
@@ -91,7 +91,7 @@
     <!-- Actions -->
     <div class="card card-liquid rounded-liquid shadow-liquid">
       <div class="card-header">
-        <h5 class="mb-0">Actions</h5>
+        <h4 class="h5 mb-0">Actions</h4>
       </div>
       <div class="card-body">
         <%= link_to "Modifier", edit_admin_panel_role_path(@role), class: "btn btn-liquid-primary w-100 mb-2" %>

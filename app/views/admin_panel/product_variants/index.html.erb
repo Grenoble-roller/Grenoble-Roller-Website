@@ -12,10 +12,10 @@
 
 <div class="card card-liquid">
   <div class="card-header card-liquid-primary d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
+    <h2 class="h5 mb-0">
       <i class="bi bi-list-ul me-2" aria-hidden="true"></i>
       Variantes (<%= @variants.count %>)
-    </h5>
+    </h2>
     <div class="btn-group">
       <%= link_to bulk_edit_admin_panel_product_product_variants_path(@product, variant_ids: []),
           class: 'btn btn-sm btn-outline-liquid-secondary',

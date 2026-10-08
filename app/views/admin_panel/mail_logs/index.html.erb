@@ -17,7 +17,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Total</h5>
+          <h2 class="h5 card-title text-muted small">Total</h2>
           <h3 class="mb-0"><%= @stats[:total] %></h3>
         </div>
       </div>
@@ -25,7 +25,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">En attente</h5>
+          <h4 class="h5 card-title text-muted small">En attente</h4>
           <h3 class="mb-0 text-warning"><%= @stats[:pending] %></h3>
         </div>
       </div>
@@ -33,7 +33,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Terminés</h5>
+          <h4 class="h5 card-title text-muted small">Terminés</h4>
           <h3 class="mb-0 text-success"><%= @stats[:finished] %></h3>
         </div>
       </div>
@@ -41,7 +41,7 @@
     <div class="col-md-3">
       <div class="card card-liquid rounded-liquid shadow-liquid">
         <div class="card-body">
-          <h5 class="card-title text-muted small">Échecs</h5>
+          <h4 class="h5 card-title text-muted small">Échecs</h4>
           <h3 class="mb-0 text-danger"><%= @stats[:failed] %></h3>
         </div>
       </div>
@@ -51,7 +51,7 @@
   <!-- FILTRES -->
   <div class="card card-liquid rounded-liquid shadow-liquid mb-4">
     <div class="card-header">
-      <h5 class="mb-0">Filtres</h5>
+      <h4 class="h5 mb-0">Filtres</h4>
     </div>
     <div class="card-body">
       <%= form_with url: admin_panel_mail_logs_path, method: :get, local: true, class: "row g-3" do |f| %>

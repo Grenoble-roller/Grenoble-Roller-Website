@@ -46,13 +46,13 @@
 <!-- Tableau des mouvements -->
 <div class="card card-liquid rounded-liquid shadow-liquid">
   <div class="card-header card-liquid-primary d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
+    <h2 class="h5 mb-0">
       <i class="bi bi-clock-history me-2" aria-hidden="true"></i>
       Historique des mouvements
       <% if @movements.any? %>
         <span class="badge badge-liquid-info ms-2"><%= @movements.count %></span>
       <% end %>
-    </h5>
+    </h2>
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
